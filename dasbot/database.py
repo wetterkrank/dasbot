@@ -1,7 +1,5 @@
 import logging
-
 from pymongo import MongoClient
-from config import DB_ADDRESS, DB_NAME
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,11 +32,4 @@ class Database(object):
         update = {"$set": chat_state}
         result = self._chats.update_one(query, update, upsert=True)
         logger.debug("Mongo updating chat %s, result: %s", chat_id, result.raw_result)
-        # chat_object = chat_state.copy()
-        # chat_object['_id'] = chat_id
-        # result = self._chats.insert_one(chat_object)
         return result
-
-
-if __name__ == '__main__':
-    db = Database(DB_ADDRESS, DB_NAME)

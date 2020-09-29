@@ -1,15 +1,17 @@
-#TODO: add hint button; if /start is sent several times -- don't send many questions
+#TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear; exception handling
 
 import logging
+import random
 
+import asyncio
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+import aioschedule
 
-import random
+import config
 from dictionary import Dictionary
 from database import Database
-import config
 
 
 # Configure logging
@@ -17,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-# Initialize bot, dispatcher, and session states
+# Initialize bot, dispatcher, and others
 bot = Bot(token=config.TOKEN)
 dp = Dispatcher(bot)
 dictionary = Dictionary(config.DICT_FILE)
@@ -98,6 +100,25 @@ def keyboard():
     keyboard_markup.row(*row_btns)
     return keyboard_markup
 
+async def broadcast_quiz():
+    logger.debug('Checking subscriptions and sending out quizes...')
+
+async def scheduler():
+    try:
+        # aioschedule.every(60).seconds.do(test_job)
+        aioschedule.every().day.at("12:00").do(broadcast_quiz)
+    except RuntimeError as e:
+        logger.error(e)
+
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(60)
+
 
 if __name__ == '__main__':
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(scheduler())
+    # dp.loop.create_task(scheduler()) -- bugfix expected?
+    
     executor.start_polling(dp)

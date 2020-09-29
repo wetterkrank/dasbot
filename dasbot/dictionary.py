@@ -1,6 +1,6 @@
 import logging
-
 import csv
+
 from config import DICT_FILE
 
 # Configure logging
