@@ -1,33 +1,47 @@
 import logging
 import csv
 
-from config import DICT_FILE
+from .config import DICT_FILE
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 
 class Dictionary(object):
+    """
+    Attributes
+    ----------
+    allwords : list
+        a list of all words
+    contents : dictionary of arrays
+        "word: [articles, translation, context, level]"
+
+    Methods
+    -------
+    articles(word)
+        Returns article(s) for the word (separated by / if more than one)
+    context(word)
+        Returns a sentence with the word
+    """
+
+    # note the encoding parameter for Excel-produced UTF-8 with BOM
     def __init__(self, dict_path):
-        # not the encoding parameter for Excel-produced UTF-8 with BOM
+        ''' dict_path : path to the dictionary file '''
         with open(dict_path, mode='r', encoding='utf-8-sig') as csv_file:
             csv_reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
-            self.details = {}
+            self.contents = {}
             for row in csv_reader:
-                self.details.update({row["word"]: 
+                self.contents.update({row["word"]: 
                     [row["articles"], row["translation"], row["context"], int(row["level"])]
                 })
-            self.allwords = list(self.details.keys())
-            logger.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
+            self.allwords = list(self.contents.keys())
+            log.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
 
     def articles(self, word):
-        articles = self.details[word][0]
+        articles = self.contents[word][0]
         return articles
 
     def context(self, word):
-        context = self.details[word][2]
+        context = self.contents[word][2]
         return context
 
 if __name__ == '__main__':
-    testdict = Dictionary(DICT_FILE)
+    pass

@@ -4,6 +4,7 @@ A Telegram bot that helps learn German der/die/das articles
 **Todo**
 - Daily quiz
 - Spaced repetition
+- Webhooks instead of long polling
 - i18n
 - SQL instead of Mongo
 

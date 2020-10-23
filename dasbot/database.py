@@ -1,35 +1,47 @@
+# TODO: Add username & password
+
 import logging
 from pymongo import MongoClient
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from .chat import Chat, ChatSchema
 
-# TODO: Add username & password
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+
 class Database(object):
     def __init__(self, db_conn, db_name):
-        client = MongoClient(db_conn) # DB connection details
-        db = client[db_name] # Database name here
-        self._chats = db['chats'] # Collection name here
+        client = MongoClient(db_conn)  # DB connection details
+        db = client[db_name]  # Database name here
+        self._chats = db['chats']  # Collection name here
         self.__status()
 
     def __status(self):
-        logger.info("%s chat(s) stored" % self._chats.count_documents({}))
+        log.info("%s chat(s) in DB" % self._chats.count_documents({}))
 
-    def get_chat(self, chat_id):
-        chat_id = str(chat_id)
-        chat_state = self._chats.find_one({"chat_id": chat_id})
-        logger.debug("Mongo retrieving chat %s, result: %s", chat_id, chat_state)
-        if chat_state:
-            chat_state.pop('_id')
-            return chat_state
-        return None
+    def load_chat(self, chat_id):
+        ''' Returns a Chat instance '''
+        chat_data = self._chats.find_one({"chat_id": chat_id}, {"_id": 0})
+        log.debug("loaded chat %s, result: %s", chat_id, chat_data)
+        chat = ChatSchema().load(chat_data) if chat_data else Chat(chat_id)
+        return chat
 
-    def save_chat(self, chat_id, chat_state):
-        chat_id = str(chat_id)
-        query = {"chat_id": chat_id}
-        update = {"$set": chat_state}
+    def save_chat(self, chat):
+        ''' Returns pymongo UpdateResult instance '''
+        chat.seen_now()
+        query = {"chat_id": chat.id}
+        data = ChatSchema().dump(chat)
+        update = {"$set": data}
         result = self._chats.update_one(query, update, upsert=True)
-        logger.debug("Mongo updating chat %s, result: %s", chat_id, result.raw_result)
+        log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
+
+    def get_subscriptions(self):
+        ''' Returns the list of chat_ids '''
+        found = self._chats.find({"subscribed": True}, {"chat_id": 1, "_id": 0})
+        subscriptions = [item['chat_id'] for item in found]
+        return subscriptions
+
+
+if __name__ == "__main__":
+    pass
