@@ -7,6 +7,7 @@ from . import config
 from .dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
+
 dictionary = Dictionary(config.DICT_FILE)
 
 

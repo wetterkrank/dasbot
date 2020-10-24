@@ -5,6 +5,7 @@ from .quiz import Quiz
 from .interface import Interface
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 
 class Controller(object):
@@ -25,9 +26,10 @@ class Controller(object):
         chat.quiz = Quiz()  # Resets the quiz
         chat.quiz.next_question_ready()
         await self.ui.ask_question(chat)
+        chat.seen_now()
         self.db.save_chat(chat)
 
-    # if smth else received
+    # anything else received
     async def generic(self, message):
         chat = self.db.load_chat(message.chat.id)
         answer = message.text.strip().lower()
@@ -39,6 +41,7 @@ class Controller(object):
             await self.ui.ask_question(chat)
         else:
             await self.ui.say_score(chat)
+        chat.seen_now()
         self.db.save_chat(chat)
 
 

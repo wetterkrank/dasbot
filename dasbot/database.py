@@ -28,7 +28,6 @@ class Database(object):
 
     def save_chat(self, chat):
         ''' Returns pymongo UpdateResult instance '''
-        chat.seen_now()
         query = {"chat_id": chat.id}
         data = ChatSchema().dump(chat)
         update = {"$set": data}
@@ -36,10 +35,11 @@ class Database(object):
         log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
 
-    def get_subscriptions(self):
+    def get_subscriptions(self, timepoint):
         ''' Returns the list of chat_ids '''
-        found = self._chats.find({"subscribed": True}, {"chat_id": 1, "_id": 0})
-        subscriptions = [item['chat_id'] for item in found]
+        found = self._chats.find({"subscribed": True, "quiz_time": timepoint}, {"chat_id": 1, "_id": 0})
+        subscriptions = [item['chat_id'] for item in found]  # Pymongo returns an object if nothing found
+        log.debug("found %s subscription(s) for %s", len(subscriptions), timepoint)
         return subscriptions
 
 

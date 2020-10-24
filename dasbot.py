@@ -1,5 +1,6 @@
-# TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear; exception handling
+# TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear
 # TODO: also use Motor for Mongo?
+# TODO: Exception handling: sending stuff to a chat that removed bot
 
 import logging
 import asyncio
@@ -9,6 +10,7 @@ from aiogram.utils import executor
 
 from dasbot import config
 from dasbot.controller import Controller
+from dasbot.scheduler import Scheduler
 from dasbot.database import Database
 
 logging.basicConfig(level=logging.INFO)
@@ -49,7 +51,8 @@ async def any_msg_handler(message: types.Message):
 if __name__ == '__main__':
     database = Database(config.DB_ADDRESS, config.DB_NAME)
     chatcon = Controller(bot, database)
+    scheduler = Scheduler(bot, database)
 
-    # loop = asyncio.get_event_loop()
-    # loop.create_task(scheduler())
+    loop = asyncio.get_event_loop()
+    loop.create_task(scheduler.run())
     executor.start_polling(dp)
