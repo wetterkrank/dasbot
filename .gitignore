@@ -1,0 +1,6 @@
+__pycache__
+.venv
+.vscode
+config.py
+data
+Snippets

@@ -9,9 +9,9 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 
 from dasbot import config
-from dasbot.controller import Controller
 from dasbot.scheduler import Scheduler
 from dasbot.database import Database
+from dasbot.controller import Controller
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
