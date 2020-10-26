@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class Chat(object):
-    def __init__(self, chat_id, subscribed=False, quiz_time=None, last_seen=None, quiz=Quiz()):
+    def __init__(self, chat_id, subscribed=False, quiz_time="12:00", last_seen=None, quiz=Quiz()):
         self.id = chat_id
         self.subscribed = subscribed
         self.quiz_time = quiz_time
