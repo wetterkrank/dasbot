@@ -1,8 +1,10 @@
 ## dddasbot
 A Telegram bot that helps learn German der/die/das articles
 
+https://t.me/derdiedas_quizbot
+
 **Todo**
-- Daily quiz
+- ~~Daily quiz~~
 - Spaced repetition
 - Webhooks instead of long polling
 - i18n
