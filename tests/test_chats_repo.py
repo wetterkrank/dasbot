@@ -3,7 +3,7 @@ import unittest
 import mongomock
 
 from dasbot.chats_repo import ChatsRepo
-from dasbot.chat import Chat
+from dasbot.models.chat import Chat
 
 
 class TestChatsRepo(unittest.TestCase):

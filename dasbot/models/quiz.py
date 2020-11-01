@@ -3,8 +3,8 @@ import random
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
-from . import config
-from .dictionary import Dictionary
+from dasbot import config
+from dasbot.dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
 

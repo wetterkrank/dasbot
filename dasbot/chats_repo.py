@@ -1,6 +1,6 @@
 import logging
 
-from .chat import Chat, ChatSchema
+from dasbot.models.chat import Chat, ChatSchema
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)

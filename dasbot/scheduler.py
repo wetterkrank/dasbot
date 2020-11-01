@@ -5,7 +5,7 @@ from aiogram.utils.exceptions import BotBlocked
 from datetime import datetime
 import time
 
-from .quiz import Quiz
+from dasbot.models.quiz import Quiz
 from .interface import Interface
 
 log = logging.getLogger(__name__)

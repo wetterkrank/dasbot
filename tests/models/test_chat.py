@@ -1,7 +1,5 @@
 import unittest
 
-from dasbot.chat import Chat
-
 
 class TestChat(unittest.TestCase):
     def setUp(self):
