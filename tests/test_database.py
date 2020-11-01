@@ -12,7 +12,7 @@ class TestDB(unittest.TestCase):
         self.db = Database(DB_ADDRESS, DB_NAME)
 
     def test_save_chat(self):
-        chat = Chat(chat_id = 1001)
+        chat = Chat(chat_id=1001)
         chat.subscribed = True
         result = self.db.save_chat(chat)
         success = result.matched_count == 1 or result.modified_count == 1

@@ -42,7 +42,8 @@ class Quiz(object):
 
 class QuizSchema(Schema):
     class Meta:
-        unknown = EXCLUDE   # Skips unknown fields on deserialization
+        unknown = EXCLUDE  # Skips unknown fields on deserialization
+
     position = fields.Integer()
     question = fields.String()
     answer = fields.String()

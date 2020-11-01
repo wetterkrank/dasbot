@@ -41,7 +41,7 @@ class Interface(object):
         await self.bot.send_message(chat.id, text, reply_markup=types.ReplyKeyboardRemove())
 
     def rate(self, correctly):
-        ratio = round(correctly/config.QUIZ_LEN * 10)
+        ratio = round(correctly / config.QUIZ_LEN * 10)
         if ratio in range(0, 4):
             msg = ", keep trying!"
         elif ratio in range(4, 7):
@@ -50,7 +50,8 @@ class Interface(object):
             msg = ", excellent!"
         elif ratio == 10:
             msg = ", perfeKt!"
-        else: msg = "."
+        else:
+            msg = "."
         return msg
 
     def quiz_kb(self):

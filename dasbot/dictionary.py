@@ -5,6 +5,7 @@ from .config import DICT_FILE
 
 log = logging.getLogger(__name__)
 
+
 class Dictionary(object):
     """
     Attributes
@@ -29,9 +30,11 @@ class Dictionary(object):
             csv_reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
             self.contents = {}
             for row in csv_reader:
-                self.contents.update({row["word"]: 
-                    [row["articles"], row["translation"], row["context"], int(row["level"])]
-                })
+                self.contents.update(
+                    {
+                        row["word"]: [row["articles"], row["translation"], row["context"], int(row["level"])]
+                    }
+                )
             self.allwords = list(self.contents.keys())
             log.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
 
@@ -42,6 +45,7 @@ class Dictionary(object):
     def context(self, word):
         context = self.contents[word][2]
         return context
+
 
 if __name__ == '__main__':
     pass
