@@ -1,9 +1,8 @@
-import logging
 import csv
-
-from .config import DICT_FILE
+import logging
 
 log = logging.getLogger(__name__)
+
 
 class Dictionary(object):
     """
@@ -24,14 +23,16 @@ class Dictionary(object):
 
     # note the encoding parameter for Excel-produced UTF-8 with BOM
     def __init__(self, dict_path):
-        ''' dict_path : path to the dictionary file '''
+        """ dict_path : path to the dictionary file """
         with open(dict_path, mode='r', encoding='utf-8-sig') as csv_file:
             csv_reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
             self.contents = {}
             for row in csv_reader:
-                self.contents.update({row["word"]: 
-                    [row["articles"], row["translation"], row["context"], int(row["level"])]
-                })
+                self.contents.update(
+                    {
+                        row["word"]: [row["articles"], row["translation"], row["context"], int(row["level"])]
+                    }
+                )
             self.allwords = list(self.contents.keys())
             log.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
 
@@ -42,6 +43,7 @@ class Dictionary(object):
     def context(self, word):
         context = self.contents[word][2]
         return context
+
 
 if __name__ == '__main__':
     pass

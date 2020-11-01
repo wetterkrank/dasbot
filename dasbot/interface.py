@@ -41,7 +41,7 @@ class Interface(object):
         await self.bot.send_message(chat.id, text, reply_markup=types.ReplyKeyboardRemove())
 
     def rate(self, correctly):
-        ratio = round(correctly/config.QUIZ_LEN * 10)
+        ratio = round(correctly / config.QUIZ_LEN * 10)
         if ratio in range(0, 4):
             msg = ", keep trying!"
         elif ratio in range(4, 7):
@@ -50,11 +50,12 @@ class Interface(object):
             msg = ", excellent!"
         elif ratio == 10:
             msg = ", perfeKt!"
-        else: msg = "."
+        else:
+            msg = "."
         return msg
 
     def quiz_kb(self):
-        ''' Returns object of ReplyKeyboardMarkup type '''
+        """ Returns object of ReplyKeyboardMarkup type """
         labels = ('der', 'die', 'das')
         keyboard_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         row_btns = (types.KeyboardButton(text) for text in labels)
@@ -62,7 +63,7 @@ class Interface(object):
         return keyboard_markup
 
     def settings_kb(self):
-        ''' Returns object of ReplyKeyboardMarkup type '''
+        """ Returns object of ReplyKeyboardMarkup type """
         pass
 
     def recognized(self, msg_text):

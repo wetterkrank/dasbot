@@ -3,8 +3,8 @@ import random
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
-from . import config
-from .dictionary import Dictionary
+from dasbot import config
+from dasbot.dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class Quiz(object):
         self.correctly = correctly
 
     def next_question_ready(self):
-        ''' Generates the next question/answer pair '''
+        """ Generates the next question/answer pair """
         if self.position < config.QUIZ_LEN:  # TODO: Proper config
             word = random.choice(dictionary.allwords)
             articles = dictionary.articles(word)
@@ -42,7 +42,8 @@ class Quiz(object):
 
 class QuizSchema(Schema):
     class Meta:
-        unknown = EXCLUDE   # Skips unknown fields on deserialization
+        unknown = EXCLUDE  # Skips unknown fields on deserialization
+
     position = fields.Integer()
     question = fields.String()
     answer = fields.String()
