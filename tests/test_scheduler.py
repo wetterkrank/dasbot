@@ -28,21 +28,22 @@ class TestScheduler(aiounittest.AsyncTestCase):
         self.chats_repo = ChatsRepo(self.chats_collection)
 
     async def test_send_quiz(self):
-        ts = datetime.utcnow()
-        tomorrow = ts + timedelta(days=1)
+        tomorrow = datetime.utcnow().date() + timedelta(days=1)
+        current_quiz_time = datetime.fromisoformat('2011-11-04 12:05:23')
+        expected_next_quiz_time = current_quiz_time.replace(year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
 
         self.ui_mock = MagicMock()
         self.ui_mock.daily_hello = TestScheduler.success
         self.ui_mock.ask_question = TestScheduler.success
         self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
 
-        chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
+        chat = Chat(chat_id=1001, quiz_scheduled_time=current_quiz_time)
         result = await self.scheduler.send_quiz(chat)
 
         saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
 
         self.assertEqual(1, saved_chat.quiz.position)
-        self.assertEqual(tomorrow, saved_chat.quiz_scheduled_time)
+        self.assertEqual(expected_next_quiz_time, saved_chat.quiz_scheduled_time)
 
         self.assertTrue(result)
 

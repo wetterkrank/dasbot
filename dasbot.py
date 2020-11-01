@@ -7,7 +7,7 @@ import asyncio
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from mongomock import MongoClient
+from pymongo import MongoClient
 
 from dasbot import config
 from dasbot.interface import Interface

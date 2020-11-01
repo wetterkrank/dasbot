@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from datetime import timedelta
+from datetime import timezone
 
 from dasbot import util
 from dasbot.models.chat import Chat, ChatSchema
@@ -33,7 +33,7 @@ class ChatsRepo(object):
         log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
 
-    def get_pending_chats(self, time=datetime.utcnow()):
+    def get_pending_chats(self, time=datetime.now(tz=timezone.utc)):
         """
         :param time: timestamp when the function is called
         :return: list of chats that have pending quizzes

@@ -27,7 +27,7 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(False, result.subscribed)
 
     def test_load_new_chat(self):
-        now = datetime.fromisoformat('2011-11-04 00:05:23.283+00:00')
+        now = datetime.fromisoformat('2011-11-04 00:05:23')
         expected_quiz_scheduled_time = datetime.fromisoformat('2011-11-04 12:00:00.000+00:00')
 
         result = self.chats_repo.load_chat(1001, now)

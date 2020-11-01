@@ -7,6 +7,7 @@ from datetime import timedelta
 import aioschedule
 from aiogram.utils.exceptions import BotBlocked
 
+from dasbot import util
 from dasbot.models.quiz import Quiz
 
 log = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class Scheduler(object):
             await self.ui.daily_hello(chat)
             chat.quiz = Quiz()  # Resets the quiz
             chat.quiz.next_question_ready()
-            chat.quiz_scheduled_time = chat.quiz_scheduled_time + timedelta(days=1)
+            chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             await self.ui.ask_question(chat)
             self.chats_repo.save_chat(chat)
             await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
@@ -41,17 +42,22 @@ class Scheduler(object):
     # Callback that sends out the quizzes to subscribed chats
     async def broadcast(self):
         pending_chats = self.chats_repo.get_pending_chats()
-        results = list(map(await self.send_quiz, pending_chats))
-        success_count = results.count(True)
+
+        success_count = 0
+        for chat in pending_chats:
+            result = await self.send_quiz(chat)
+            if result:
+                success_count += 1
+
         log.info("Broadcast: %s message(s) sent.", success_count)
 
     # Creates the schedule and runs it
     async def run(self):
         try:
-            aioschedule.every(60).seconds.do(self.broadcast, "12:00")
+            aioschedule.every(60).seconds.do(self.broadcast)
             for tpoint in TIMES_UTC:
                 tpoint_servertz = Scheduler.utc_to_local(tpoint)
-                aioschedule.every().day.at(tpoint_servertz).do(self.broadcast, tpoint)
+                aioschedule.every().day.at(tpoint_servertz).do(self.broadcast)
             log.debug("Scheduled jobs: %s", len(aioschedule.jobs))
         except RuntimeError as e:
             log.error(e)
