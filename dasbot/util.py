@@ -1,5 +1,17 @@
+from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 
 
 def next_noon(now):
-    return (now + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)
+    base_date = now.date()
+    if now.hour >= 12:
+        base_date = now.date() + timedelta(days=1)
+
+    return datetime(
+        year=base_date.year,
+        month=base_date.month,
+        day=base_date.day,
+        hour=12,
+        tzinfo=timezone.utc
+    )
