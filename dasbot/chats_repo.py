@@ -42,7 +42,7 @@ class ChatsRepo(object):
         #  Currently timestamps are serialized with marshmallow as strings.
         #  We should serialize them as timestamps, and query here:
         #  {"subscribed": True, "quiz_scheduled_time": {"$lte": time}}
-        results_from_db = self._chats.find({"subscribed": True}, {"_id": 0})
+        results_from_db = self._chats.find({"subscribed": True, "quiz_scheduled_time": {"$ne": None}}, {"_id": 0})
         chats = [ChatSchema().load(chat_data) for chat_data in results_from_db]
         return list(filter(lambda chat: chat.quiz_scheduled_time < time, chats))
 
