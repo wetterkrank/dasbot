@@ -53,6 +53,15 @@ class TestChatsRepo(unittest.TestCase):
         result = self.chats_repo.get_pending_chats(ts)
         self.assertEqual(1, len(result))
 
+    def test_get_pending_chats_empty_ts(self):
+        ts = datetime.utcnow()
+
+        chat = Chat(chat_id=1001, quiz_scheduled_time=None)
+        self.chats_repo.save_chat(chat)
+
+        result = self.chats_repo.get_pending_chats(ts)
+        self.assertEqual(0, len(result))
+
 
 if __name__ == '__main__':
     unittest.main()
