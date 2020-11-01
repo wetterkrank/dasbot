@@ -1,7 +1,5 @@
-import logging
 import csv
-
-from .config import DICT_FILE
+import logging
 
 log = logging.getLogger(__name__)
 

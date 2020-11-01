@@ -7,10 +7,11 @@ import asyncio
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+from mongomock import MongoClient
 
 from dasbot import config
 from dasbot.scheduler import Scheduler
-from dasbot.database import Database
+from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
 
 logging.basicConfig(level=logging.INFO)
@@ -49,9 +50,13 @@ async def any_msg_handler(message: types.Message):
 
 
 if __name__ == '__main__':
-    database = Database(config.DB_ADDRESS, config.DB_NAME)
-    chatcon = Controller(bot, database)
-    scheduler = Scheduler(bot, database)
+    # TODO: Add username & password
+    client = MongoClient(config.DB_ADDRESS)
+    db = client[config.DB_NAME]
+    chats_repo = ChatsRepo(db['chats'])
+
+    chatcon = Controller(bot, chats_repo)
+    scheduler = Scheduler(bot, chats_repo)
 
     loop = asyncio.get_event_loop()
     loop.create_task(scheduler.run())

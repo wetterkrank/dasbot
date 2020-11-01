@@ -1,7 +1,4 @@
-# TODO: Add username & password
-
 import logging
-from pymongo import MongoClient
 
 from .chat import Chat, ChatSchema
 
@@ -9,11 +6,9 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-class Database(object):
-    def __init__(self, db_conn, db_name):
-        client = MongoClient(db_conn)  # DB connection details
-        db = client[db_name]  # Database name here
-        self._chats = db['chats']  # Collection name here
+class ChatsRepo(object):
+    def __init__(self, chats_table):
+        self._chats = chats_table
         self.__status()
 
     def __status(self):

@@ -15,23 +15,23 @@ TIMES_UTC = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:
 
 
 class Scheduler(object):
-    def __init__(self, bot, database):
+    def __init__(self, bot, chats_repo):
         self.bot = bot
-        self.db = database
+        self.chats_repo = chats_repo
         self.ui = Interface(bot)
 
     # Callback that sends out the quizes to subscribed chats
     async def broadcast(self, timepoint):
-        subscriptions = self.db.get_subscriptions(timepoint)
+        subscriptions = self.chats_repo.get_subscriptions(timepoint)
         sent_count = 0
         try:
             for chat_id in subscriptions:
-                chat = self.db.load_chat(chat_id)
+                chat = self.chats_repo.load_chat(chat_id)
                 await self.ui.daily_hello(chat)
                 chat.quiz = Quiz()  # Resets the quiz
                 chat.quiz.next_question_ready()
                 await self.ui.ask_question(chat)
-                self.db.save_chat(chat)
+                self.chats_repo.save_chat(chat)
                 sent_count += 1
                 await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
         except BotBlocked:
