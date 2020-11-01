@@ -10,6 +10,7 @@ from aiogram.utils import executor
 from mongomock import MongoClient
 
 from dasbot import config
+from dasbot.interface import Interface
 from dasbot.scheduler import Scheduler
 from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
@@ -56,7 +57,7 @@ if __name__ == '__main__':
     chats_repo = ChatsRepo(db['chats'])
 
     chatcon = Controller(bot, chats_repo)
-    scheduler = Scheduler(bot, chats_repo)
+    scheduler = Scheduler(Interface(bot), chats_repo)
 
     loop = asyncio.get_event_loop()
     loop.create_task(scheduler.run())

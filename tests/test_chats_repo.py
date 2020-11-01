@@ -1,4 +1,6 @@
 import unittest
+from datetime import datetime
+from datetime import timedelta
 
 import mongomock
 
@@ -24,20 +26,34 @@ class TestChatsRepo(unittest.TestCase):
         result = self.chats_repo.load_chat(1001)
         self.assertEqual(False, result.subscribed)
 
-    def test_load_chat(self):
-        result = self.chats_repo.load_chat(1001)
+    def test_load_new_chat(self):
+        now = datetime.fromisoformat('2011-11-04 00:05:23.283+00:00')
+
+        # todo: actually, it should be 2011-11-04 12:00:00.000+00:00!
+        expected_quiz_scheduled_time = datetime.fromisoformat('2011-11-05 12:00:00.000+00:00')
+
+        result = self.chats_repo.load_chat(1001, now)
         self.assertEqual(result.id, 1001)
         self.assertEqual(True, result.subscribed)
+        self.assertEqual(expected_quiz_scheduled_time, result.quiz_scheduled_time)
 
-    def test_get_subscriptions(self):
-        chat = Chat(chat_id=1001)
+    def test_get_pending_chats_empty(self):
+        ts = datetime.utcnow()
+
+        chat = Chat(chat_id=1001, quiz_scheduled_time=ts + timedelta(seconds=1))
         self.chats_repo.save_chat(chat)
 
-        result = self.chats_repo.get_subscriptions("12:00")
-        self.assertGreater(len(result), 0)
-        self.assertEqual(1001, result[0])
-        result = self.chats_repo.get_subscriptions("06:00")
+        result = self.chats_repo.get_pending_chats(ts)
         self.assertEqual(0, len(result))
+
+    def test_get_pending_chats_non_empty(self):
+        ts = datetime.utcnow()
+
+        chat = Chat(chat_id=1001, quiz_scheduled_time=ts - timedelta(seconds=1))
+        self.chats_repo.save_chat(chat)
+
+        result = self.chats_repo.get_pending_chats(ts)
+        self.assertEqual(1, len(result))
 
 
 if __name__ == '__main__':
