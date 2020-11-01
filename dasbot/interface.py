@@ -2,7 +2,8 @@ import logging
 from aiogram import types
 from . import config
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 class Interface(object):
@@ -25,7 +26,8 @@ class Interface(object):
     async def ask_question(self, chat):
         text = f"{chat.quiz.position}/{config.QUIZ_LEN}. "
         text += f"What's the article for {chat.quiz.question}?"
-        await self.bot.send_message(chat.id, text, reply_markup=self.quiz_kb())
+        result = await self.bot.send_message(chat.id, text, reply_markup=self.quiz_kb())
+        log.debug("message sent, result: %s", result)
 
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "Incorrect, "

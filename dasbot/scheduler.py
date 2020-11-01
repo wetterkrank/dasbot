@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import aioschedule
+from aiogram.utils.exceptions import BotBlocked
 from datetime import datetime
 import time
 
@@ -8,7 +9,7 @@ from .quiz import Quiz
 from .interface import Interface
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 TIMES_UTC = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
 
@@ -33,13 +34,15 @@ class Scheduler(object):
                 self.db.save_chat(chat)
                 sent_count += 1
                 await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
+        except BotBlocked:
+            log.info("Bot blocked, chat id: %s", chat.id)
         finally:
             log.info("Broadcast: %s message(s) sent.", sent_count)
 
     # Creates the schedule and runs it
     async def run(self):
         try:
-            # aioschedule.every(60).seconds.do(self.broadcast, "12:00")
+            aioschedule.every(60).seconds.do(self.broadcast, "12:00")
             for tpoint in TIMES_UTC:
                 tpoint_servertz = Scheduler.utc_to_local(tpoint)
                 aioschedule.every().day.at(tpoint_servertz).do(self.broadcast, tpoint)

@@ -1,6 +1,6 @@
 # TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear
 # TODO: also use Motor for Mongo?
-# TODO: Exception handling: sending stuff to a chat that removed bot
+# TODO: Exception handling: sending stuff to a chat that has removed bot
 
 import logging
 import asyncio
