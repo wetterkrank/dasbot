@@ -23,7 +23,7 @@ class Dictionary(object):
 
     # note the encoding parameter for Excel-produced UTF-8 with BOM
     def __init__(self, dict_path):
-        ''' dict_path : path to the dictionary file '''
+        """ dict_path : path to the dictionary file """
         with open(dict_path, mode='r', encoding='utf-8-sig') as csv_file:
             csv_reader = csv.DictReader(csv_file, quoting=csv.QUOTE_MINIMAL)
             self.contents = {}

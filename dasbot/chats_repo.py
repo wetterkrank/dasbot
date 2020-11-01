@@ -15,14 +15,14 @@ class ChatsRepo(object):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
 
     def load_chat(self, chat_id):
-        ''' Returns a Chat instance '''
+        """ Returns a Chat instance """
         chat_data = self._chats.find_one({"chat_id": chat_id}, {"_id": 0})
         log.debug("loaded chat %s, result: %s", chat_id, chat_data)
         chat = ChatSchema().load(chat_data) if chat_data else Chat(chat_id)
         return chat
 
     def save_chat(self, chat):
-        ''' Returns pymongo UpdateResult instance '''
+        """ Returns pymongo UpdateResult instance """
         query = {"chat_id": chat.id}
         data = ChatSchema().dump(chat)
         update = {"$set": data}
@@ -31,7 +31,7 @@ class ChatsRepo(object):
         return result
 
     def get_subscriptions(self, timepoint):
-        ''' Returns the list of chat_ids '''
+        """ Returns the list of chat_ids """
         found = self._chats.find({"subscribed": True, "quiz_time": timepoint}, {"chat_id": 1, "_id": 0})
         subscriptions = [item['chat_id'] for item in found]  # Pymongo returns an object if nothing found
         log.debug("found %s subscription(s) for %s", len(subscriptions), timepoint)

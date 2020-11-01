@@ -56,7 +56,7 @@ class Scheduler(object):
 
     @staticmethod
     def utc_to_local(hhmm):
-        ''' Returns the HH:MM time converted from UTC to server's TZ '''
+        """ Returns the HH:MM time converted from UTC to server's TZ """
         utc = datetime.strptime(f"{hhmm}UTC", "%H:%M%Z")
         now = time.time()
         offset = datetime.fromtimestamp(now) - datetime.utcfromtimestamp(now)

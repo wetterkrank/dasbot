@@ -19,7 +19,7 @@ class Quiz(object):
         self.correctly = correctly
 
     def next_question_ready(self):
-        ''' Generates the next question/answer pair '''
+        """ Generates the next question/answer pair """
         if self.position < config.QUIZ_LEN:  # TODO: Proper config
             word = random.choice(dictionary.allwords)
             articles = dictionary.articles(word)

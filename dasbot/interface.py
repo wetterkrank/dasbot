@@ -55,7 +55,7 @@ class Interface(object):
         return msg
 
     def quiz_kb(self):
-        ''' Returns object of ReplyKeyboardMarkup type '''
+        """ Returns object of ReplyKeyboardMarkup type """
         labels = ('der', 'die', 'das')
         keyboard_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         row_btns = (types.KeyboardButton(text) for text in labels)
@@ -63,7 +63,7 @@ class Interface(object):
         return keyboard_markup
 
     def settings_kb(self):
-        ''' Returns object of ReplyKeyboardMarkup type '''
+        """ Returns object of ReplyKeyboardMarkup type """
         pass
 
     def recognized(self, msg_text):
