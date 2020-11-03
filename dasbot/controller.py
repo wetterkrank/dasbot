@@ -25,7 +25,7 @@ class Controller(object):
         chat.quiz = Quiz()  # Resets the quiz
         chat.quiz.next_question_ready()
         await self.ui.ask_question(chat)
-        chat.seen_now()
+        chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
     # anything else received
@@ -40,7 +40,7 @@ class Controller(object):
             await self.ui.ask_question(chat)
         else:
             await self.ui.say_score(chat)
-        chat.seen_now()
+        chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
 

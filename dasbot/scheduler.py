@@ -1,9 +1,6 @@
-import asyncio
 import logging
-import time
-from datetime import datetime
-from datetime import timedelta
 
+import asyncio
 import aioschedule
 from aiogram.utils.exceptions import BotBlocked
 
@@ -12,8 +9,6 @@ from dasbot.models.quiz import Quiz
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
-
-TIMES_UTC = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
 
 
 class Scheduler(object):
@@ -39,38 +34,20 @@ class Scheduler(object):
             log.info("Bot blocked, chat id: %s", chat.id)
             return False
 
-    # Callback that sends out the quizzes to subscribed chats
+    # Regularly called rouine that sends out the (over)due quizzes
     async def broadcast(self):
         pending_chats = self.chats_repo.get_pending_chats()
-
-        success_count = 0
+        log.debug("Broadcast: %s pending", len(pending_chats))
+        sent = 0
         for chat in pending_chats:
             result = await self.send_quiz(chat)
             if result:
-                success_count += 1
+                sent += 1
+        log.debug("Broadcast: %s sent.", sent)
 
-        log.info("Broadcast: %s message(s) sent.", success_count)
-
-    # Creates the schedule and runs it
+    # Sets the schedule and runs the scheduler loop
     async def run(self):
-        try:
-            aioschedule.every(60).seconds.do(self.broadcast)
-            for tpoint in TIMES_UTC:
-                tpoint_servertz = Scheduler.utc_to_local(tpoint)
-                aioschedule.every().day.at(tpoint_servertz).do(self.broadcast)
-            log.debug("Scheduled jobs: %s", len(aioschedule.jobs))
-        except RuntimeError as e:
-            log.error(e)
-
+        aioschedule.every(60).seconds.do(self.broadcast)  # TODO: Change on prod?
         while True:
             await aioschedule.run_pending()
             await asyncio.sleep(60)
-
-    @staticmethod
-    def utc_to_local(hhmm):
-        """ Returns the HH:MM time converted from UTC to server's TZ """
-        utc = datetime.strptime(f"{hhmm}UTC", "%H:%M%Z")
-        now = time.time()
-        offset = datetime.fromtimestamp(now) - datetime.utcfromtimestamp(now)
-        local = utc + offset
-        return datetime.strftime(local, "%H:%M")

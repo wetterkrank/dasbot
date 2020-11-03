@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from datetime import timedelta
 
 import mongomock
@@ -27,8 +27,8 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(False, result.subscribed)
 
     def test_load_new_chat(self):
-        now = datetime.fromisoformat('2011-11-04 00:05:23')
-        expected_quiz_scheduled_time = datetime.fromisoformat('2011-11-04 12:00:00.000+00:00')
+        now = datetime.fromisoformat('2011-11-04 00:05:23+00:00')
+        expected_quiz_scheduled_time = datetime.fromisoformat('2011-11-04 12:00:00+00:00')
 
         result = self.chats_repo.load_chat(1001, now)
         self.assertEqual(result.id, 1001)
@@ -36,8 +36,7 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(expected_quiz_scheduled_time, result.quiz_scheduled_time)
 
     def test_get_pending_chats_empty(self):
-        ts = datetime.utcnow()
-
+        ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts + timedelta(seconds=1))
         self.chats_repo.save_chat(chat)
 
@@ -45,8 +44,7 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(0, len(result))
 
     def test_get_pending_chats_non_empty(self):
-        ts = datetime.utcnow()
-
+        ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts - timedelta(seconds=1))
         self.chats_repo.save_chat(chat)
 
@@ -54,8 +52,7 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(1, len(result))
 
     def test_get_pending_chats_empty_ts(self):
-        ts = datetime.utcnow()
-
+        ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=None)
         self.chats_repo.save_chat(chat)
 

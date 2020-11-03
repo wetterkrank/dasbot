@@ -15,7 +15,10 @@ from dasbot.scheduler import Scheduler
 from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    datefmt='%m.%d %H:%M:%S')
 log = logging.getLogger(__name__)
 
 # Initialize bot & dispatcher
@@ -44,17 +47,17 @@ async def any_msg_handler(message: types.Message):
     await chatcon.generic(message)
 
 
-# # /settings command handler
-# @dp.message_handler(commands=['settings'])
-# async def process_settings_command(message: types.Message):
-#     pass
+# /settings command handler
+@dp.message_handler(commands=['settings'])
+async def process_settings_command(message: types.Message):
+    pass
 
 
 if __name__ == '__main__':
     # TODO: Add username & password
     client = MongoClient(config.DB_ADDRESS)
-    db = client[config.DB_NAME]
-    chats_repo = ChatsRepo(db['chats'])
+    db = client[config.DB_NAME]['chats']
+    chats_repo = ChatsRepo(db)
 
     chatcon = Controller(bot, chats_repo)
     scheduler = Scheduler(Interface(bot), chats_repo)

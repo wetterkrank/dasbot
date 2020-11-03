@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock
 
 import aiounittest
@@ -12,8 +12,8 @@ from dasbot.scheduler import Scheduler
 
 
 class TestScheduler(aiounittest.AsyncTestCase):
-    ts = datetime.utcnow()
-    tomorrow = datetime.utcnow() + timedelta(days=1)
+    ts = datetime.now(tz=timezone.utc)
+    tomorrow = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
     @staticmethod
     async def success(chat):
@@ -24,13 +24,14 @@ class TestScheduler(aiounittest.AsyncTestCase):
         raise BotBlocked("foobar")
 
     def setUp(self):
-        self.chats_collection = mongomock.MongoClient().db.collection
+        self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.chats_repo = ChatsRepo(self.chats_collection)
 
     async def test_send_quiz(self):
-        tomorrow = datetime.utcnow().date() + timedelta(days=1)
-        current_quiz_time = datetime.fromisoformat('2011-11-04 12:05:23')
-        expected_next_quiz_time = current_quiz_time.replace(year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
+        tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)
+        current_quiz_time = datetime.fromisoformat('2011-11-04 12:05:23+00:00')
+        expected_next_quiz_time = current_quiz_time.replace(
+            year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
 
         self.ui_mock = MagicMock()
         self.ui_mock.daily_hello = TestScheduler.success
@@ -53,7 +54,7 @@ class TestScheduler(aiounittest.AsyncTestCase):
         self.ui_mock.ask_question = TestScheduler.success
         self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
 
-        ts = datetime.utcnow()
+        ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
         result = await self.scheduler.send_quiz(chat)
         self.assertFalse(result)
@@ -64,7 +65,7 @@ class TestScheduler(aiounittest.AsyncTestCase):
         self.ui_mock.ask_question = TestScheduler.fail
         self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
 
-        ts = datetime.utcnow()
+        ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
         result = await self.scheduler.send_quiz(chat)
         self.assertFalse(result)
