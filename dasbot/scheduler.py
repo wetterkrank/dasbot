@@ -1,7 +1,6 @@
 import logging
 
 import asyncio
-import aioschedule
 from aiogram.utils.exceptions import BotBlocked
 
 from dasbot import util
@@ -31,6 +30,7 @@ class Scheduler(object):
             await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
             return True
         except BotBlocked:
+            chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             log.info("Bot blocked, chat id: %s", chat.id)
             return False
 
@@ -47,7 +47,7 @@ class Scheduler(object):
 
     # Sets the schedule and runs the scheduler loop
     async def run(self):
-        aioschedule.every(60).seconds.do(self.broadcast)  # TODO: Change on prod?
+        log.info("Broadcaster started")
         while True:
-            await aioschedule.run_pending()
             await asyncio.sleep(60)
+            await self.broadcast()

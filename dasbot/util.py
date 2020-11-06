@@ -21,12 +21,14 @@ def next_noon(now):
     )
 
 
-def next_quiz_time(last_quiz_time, now=datetime.now(tz=timezone.utc)):
+def next_quiz_time(last_quiz_time, now=None):
     """
     :param last_quiz_time: the previous time quiz was scheduled
     :param now: timestamp when the function is called
     :return: same time + 1 day (i.e. tomorrow)
     """
+    if now is None:
+        now = datetime.now(tz=timezone.utc)
     tomorrow_date = now.date() + timedelta(days=1)
     return last_quiz_time.replace(year=tomorrow_date.year,
                                   month=tomorrow_date.month,
