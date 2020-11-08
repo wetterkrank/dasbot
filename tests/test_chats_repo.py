@@ -27,13 +27,10 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(False, result.subscribed)
 
     def test_load_new_chat(self):
-        now = datetime.fromisoformat('2011-11-04 00:05:23+00:00')
-        expected_quiz_scheduled_time = datetime.fromisoformat('2011-11-04 12:00:00+00:00')
-
-        result = self.chats_repo.load_chat(1001, now)
+        result = self.chats_repo.load_chat(1001)
         self.assertEqual(result.id, 1001)
         self.assertEqual(True, result.subscribed)
-        self.assertEqual(expected_quiz_scheduled_time, result.quiz_scheduled_time)
+        self.assertEqual(None, result.last_seen)
 
     def test_get_pending_chats_empty(self):
         ts = datetime.now(tz=timezone.utc)

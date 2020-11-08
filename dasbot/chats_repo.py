@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 from datetime import timezone
 
-from dasbot import util
 from dasbot.models.chat import Chat, ChatSchema
 
 log = logging.getLogger(__name__)
@@ -17,20 +16,18 @@ class ChatsRepo(object):
     def __status(self):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
 
-    def load_chat(self, chat_id, now=None):
+    def load_chat(self, chat_id):
         """
         :param chat_id: Telegram chat id
-        :param now: timestamp when the function is called
+        :param now: datetime when the function is called
         :return: Chat instance, loaded from DB, or new if not found
         """
-        if now is None:
-            now = datetime.now(tz=timezone.utc)
         chat_data = self._chats.find_one({"chat_id": chat_id}, {"_id": 0})
         log.debug("requested chat %s, result: %s", chat_id, chat_data)
         if chat_data:
             chat = ChatSchema().load(chat_data)
         else:
-            chat = Chat(chat_id, quiz_scheduled_time=util.next_noon(now))
+            chat = Chat(chat_id)
         return chat
 
     def save_chat(self, chat):
@@ -50,7 +47,6 @@ class ChatsRepo(object):
         if now is None:
             now = datetime.now(tz=timezone.utc)
         query = {"subscribed": True, "quiz_scheduled_time": {"$lte": now}}
-        log.debug('DB query: %s', query)
         results_from_db = self._chats.find(query, {"_id": 0})
         chats = [ChatSchema().load(chat_data) for chat_data in results_from_db]
         return chats

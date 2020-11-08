@@ -1,24 +1,28 @@
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-from datetime import time
 
 
-def next_noon(now):
+def next_hhmm(hhmm, now):
     """
-    :param now: timestamp when the function is called
-    :return: the nearest noon datetime
+    :param now: datetime when the function is called
+    :param hhmm: time of the day as a string "HH:MM"
+    :return: datetime of the next HH:MM, same TZ
     """
+    # now = now.astimezone()  # Convert to server time zone
+    h, m = (int(x) for x in hhmm.split(":"))
     base_date = now.date()
-    if now.hour >= 12:
-        base_date = now.date() + timedelta(days=1)
-    return datetime(
+    if now.hour >= h:
+        base_date = base_date + timedelta(days=1)
+    target = datetime(
         year=base_date.year,
         month=base_date.month,
         day=base_date.day,
-        hour=12,
-        tzinfo=now.tzinfo
-    )
+        hour=h,
+        minute=m,
+        tzinfo=now.tzinfo)
+    # target = target.astimezone(timezone.utc)  # Convert to UTC
+    return target
 
 
 def next_quiz_time(last_quiz_time, now=None):
@@ -33,12 +37,3 @@ def next_quiz_time(last_quiz_time, now=None):
     return last_quiz_time.replace(year=tomorrow_date.year,
                                   month=tomorrow_date.month,
                                   day=tomorrow_date.day)
-
-
-def utc_to_local(hhmm):
-    """ Returns the HH:MM time converted from UTC to server's TZ """
-    utc = datetime.strptime(f"{hhmm}UTC", "%H:%M%Z")
-    now = time.time()
-    offset = datetime.fromtimestamp(now) - datetime.utcfromtimestamp(now)
-    local = utc + offset
-    return datetime.strftime(local, "%H:%M")

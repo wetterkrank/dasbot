@@ -13,11 +13,11 @@ class Controller(object):
         self.chats_repo = chats_repo
         self.ui = Interface(bot)
 
-    # if /help received
+    # /help
     async def help(self, message):
         await self.ui.reply_with_help(message)
 
-    # if /start received
+    # /start
     async def start(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)
         if not chat.last_seen:
@@ -28,7 +28,7 @@ class Controller(object):
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
-    # anything else received
+    # not-a-command
     async def generic(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)
         answer = message.text.strip().lower()
@@ -42,6 +42,29 @@ class Controller(object):
             await self.ui.say_score(chat)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
+
+    # /settings
+    async def settings(self, message):
+        await self.ui.settings_root(message)
+
+    # /settings UNSUBSCRIBE
+    async def settings_unsubscribe(self, query):
+        await query.answer()  # To confirm reception
+        chat = self.chats_repo.load_chat(query.message.chat.id)
+        chat.unsubscribe()
+        chat.stamp_time()
+        self.chats_repo.save_chat(chat)
+        await self.ui.settings_quiztime_set(query, "UNSUBSCRIBE")
+
+    # /settings HH:MM
+    async def settings_timepref(self, query):
+        await query.answer()
+        chat = self.chats_repo.load_chat(query.message.chat.id)
+        preferred_time = query.data
+        chat.set_quiz_time(preferred_time)
+        chat.stamp_time()
+        self.chats_repo.save_chat(chat)
+        await self.ui.settings_quiztime_set(query, preferred_time)
 
 
 if __name__ == "__main__":
