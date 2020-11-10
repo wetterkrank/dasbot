@@ -30,8 +30,9 @@ class Scheduler(object):
             await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
             return True
         except BotBlocked:
-            chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             log.info("Bot blocked, chat id: %s", chat.id)
+            chat.unsubscribe()
+            self.chats_repo.save_chat(chat)
             return False
 
     # Regularly called rouine that sends out the (over)due quizzes
