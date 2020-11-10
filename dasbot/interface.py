@@ -14,7 +14,7 @@ class Interface(object):
         self.bot = bot
 
     async def reply_with_help(self, message):
-        await message.reply('Type /start to start the quiz.')
+        await message.reply('Type /start to start the quiz, /settings to change the quiz time.')
 
     async def welcome(self, chat):
         text = ("Hi! Dasbot will help you memorize German articles.\n"
