@@ -58,7 +58,7 @@ class Interface(object):
         return msg
 
     async def settings_root(self, message):
-        await message.answer("Plese select quiz time (time zone Berlin/CET)",
+        await message.answer("Please select quiz time (time zone Berlin/CET)",
                              reply_markup=Interface.settings_kb())
 
     async def settings_quiztime_set(self, query, pref):
