@@ -1,6 +1,6 @@
 import logging
 from aiogram import types
-from . import config
+from dynaconf import settings
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -27,7 +27,7 @@ class Interface(object):
         await self.bot.send_message(chat.id, text)
 
     async def ask_question(self, chat):
-        text = f"{chat.quiz.position}/{config.QUIZ_LEN}. "
+        text = f"{chat.quiz.position}/{settings.QUIZ_LEN}. "
         text += f"What's the article for {chat.quiz.question}?"
         result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb())
         log.debug("message sent, result: %s", result)
@@ -38,13 +38,13 @@ class Interface(object):
         await message.answer(text)
 
     async def say_score(self, chat):
-        text = f"{chat.quiz.correctly} out of {config.QUIZ_LEN}"
+        text = f"{chat.quiz.correctly} out of {settings.QUIZ_LEN}"
         text += self.rate(chat.quiz.correctly) + "\n"
         text += "To start over, type /start, or /help for more info."
         await self.bot.send_message(chat.id, text, reply_markup=types.ReplyKeyboardRemove())
 
     def rate(self, correctly):
-        ratio = round(correctly / config.QUIZ_LEN * 10)
+        ratio = round(correctly / settings.QUIZ_LEN * 10)
         if ratio in range(0, 4):
             msg = ", keep trying!"
         elif ratio in range(4, 7):

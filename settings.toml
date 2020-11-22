@@ -1,0 +1,11 @@
+[default]
+quiz_len = 10
+dict_file = 'data/dictionary_de.csv'
+db_address = 'mongodb://localhost:27017/'
+db_name = 'dasbot'
+
+[development]
+debug = true
+
+[production]
+debug = false

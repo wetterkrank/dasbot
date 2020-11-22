@@ -3,17 +3,19 @@
 # TODO: Exception handling: sending stuff to a chat that has removed bot
 
 import logging
+
 import asyncio
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from pymongo import MongoClient
 
-from dasbot import config
 from dasbot.interface import Interface
 from dasbot.scheduler import Scheduler
 from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
+
+from dynaconf import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,7 +27,7 @@ log = logging.getLogger(__name__)
 if __name__ == '__main__':
 
     # Initialize bot & dispatcher
-    bot = Bot(token=config.TOKEN)
+    bot = Bot(token=settings.TOKEN)
     dp = Dispatcher(bot)
 
     # /help command handler
@@ -65,8 +67,8 @@ if __name__ == '__main__':
         await chatcon.settings_timepref(query)
 
     # TODO: Add DB auth
-    client = MongoClient(config.DB_ADDRESS)
-    db = client[config.DB_NAME]['chats']
+    client = MongoClient(settings.DB_ADDRESS)
+    db = client[settings.DB_NAME]['chats']
     chats_repo = ChatsRepo(db)
 
     chatcon = Controller(bot, chats_repo)

@@ -3,12 +3,12 @@ import random
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
-from dasbot import config
+from dynaconf import settings
 from dasbot.dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
 
-dictionary = Dictionary(config.DICT_FILE)
+dictionary = Dictionary(settings.DICT_FILE)
 
 
 class Quiz(object):
@@ -20,7 +20,7 @@ class Quiz(object):
 
     def next_question_ready(self):
         """ Generates the next question/answer pair """
-        if self.position < config.QUIZ_LEN:  # TODO: Proper config
+        if self.position < settings.QUIZ_LEN:  # TODO: Proper config
             word = random.choice(dictionary.allwords)
             articles = dictionary.articles(word)
             self.question = word
