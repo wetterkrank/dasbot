@@ -1,6 +1,6 @@
 # TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear
 # TODO: also use Motor for Mongo?
-# TODO: Exception handling: sending stuff to a chat that has removed bot
+# TODO: Better exception handling on scheduled broadcasts
 
 import logging
 
@@ -11,7 +11,7 @@ from aiogram.utils import executor
 from pymongo import MongoClient
 
 from dasbot.interface import Interface
-from dasbot.scheduler import Scheduler
+from dasbot.broadcaster import Broadcaster
 from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
 
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     chats_repo = ChatsRepo(db)
 
     chatcon = Controller(bot, chats_repo)
-    scheduler = Scheduler(Interface(bot), chats_repo)
+    broadcaster = Broadcaster(Interface(bot), chats_repo)
 
     loop = asyncio.get_event_loop()
-    loop.create_task(scheduler.run())
+    loop.create_task(broadcaster.run())
     executor.start_polling(dp)

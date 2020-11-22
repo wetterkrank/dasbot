@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
-class Scheduler(object):
+class Broadcaster(object):
     def __init__(self, ui, chats_repo):
         self.ui = ui
         self.chats_repo = chats_repo
@@ -46,7 +46,7 @@ class Scheduler(object):
                 sent += 1
         log.debug("Broadcast: %s sent.", sent)
 
-    # Sets the schedule and runs the scheduler loop
+    # Runs the broadcast loop
     async def run(self):
         log.info("Broadcaster started")
         while True:

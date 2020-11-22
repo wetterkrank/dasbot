@@ -8,10 +8,10 @@ from aiogram.utils.exceptions import BotBlocked
 
 from dasbot.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
-from dasbot.scheduler import Scheduler
+from dasbot.broadcaster import Broadcaster
 
 
-class TestScheduler(aiounittest.AsyncTestCase):
+class TestBroadcaster(aiounittest.AsyncTestCase):
     ts = datetime.now(tz=timezone.utc)
     tomorrow = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
@@ -34,12 +34,12 @@ class TestScheduler(aiounittest.AsyncTestCase):
             year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
 
         self.ui_mock = MagicMock()
-        self.ui_mock.daily_hello = TestScheduler.success
-        self.ui_mock.ask_question = TestScheduler.success
-        self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
+        self.ui_mock.daily_hello = TestBroadcaster.success
+        self.ui_mock.ask_question = TestBroadcaster.success
+        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         chat = Chat(chat_id=1001, quiz_scheduled_time=current_quiz_time)
-        result = await self.scheduler.send_quiz(chat)
+        result = await self.broadcaster.send_quiz(chat)
 
         saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
 
@@ -50,24 +50,24 @@ class TestScheduler(aiounittest.AsyncTestCase):
 
     async def test_send_quiz_fail_daily_hello(self):
         self.ui_mock = MagicMock()
-        self.ui_mock.daily_hello = TestScheduler.fail
-        self.ui_mock.ask_question = TestScheduler.success
-        self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
+        self.ui_mock.daily_hello = TestBroadcaster.fail
+        self.ui_mock.ask_question = TestBroadcaster.success
+        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
-        result = await self.scheduler.send_quiz(chat)
+        result = await self.broadcaster.send_quiz(chat)
         self.assertFalse(result)
 
     async def test_send_quiz_fail_ask_question(self):
         self.ui_mock = MagicMock()
-        self.ui_mock.daily_hello = TestScheduler.success
-        self.ui_mock.ask_question = TestScheduler.fail
-        self.scheduler = Scheduler(self.ui_mock, self.chats_repo)
+        self.ui_mock.daily_hello = TestBroadcaster.success
+        self.ui_mock.ask_question = TestBroadcaster.fail
+        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
-        result = await self.scheduler.send_quiz(chat)
+        result = await self.broadcaster.send_quiz(chat)
         self.assertFalse(result)
 
 
