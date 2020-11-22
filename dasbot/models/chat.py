@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
+from pytz import timezone
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
@@ -21,13 +22,15 @@ class Chat(object):
             self.set_quiz_time("12:00", now)  # Default: nearest noon
 
     def stamp_time(self):
-        self.last_seen = datetime.now(tz=timezone.utc)
+        self.last_seen = datetime.now(tz=timezone('UTC'))
 
     def unsubscribe(self):
         self.subscribed = False
 
+    # TODO: should this be here?
     def set_quiz_time(self, hhmm, now=None):
-        now = now or datetime.now().astimezone()  # Setting quiz time in server's TZ
+        berlin = timezone('Europe/Berlin')
+        now = now or datetime.now().astimezone(berlin)
         self.quiz_scheduled_time = util.next_hhmm(hhmm, now)
 
 
