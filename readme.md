@@ -8,7 +8,6 @@ https://t.me/derdiedas_quizbot
 - Spaced repetition
 - Webhooks instead of long polling
 - i18n
-- SQL instead of Mongo
 
 **Notable corner cases**
 - Some nouns can have different gender depending on the meaning: der See (lake) - die See (sea), der Leiter (leader) - die Leiter (ladder)
