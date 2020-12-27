@@ -2,7 +2,6 @@ __pycache__
 .venv
 .vscode
 .pylintrc
-data
 Snippets
 .env*
 .secrets.*
