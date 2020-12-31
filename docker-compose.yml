@@ -1,0 +1,17 @@
+version: "3.0"
+services:
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "127.0.0.1:27017:27017"
+      
+  dasbot:
+    image: wetterkrank/dasbot:latest
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    env_file: .env
+    restart: always
