@@ -5,8 +5,8 @@ services:
     image: mongo:latest
     container_name: dasbot_mongo
     restart: always
-    ports:
-      - "127.0.0.1:27017:27017"
+    # ports:
+    #   - "127.0.0.1:27017:27017"
       
   dasbot:
     image: wetterkrank/dasbot:latest
