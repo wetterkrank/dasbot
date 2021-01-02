@@ -18,8 +18,9 @@ class Interface(object):
 
     async def welcome(self, chat):
         text = ("Hi! Dasbot will help you memorize German articles.\n"
-                "It will send you a short quiz every day. "
-                "You can also practice any time by sending the /start command.")
+                "It will send you a short quiz every day -- a few of 2000 most frequently used nouns. "
+                "You can also practice any time by sending the /start command.\n"
+                "To change the preferred quiz time (or turn it off) send /options command.")
         await self.bot.send_message(chat.id, text)
 
     async def daily_hello(self, chat):

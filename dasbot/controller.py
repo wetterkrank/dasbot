@@ -40,6 +40,7 @@ class Controller(object):
             await self.ui.ask_question(chat)
         else:
             await self.ui.say_score(chat)
+            chat.quiz = Quiz()
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
