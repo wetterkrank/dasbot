@@ -29,6 +29,7 @@ class Quiz(object):
             return True
         return False
 
+    @property
     def active(self):
         return self.position > 0
 
