@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class Chat(object):
-    def __init__(self, chat_id, subscribed=True, last_seen=None, quiz=Quiz(),
+    def __init__(self, chat_id, subscribed=True, last_seen=None, quiz=Quiz.new(),
                  quiz_scheduled_time=None, now=None):
         self.id = chat_id
         self.subscribed = subscribed

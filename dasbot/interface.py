@@ -28,7 +28,7 @@ class Interface(object):
         await self.bot.send_message(chat.id, text)
 
     async def ask_question(self, chat):
-        text = f"{chat.quiz.position}/{settings.QUIZ_LEN}. "
+        text = f"{chat.quiz.pos}/{chat.quiz.length}. "
         text += f"What's the article for {chat.quiz.question}?"
         result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb())
         log.debug("message sent, result: %s", result)

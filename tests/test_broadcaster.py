@@ -43,7 +43,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
 
         saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
 
-        self.assertEqual(1, saved_chat.quiz.position)
+        self.assertEqual(0, saved_chat.quiz.position)
         self.assertEqual(expected_next_quiz_time, saved_chat.quiz_scheduled_time)
 
         self.assertTrue(result)

@@ -22,8 +22,7 @@ class Broadcaster(object):
         """
         try:
             await self.ui.daily_hello(chat)
-            chat.quiz = Quiz()  # Resets the quiz
-            chat.quiz.next_question_ready()
+            chat.quiz = Quiz.new()  # Resets the quiz
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             await self.ui.ask_question(chat)
             self.chats_repo.save_chat(chat)
