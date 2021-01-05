@@ -17,8 +17,8 @@ class Interface(object):
         await message.reply('Type /start to start the quiz, /settings to change the quiz time.')
 
     async def welcome(self, chat):
-        text = ("Hi! Dasbot will help you memorize German articles.\n"
-                "It will send you a short quiz every day -- a few words from 2000 most frequently used ones.\n"
+        text = ("Hi! I'm Dasbot. My mission is to help you memorize German articles.\n"
+                "I know about 2000 most frequently used German words, and I'll send you a short quiz every day.\n"
                 "To change the preferred quiz time (or turn it off), send /settings command.\n"
                 "You can also practice any time by typing /start.")
         await self.bot.send_message(chat.id, text)
