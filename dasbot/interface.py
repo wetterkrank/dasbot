@@ -38,7 +38,7 @@ class Interface(object):
         text += f"{chat.quiz.answer} {chat.quiz.question}"
         await message.answer(text)
 
-    async def say_score(self, chat):
+    async def announce_result(self, chat):
         text = f"{chat.quiz.correctly} out of {settings.QUIZ_LEN}"
         text += self.rate(chat.quiz.correctly) + "\n"
         text += "To start over, type /start, or /help for more info."

@@ -4,14 +4,14 @@ from pytz import timezone
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
-from .quiz import Quiz, QuizSchema
+from .quiz import QuizSchema
 from dasbot import util
 
 log = logging.getLogger(__name__)
 
 
 class Chat(object):
-    def __init__(self, chat_id, subscribed=True, last_seen=None, quiz=Quiz.new(),
+    def __init__(self, chat_id, subscribed=True, last_seen=None, quiz=None,
                  quiz_scheduled_time=None, now=None):
         self.id = chat_id
         self.subscribed = subscribed
@@ -27,7 +27,6 @@ class Chat(object):
     def unsubscribe(self):
         self.subscribed = False
 
-    # TODO: should this be here?
     def set_quiz_time(self, hhmm, now=None):
         berlin = timezone('Europe/Berlin')
         now = now or datetime.now().astimezone(berlin)
@@ -41,7 +40,7 @@ class ChatSchema(Schema):
     chat_id = fields.Integer()
     subscribed = fields.Boolean(missing=True)
     last_seen = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
-    quiz = fields.Nested(QuizSchema)
+    quiz = fields.Nested(QuizSchema, missing=None)
     quiz_scheduled_time = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
 
     @post_load

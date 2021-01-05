@@ -22,7 +22,8 @@ class Controller(object):
         chat = self.chats_repo.load_chat(message.chat.id)
         if not chat.last_seen:
             await self.ui.welcome(chat)
-        chat.quiz = Quiz.new()  # Resets the quiz
+        scores = self.chats_repo.load_scores(chat)
+        chat.quiz = Quiz.new(scores)
         await self.ui.ask_question(chat)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
@@ -31,15 +32,16 @@ class Controller(object):
     async def generic(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)
         answer = message.text.strip().lower()
-        if not (chat.quiz.active and self.ui.recognized(answer)):
+        if not (chat.quiz and chat.quiz.active and self.ui.recognized(answer)):
             return await self.ui.reply_with_help(message)
         result = chat.quiz.verify(answer)
         await self.ui.give_feedback(chat, message, result)
+        self.chats_repo.save_score(chat, chat.quiz.question, chat.quiz.score)
         chat.quiz.advance()
         if chat.quiz.has_questions:
             await self.ui.ask_question(chat)
         else:
-            await self.ui.say_score(chat)
+            await self.ui.announce_result(chat)
             chat.quiz.stop()
         chat.stamp_time()
         self.chats_repo.save_chat(chat)

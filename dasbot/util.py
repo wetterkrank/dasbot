@@ -5,11 +5,10 @@ from datetime import timezone
 
 def next_hhmm(hhmm, now):
     """
-    :param now: datetime when the function is called
     :param hhmm: time of the day as a string "HH:MM"
+    :param now: datetime when the function is called
     :return: datetime of the next HH:MM, same TZ
     """
-    # now = now.astimezone()  # Convert to server time zone
     h, m = (int(x) for x in hhmm.split(":"))
     base_date = now.date()
     if now.hour >= h:
@@ -21,7 +20,6 @@ def next_hhmm(hhmm, now):
         hour=h,
         minute=m,
         tzinfo=now.tzinfo)
-    # target = target.astimezone(timezone.utc)  # Convert to UTC
     return target
 
 
