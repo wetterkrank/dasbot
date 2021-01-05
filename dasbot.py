@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
     # TODO: Add DB auth
     client = MongoClient(settings.DB_ADDRESS)
-    db = client[settings.DB_NAME]['chats']
-    chats_repo = ChatsRepo(db)
+    db = client[settings.DB_NAME]
+    chats_repo = ChatsRepo(db['chats'])
 
     chatcon = Controller(bot, chats_repo)
     broadcaster = Broadcaster(Interface(bot), chats_repo)
