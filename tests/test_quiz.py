@@ -18,7 +18,7 @@ class TestQuiz(unittest.TestCase):
         quiz = Quiz.new(history={
             'Tag': (1, None),
             'Monat': (1, self.now - timedelta(days=1)),
-            'Jahr': (1, self.now)
+            'Jahr': (1, self.now + timedelta(days=1))
         })
         self.assertEqual(settings.QUIZ_LEN, quiz.length)
         self.assertEqual(settings.QUIZ_LEN, len(quiz.cards))
