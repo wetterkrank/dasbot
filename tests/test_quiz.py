@@ -22,7 +22,7 @@ class TestQuiz(unittest.TestCase):
         })
         self.assertEqual(settings.QUIZ_LEN, quiz.length)
         self.assertEqual(settings.QUIZ_LEN, len(quiz.cards))
-        self.assertEqual(1, len(quiz.scores))
+        self.assertEqual(1, len(quiz.scores), f'unexpected scores length; scores: {quiz.scores}; now: {self.now}')
         self.assertEqual('Monat', quiz.cards[0]['word'])
         self.assertEqual(0, quiz.position)
         self.assertEqual(1, quiz.pos)
