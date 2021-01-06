@@ -4,7 +4,6 @@ from dasbot.models.quiz import Quiz
 from .interface import Interface
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
 
 
 class Controller(object):
@@ -22,8 +21,8 @@ class Controller(object):
         chat = self.chats_repo.load_chat(message.chat.id)
         if not chat.last_seen:
             await self.ui.welcome(chat)
-        chat.quiz = Quiz()  # Resets the quiz
-        chat.quiz.next_question_ready()
+        scores = self.chats_repo.load_scores(chat)
+        chat.quiz = Quiz.new(scores)
         await self.ui.ask_question(chat)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
@@ -32,15 +31,17 @@ class Controller(object):
     async def generic(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)
         answer = message.text.strip().lower()
-        if not (chat.quiz.active and self.ui.recognized(answer)):
+        if not (chat.quiz and chat.quiz.active and self.ui.recognized(answer)):
             return await self.ui.reply_with_help(message)
-        result = chat.quiz.prove(answer)
+        result = chat.quiz.verify_and_update_score(answer)
         await self.ui.give_feedback(chat, message, result)
-        if chat.quiz.next_question_ready():
+        self.chats_repo.save_score(chat, chat.quiz.question, chat.quiz.score)
+        chat.quiz.advance()
+        if chat.quiz.has_questions:
             await self.ui.ask_question(chat)
         else:
-            await self.ui.say_score(chat)
-            chat.quiz = Quiz()
+            await self.ui.announce_result(chat)
+            chat.quiz.stop()
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 

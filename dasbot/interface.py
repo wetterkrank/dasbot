@@ -3,7 +3,7 @@ from aiogram import types
 from dynaconf import settings
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
 
 
 class Interface(object):
@@ -17,8 +17,8 @@ class Interface(object):
         await message.reply('Type /start to start the quiz, /settings to change the quiz time.')
 
     async def welcome(self, chat):
-        text = ("Hi! Dasbot will help you memorize German articles.\n"
-                "It will send you a short quiz every day -- a few words from 2000 most frequently used ones.\n"
+        text = ("Hi! I'm Dasbot. My mission is to help you memorize German articles.\n"
+                "I know about 2000 most frequently used German words, and I'll send you a short quiz every day.\n"
                 "To change the preferred quiz time (or turn it off), send /settings command.\n"
                 "You can also practice any time by typing /start.")
         await self.bot.send_message(chat.id, text)
@@ -28,7 +28,7 @@ class Interface(object):
         await self.bot.send_message(chat.id, text)
 
     async def ask_question(self, chat):
-        text = f"{chat.quiz.position}/{settings.QUIZ_LEN}. "
+        text = f"{chat.quiz.pos}/{chat.quiz.length}. "
         text += f"What's the article for {chat.quiz.question}?"
         result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb())
         log.debug("message sent, result: %s", result)
@@ -38,7 +38,7 @@ class Interface(object):
         text += f"{chat.quiz.answer} {chat.quiz.question}"
         await message.answer(text)
 
-    async def say_score(self, chat):
+    async def announce_result(self, chat):
         text = f"{chat.quiz.correctly} out of {settings.QUIZ_LEN}"
         text += self.rate(chat.quiz.correctly) + "\n"
         text += "To start over, type /start, or /help for more info."

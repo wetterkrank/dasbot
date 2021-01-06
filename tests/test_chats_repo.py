@@ -8,10 +8,12 @@ from dasbot.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat
 
 
+# TODO: Test save/load of a chat with attached quiz
 class TestChatsRepo(unittest.TestCase):
     def setUp(self):
         self.chats_collection = mongomock.MongoClient().db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection)
+        self.scores_collection = mongomock.MongoClient().db.collection
+        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
 
     def test_save_chat(self):
         chat = Chat(chat_id=1001)

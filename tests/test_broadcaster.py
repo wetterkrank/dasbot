@@ -25,7 +25,8 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
 
     def setUp(self):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection)
+        self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
+        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)
@@ -43,7 +44,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
 
         saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
 
-        self.assertEqual(1, saved_chat.quiz.position)
+        self.assertEqual(1, saved_chat.quiz.pos)
         self.assertEqual(expected_next_quiz_time, saved_chat.quiz_scheduled_time)
 
         self.assertTrue(result)
