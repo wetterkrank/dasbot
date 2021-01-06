@@ -1,6 +1,7 @@
 import unittest
 
 from datetime import datetime, timedelta
+from pytz import timezone
 
 from dasbot.models.quiz import Quiz, SCHEDULE
 from dynaconf import settings
@@ -10,7 +11,7 @@ from dynaconf import settings
 # TODO: Inject settings to Quiz and mock them instead of using real settings?
 class TestQuiz(unittest.TestCase):
     def setUp(self):
-        self.now = datetime.now()  # NOTE: We're using TZ-naive dt here
+        self.now = datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # NOTE: We're using TZ-naive dt here
 
     def test_new(self):
         # TODO: Mock the dictionary as well
