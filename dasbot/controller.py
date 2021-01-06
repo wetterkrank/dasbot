@@ -4,7 +4,6 @@ from dasbot.models.quiz import Quiz
 from .interface import Interface
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 class Controller(object):

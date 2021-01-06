@@ -9,7 +9,6 @@ from dynaconf import settings
 from dasbot.dictionary import Dictionary
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 dictionary = Dictionary(settings.DICT_FILE)
 
@@ -75,8 +74,10 @@ class Quiz(object):
     def prepare_cards(length, scores, allwords):
         cards = []
         new_length = length - len(scores)
-        # TODO: Consecutive instead of random?
         new_words = random.sample(set(allwords) - set(scores), new_length)
+        # TODO: Consecutive instead of random? We'll need to sort'em first...
+        # new_words = set(allwords) - set(scores)
+        # new_words = {v for _, v in zip(range(new_length), new_words)}
         for word in scores.keys():
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         for word in new_words:

@@ -2,11 +2,11 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from dasbot.models.quiz import Quiz
+from dasbot.models.quiz import Quiz, SCHEDULE
 from dynaconf import settings
 
 
-# TODO: Split tests into separate cases
+# TODO: Split tests into separate cases?
 # TODO: Inject settings to Quiz and mock them instead of using real settings?
 class TestQuiz(unittest.TestCase):
     def setUp(self):
@@ -45,23 +45,27 @@ class TestQuiz(unittest.TestCase):
 
     def test_verify_and_update_score(self):
         history = {
-            'Tag': (1, self.now - timedelta(days=1)),
-            'Monat': (1, self.now - timedelta(days=1)),
-            'Jahr': (1, self.now + timedelta(days=1)),
+            'Jahr': (1, self.now + timedelta(days=1)),  # skip
+            'Tag': (1, self.now - timedelta(days=1)),  # in
+            'Monat': (10, self.now - timedelta(days=1))  # in
         }
         quiz = Quiz.new(history)
         quiz.cards = [
-            {'word': 'Jahr', 'articles': 'das'},
+            {'word': 'Zeit', 'articles': 'die'},
             {'word': 'Tag', 'articles': 'der'},
             {'word': 'Monat', 'articles': 'der'}
         ]
-        result = quiz.verify_and_update_score('der')
+        result = quiz.verify_and_update_score('der')  # incorrect
         self.assertEqual(False, result)
         self.assertEqual(0, quiz.score[0])
         quiz.advance()
-        result = quiz.verify_and_update_score('der')
+        result = quiz.verify_and_update_score('der')  # correct
         self.assertEqual(True, result)
         self.assertEqual(2, quiz.score[0])
+        quiz.advance()
+        result = quiz.verify_and_update_score('der')  # correct
+        self.assertEqual(True, result)
+        self.assertEqual(max(SCHEDULE.keys()), quiz.score[0])
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 [default]
-quiz_len = 5
+quiz_len = 10
 dict_file = 'data/dictionary_de.csv'
 db_address = 'mongodb://mongo:27017/'
 db_name = 'dasbot'

@@ -5,7 +5,6 @@ from datetime import timezone
 from dasbot.models.chat import Chat, ChatSchema
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 class ChatsRepo(object):
@@ -61,7 +60,7 @@ class ChatsRepo(object):
         query = {"chat_id": chat.id}
         results_from_db = self._scores.find(query, {"_id": 0})
         scores = {item["word"]: (item["score"], item["revisit"]) for item in results_from_db}
-        log.debug("loaded scores for chat %s, result: %s", chat.id, scores)
+        # log.debug("loaded scores for chat %s, result: %s", chat.id, scores)
         return scores
 
     def save_score(self, chat, word, score):
@@ -74,7 +73,7 @@ class ChatsRepo(object):
         query = {"chat_id": chat.id, "word": word}
         update = {"$set": {"chat_id": chat.id, "word": word, "score": score[0], "revisit": score[1]}}
         result = self._scores.update_one(query, update, upsert=True)
-        log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
+        # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
 
 

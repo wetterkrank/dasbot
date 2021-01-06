@@ -3,7 +3,7 @@ from aiogram import types
 from dynaconf import settings
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
 
 
 class Interface(object):
