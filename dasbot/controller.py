@@ -34,7 +34,7 @@ class Controller(object):
         answer = message.text.strip().lower()
         if not (chat.quiz and chat.quiz.active and self.ui.recognized(answer)):
             return await self.ui.reply_with_help(message)
-        result = chat.quiz.verify(answer)
+        result = chat.quiz.verify_and_update_score(answer)
         await self.ui.give_feedback(chat, message, result)
         self.chats_repo.save_score(chat, chat.quiz.question, chat.quiz.score)
         chat.quiz.advance()

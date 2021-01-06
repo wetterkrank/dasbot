@@ -13,7 +13,7 @@ log.setLevel(logging.DEBUG)
 
 dictionary = Dictionary(settings.DICT_FILE)
 
-REVIEW = {
+SCHEDULE = {
     0: timedelta(0),
     1: timedelta(hours=1),
     2: timedelta(hours=12),
@@ -39,7 +39,7 @@ class Quiz(object):
 
     @staticmethod
     def new(history):
-        """
+        """ Returns a new fully setup Quiz
         :param history: dictionary {word: (score, due_date)}
         :return: new Quiz instance
         """
@@ -47,33 +47,72 @@ class Quiz(object):
         review_length = min(length // 2, len(history))
         scores = Quiz.prepare_review(history, review_length)
         cards = Quiz.prepare_cards(length, scores, dictionary.allwords)
-        return Quiz(length=length, cards=cards, position=0, correctly=0, active=True, scores=scores)
+        return Quiz(
+            length=length,
+            cards=cards,
+            position=0,
+            correctly=0,
+            active=True,
+            scores=scores
+        )
 
     @staticmethod
     def prepare_review(history, rev_length, now=None):
-        """
+        """ Selects overdue words to practice from the history dict
         :param history: dictionary {word: (score, due_date)}
-        :param rev_length: integer
-        :return: scores, a selection from this dictionary -- of rev_length or shorter
+        :param rev_length: integer; function returns rev_length (or fewer) entries
+        :param now: datetime for testing
+        :return: scores, in the same format as input dictionary
         """
-        now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)
+        now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # Strip TZ here or add to DB-stored dates
         # NOTE: Could add a randomizer right here:
-        overdue = filter(lambda rec: rec[1][1] and now > rec[1][1], history.items())
+        overdue = filter(
+            lambda rec: rec[1][1] and now > rec[1][1], history.items())
         scores = {k: v for _, (k, v) in zip(range(rev_length), overdue)}
-        # scores = dict(random.sample(overdue, min(rev_length, len(overdue))))  # There's no len() for iterator though
-        log.debug('planned review scores: %s', scores)
         return scores
 
     @staticmethod
     def prepare_cards(length, scores, allwords):
         cards = []
         new_length = length - len(scores)
-        new_words = random.sample(set(allwords) - set(scores), new_length)  # TODO: Consecutive instead of random?
+        # TODO: Consecutive instead of random?
+        new_words = random.sample(set(allwords) - set(scores), new_length)
         for word in scores.keys():
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         for word in new_words:
-            cards.append({'word': word, 'articles': dictionary.articles(word)})  # TODO: Store scores in cards?
+            # TODO: Store scores in cards?
+            cards.append({'word': word, 'articles': dictionary.articles(word)})
         return cards
+
+    # NOTE: Split into 2 parts?
+    def verify_and_update_score(self, answer):
+        accepted_answers = self.answer.split("/")  # TODO: set in dictionary
+        if answer in accepted_answers:
+            result = True
+            self.correctly += 1
+            new_score_num = min(self.score[0] + 1, max(SCHEDULE.keys()))
+        else:
+            result = False
+            new_score_num = max(self.score[0] - 1, min(SCHEDULE.keys()))
+        self.score = (new_score_num, self.next_review(new_score_num))
+        return result
+
+    @staticmethod
+    def next_review(score_num, now=None):
+        """
+        :param score_num: current score (after the answer check), Integer
+        :param now: current datetime, for testing
+        :return: next review datetime for this score
+        """
+        now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)
+        next_review_date = now + SCHEDULE[score_num]
+        return next_review_date
+
+    def advance(self):
+        self.position += 1
+
+    def stop(self):
+        self.active = False
 
     @property
     def pos(self):
@@ -93,22 +132,12 @@ class Quiz(object):
 
     @property
     def score(self):
-        values = self.scores.get(self.question)
-        return values or (0, datetime.now(tz=timezone('UTC')))
-        # return {self.question: values} if values else {self.question: (0, 'someday')}
+        """ Returns a tuple (Integer score, Datetime due date) """
+        return self.scores.get(self.question) or (0, datetime.now(tz=timezone('UTC')))
 
-    def verify(self, answer):
-        accepted_answers = self.answer.split("/")  # TODO: set in dictionary
-        if answer in accepted_answers:
-            self.correctly += 1
-            return True
-        return False
-
-    def advance(self):
-        self.position += 1
-
-    def stop(self):
-        self.active = False
+    @score.setter
+    def score(self, new_val):
+        self.scores[self.question] = new_val
 
 
 class QuizSchema(Schema):
@@ -120,7 +149,8 @@ class QuizSchema(Schema):
     correctly = fields.Integer()
     active = fields.Boolean(missing=False)
     cards = fields.List(fields.Dict(keys=fields.Str(), values=fields.Str()))
-    scores = fields.Dict(keys=fields.Str(), values=fields.Tuple((fields.Integer(), fields.Raw())))
+    scores = fields.Dict(keys=fields.Str(),
+                         values=fields.Tuple((fields.Integer(), fields.Raw())))
 
     @post_load
     def get_quiz(self, data, **kwargs):

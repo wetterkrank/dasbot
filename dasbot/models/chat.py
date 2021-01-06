@@ -28,6 +28,11 @@ class Chat(object):
         self.subscribed = False
 
     def set_quiz_time(self, hhmm, now=None):
+        """
+        :param hhmm: string "HH:MM"
+        :param now: datetime, if None then current datetime in Berlin TZ will be used
+        :return: nothing, changes the Chat instance
+        """
         berlin = timezone('Europe/Berlin')
         now = now or datetime.now().astimezone(berlin)
         self.quiz_scheduled_time = util.next_hhmm(hhmm, now)
