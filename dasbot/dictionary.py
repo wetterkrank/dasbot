@@ -37,12 +37,13 @@ class Dictionary(object):
             log.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
 
     def articles(self, word):
-        articles = self.contents[word][0]
-        return articles
+        return self.contents[word][0]
 
     def context(self, word):
-        context = self.contents[word][2]
-        return context
+        return self.contents[word][2]
+
+    def level(self, word):
+        return self.contents[word][3]
 
 
 if __name__ == '__main__':

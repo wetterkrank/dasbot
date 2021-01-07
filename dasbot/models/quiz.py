@@ -1,5 +1,4 @@
 import logging
-import random
 from datetime import datetime, timedelta
 from pytz import timezone
 
@@ -9,21 +8,19 @@ from dynaconf import settings
 from dasbot.dictionary import Dictionary
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
 
 dictionary = Dictionary(settings.DICT_FILE)
 
 SCHEDULE = {
     0: timedelta(0),
     1: timedelta(hours=1),
-    2: timedelta(hours=12),
-    3: timedelta(days=1),
-    4: timedelta(days=3),
-    5: timedelta(weeks=1),
-    6: timedelta(weeks=2),
-    7: timedelta(weeks=4),
-    8: timedelta(weeks=8),
-    9: timedelta(weeks=16),
-    10:	timedelta(weeks=24)
+    2: timedelta(days=1),
+    3: timedelta(weeks=1),
+    4: timedelta(weeks=4),
+    5: timedelta(weeks=12),
+    6: timedelta(weeks=24)
 }
 
 
@@ -44,15 +41,15 @@ class Quiz(object):
         """
         length = settings.QUIZ_LEN
         review_length = min(length // 2, len(history))
-        scores = Quiz.prepare_review(history, review_length)
-        cards = Quiz.prepare_cards(length, scores, dictionary.allwords)
+        review = Quiz.prepare_review(history, review_length)
+        cards = Quiz.prepare_cards(length, review, history, dictionary)
         return Quiz(
             length=length,
             cards=cards,
             position=0,
             correctly=0,
             active=True,
-            scores=scores
+            scores=review
         )
 
     @staticmethod
@@ -63,25 +60,32 @@ class Quiz(object):
         :param now: datetime for testing
         :return: scores, in the same format as input dictionary
         """
-        now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # Strip TZ here or add to DB-stored dates
+        now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # Strip TZ here vs add to the scores' dates
         # NOTE: Could add a randomizer right here:
         overdue = filter(
             lambda rec: rec[1][1] and now > rec[1][1], history.items())
-        scores = {k: v for _, (k, v) in zip(range(rev_length), overdue)}
-        return scores
+        review = {k: v for _, (k, v) in zip(range(rev_length), overdue)}
+        return review
 
     @staticmethod
-    def prepare_cards(length, scores, allwords):
+    def prepare_cards(length, review, history, dictionary):
+        """ Returns the question/answer cards list for the quiz
+        :param length: number of cards to make
+        :param review: dictionary of words to review, with scores
+        :param dictionary: Dictionary instance
+        :return: list of dicts, with word and articles keys
+        """
         cards = []
-        new_length = length - len(scores)
-        new_words = random.sample(set(allwords) - set(scores), new_length)
-        # TODO: Consecutive instead of random? We'll need to sort'em first...
-        # new_words = set(allwords) - set(scores)
-        # new_words = {v for _, v in zip(range(new_length), new_words)}
-        for word in scores.keys():
+        new_words_num = length - len(review)
+        # Random selection:
+        # new_words = random.sample(dictionary.keys() - review.keys(), new_length)
+        new_words = dictionary.contents.keys() - history.keys()
+        new_words = sorted(new_words, key=lambda k: dictionary.level(k))   # TODO: Avoid sorting the whole list
+        new_words = [v for _, v in zip(range(new_words_num), new_words)]
+        for word in review.keys():
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         for word in new_words:
-            # TODO: Store scores in cards?
+            # NOTE: Store scores in cards?
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         return cards
 

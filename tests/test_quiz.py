@@ -42,7 +42,7 @@ class TestQuiz(unittest.TestCase):
         review_date = Quiz.next_review(0, self.now)
         self.assertEqual(self.now, review_date)
         review_date = Quiz.next_review(3, self.now)
-        self.assertEqual(self.now + timedelta(days=1), review_date)
+        self.assertEqual(self.now + timedelta(weeks=1), review_date)
 
     def test_verify_and_update_score(self):
         history = {
