@@ -8,7 +8,7 @@ from dynaconf import settings
 from dasbot.dictionary import Dictionary
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
 
 
 dictionary = Dictionary(settings.DICT_FILE)
