@@ -19,11 +19,12 @@ https://t.me/derdiedas_quizbot
 - i18n
 
 **Spaced repetition**
+
 I've adapted a simple algorithm borrowed from [drill-srs](https://github.com/rr-/drill).
 
 Card score | Wait time
 ---------- | ---------
-0          | none (new question, never answered)
+0          | (new question)
 1          | 1 hour
 2          | 1 day
 3          | 1 week
