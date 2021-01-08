@@ -15,7 +15,7 @@ class TestQuiz(unittest.TestCase):
 
     def test_new(self):
         # TODO: Mock the dictionary as well
-        quiz = Quiz.new(history={
+        quiz = Quiz.new(settings.QUIZ_LEN, history={
             'Tag': (1, None),
             'Monat': (1, self.now - timedelta(days=1)),
             'Jahr': (1, self.now + timedelta(days=1))
@@ -50,7 +50,7 @@ class TestQuiz(unittest.TestCase):
             'Tag': (1, self.now - timedelta(days=1)),  # in
             'Monat': (10, self.now - timedelta(days=1))  # in
         }
-        quiz = Quiz.new(history)
+        quiz = Quiz.new(settings.QUIZ_LEN, history)
         quiz.cards = [
             {'word': 'Zeit', 'articles': 'die'},
             {'word': 'Tag', 'articles': 'der'},

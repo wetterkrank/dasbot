@@ -34,12 +34,11 @@ class Quiz(object):
         self.scores = scores
 
     @staticmethod
-    def new(history):
+    def new(length, history):
         """ Returns a new fully setup Quiz
         :param history: dictionary {word: (score, due_date)}
         :return: new Quiz instance
         """
-        length = settings.QUIZ_LEN
         review_length = min(length // 2, len(history))
         review = Quiz.prepare_review(history, review_length)
         cards = Quiz.prepare_cards(length, review, history, dictionary)
