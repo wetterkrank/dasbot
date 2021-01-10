@@ -1,6 +1,6 @@
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/wetterkrank/dasbot)
 
-# dddasbot
+# dasbot
 A Telegram bot that helps you learn German der/die/das articles
 
 https://t.me/derdiedas_quizbot
