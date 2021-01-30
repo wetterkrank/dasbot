@@ -1,7 +1,7 @@
 import logging
 
 import asyncio
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils import exceptions
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -29,10 +29,13 @@ class Broadcaster(object):
             self.chats_repo.save_chat(chat)
             await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
             return True
-        except BotBlocked:
-            log.info("Bot blocked, chat id: %s", chat.id)
+        except (exceptions.BotBlocked, exceptions.BotKicked):
+            log.info("Bot blocked/kicked, chat id: %s", chat.id)
             chat.unsubscribe()
             self.chats_repo.save_chat(chat)
+            return False
+        except exceptions.TelegramAPIError as e:
+            log.info("Unexpected error: %s", e)
             return False
 
     # Regularly called rouine that sends out the (over)due quizzes
