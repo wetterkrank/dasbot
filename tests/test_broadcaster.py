@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import aiounittest
 import mongomock
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotBlocked, TelegramAPIError
 
 from dasbot.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
@@ -20,8 +20,11 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         pass
 
     @staticmethod
-    async def fail(chat):
+    async def failBlocked(chat):
         raise BotBlocked("foobar")
+
+    async def failGeneric(chat):
+        raise TelegramAPIError("foobar")
 
     def setUp(self):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
@@ -51,7 +54,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
 
     async def test_send_quiz_fail_daily_hello(self):
         self.ui_mock = MagicMock()
-        self.ui_mock.daily_hello = TestBroadcaster.fail
+        self.ui_mock.daily_hello = TestBroadcaster.failBlocked
         self.ui_mock.ask_question = TestBroadcaster.success
         self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
@@ -63,7 +66,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
     async def test_send_quiz_fail_ask_question(self):
         self.ui_mock = MagicMock()
         self.ui_mock.daily_hello = TestBroadcaster.success
-        self.ui_mock.ask_question = TestBroadcaster.fail
+        self.ui_mock.ask_question = TestBroadcaster.failGeneric
         self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         ts = datetime.now(tz=timezone.utc)
