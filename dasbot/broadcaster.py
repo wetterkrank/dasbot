@@ -23,7 +23,7 @@ class Broadcaster(object):
         try:
             await self.ui.daily_hello(chat)
             scores = self.chats_repo.load_scores(chat)
-            chat.quiz = Quiz.new(scores)  # TODO: reuse the previously generated quiz if not started/completed?
+            chat.quiz = Quiz.new(chat.quiz_length, scores)  # TODO: reuse the previously generated quiz?
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             await self.ui.ask_question(chat)
             self.chats_repo.save_chat(chat)

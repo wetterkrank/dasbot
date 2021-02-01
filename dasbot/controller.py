@@ -22,7 +22,7 @@ class Controller(object):
         if not chat.last_seen:
             await self.ui.welcome(chat)
         scores = self.chats_repo.load_scores(chat)
-        chat.quiz = Quiz.new(scores)
+        chat.quiz = Quiz.new(chat.quiz_length, scores)
         await self.ui.ask_question(chat)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
