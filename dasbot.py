@@ -1,6 +1,5 @@
 # TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear
-# TODO: also use Motor for Mongo?
-# TODO: Better exception handling on scheduled broadcasts
+# TODO: use Motor for Mongo?
 
 import logging
 
@@ -55,19 +54,7 @@ if __name__ == '__main__':
         log.debug('callback query received: %s', query)
         await menucon.navigate(query)
 
-    # # /settings callback: unsubscribe button
-    # @dp.callback_query_handler(text='UNSUBSCRIBE')
-    # async def settings_unsubscribe_callback(query: types.CallbackQuery):
-    #     log.debug('UNSUBSCRIBE callback received: %s', query)
-    #     await chatcon.settings_unsubscribe(query)
-
-    # # /settings callback: one of the time options
-    # @dp.callback_query_handler(text=Interface.time_choices)
-    # async def settings_timepref_callback(query: types.CallbackQuery):
-    #     log.debug('quiz time preference callback received: %s', query)
-    #     await chatcon.settings_timepref(query)
-
-    # generic message handler
+    # generic message handler; should be last
     @dp.message_handler()
     async def all_other_messages(message: types.Message):
         log.debug('generic message received: %s', message)
@@ -79,7 +66,7 @@ if __name__ == '__main__':
     chats_repo = ChatsRepo(db['chats'], db['scores'])
 
     chatcon = Controller(bot, chats_repo)
-    menucon = MenuController(bot, chats_repo)
+    menucon = MenuController(Interface(bot), chats_repo)
     broadcaster = Broadcaster(Interface(bot), chats_repo)
 
     loop = asyncio.get_event_loop()

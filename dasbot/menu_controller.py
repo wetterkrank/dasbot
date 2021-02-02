@@ -4,17 +4,13 @@ import re
 from aiogram.types import Message
 from aiogram.utils.callback_data import CallbackData
 
-from .interface import Interface
-
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 class MenuController(object):
-    def __init__(self, bot, chats_repo):
-        self.bot = bot
+    def __init__(self, ui, chats_repo):
         self.chats_repo = chats_repo
-        self.ui = Interface(bot)
+        self.ui = ui
         self.callback = CallbackData('menu', 'level', 'menu_id', 'selection')  # menu:<level>:<id>:<action>
 
     def callback_generator(self, level, menu_id, selection):
@@ -31,8 +27,6 @@ class MenuController(object):
         current_level = int(callback_data.get('level'))
         menu_id = callback_data.get('menu_id')
         selection = callback_data.get('selection')
-        log.debug(f'current level: {current_level}, parent menu: {menu_id}, selection: {selection}')
-
         settings_actions = {
             1: {'main': self.ui.settings_menu},
             2: {'quiz-time': self.set_quiz_time,

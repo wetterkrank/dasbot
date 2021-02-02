@@ -1,5 +1,6 @@
-import csv
 import logging
+
+import csv
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +37,11 @@ class Dictionary(object):
             self.allwords = list(self.contents.keys())
             log.debug("Imported dictionary, %s words, last row: %s", len(self.allwords), row)
 
+    # BUG: Need error handling in case word is not found (dictionary edited but the word is present in the history)
     def articles(self, word):
+        record = self.contents.get(word)
+        if not record:
+            return None
         return self.contents[word][0]
 
     def context(self, word):
