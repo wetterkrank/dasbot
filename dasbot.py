@@ -14,11 +14,12 @@ from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
 from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
+from dasbot.menu_controller import MenuController
 
 from dynaconf import settings
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if settings.DEBUG else logging.INFO,
     format='%(asctime)s %(levelname)-8s %(message)s',
     datefmt='%m.%d %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -46,7 +47,25 @@ if __name__ == '__main__':
     @dp.message_handler(commands='settings')
     async def settings_command(message: types.Message):
         log.debug('/settings received: %s', message)
-        await chatcon.settings(message)
+        await menucon.main(message)
+
+    # handler for the settings menu callbacks
+    @dp.callback_query_handler()
+    async def settings_select(query: types.CallbackQuery):
+        log.debug('callback query received: %s', query)
+        await menucon.navigate(query)
+
+    # # /settings callback: unsubscribe button
+    # @dp.callback_query_handler(text='UNSUBSCRIBE')
+    # async def settings_unsubscribe_callback(query: types.CallbackQuery):
+    #     log.debug('UNSUBSCRIBE callback received: %s', query)
+    #     await chatcon.settings_unsubscribe(query)
+
+    # # /settings callback: one of the time options
+    # @dp.callback_query_handler(text=Interface.time_choices)
+    # async def settings_timepref_callback(query: types.CallbackQuery):
+    #     log.debug('quiz time preference callback received: %s', query)
+    #     await chatcon.settings_timepref(query)
 
     # generic message handler
     @dp.message_handler()
@@ -54,24 +73,13 @@ if __name__ == '__main__':
         log.debug('generic message received: %s', message)
         await chatcon.generic(message)
 
-    # /settings callback: unsubscribe button
-    @dp.callback_query_handler(text='UNSUBSCRIBE')
-    async def settings_unsubscribe_callback(query: types.CallbackQuery):
-        log.debug('UNSUBSCRIBE callback received: %s', query)
-        await chatcon.settings_unsubscribe(query)
-
-    # /settings callback: one of the time options
-    @dp.callback_query_handler(text=Interface.time_choices)
-    async def settings_timepref_callback(query: types.CallbackQuery):
-        log.debug('quiz time preference callback received: %s', query)
-        await chatcon.settings_timepref(query)
-
     # TODO: Add DB auth
     client = MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
     chats_repo = ChatsRepo(db['chats'], db['scores'])
 
     chatcon = Controller(bot, chats_repo)
+    menucon = MenuController(bot, chats_repo)
     broadcaster = Broadcaster(Interface(bot), chats_repo)
 
     loop = asyncio.get_event_loop()

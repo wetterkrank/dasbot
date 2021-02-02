@@ -5,7 +5,7 @@ db_address = 'mongodb://mongo:27017/'
 db_name = 'dasbot'
 
 [development]
-debug = true
+debug = false
 
 [production]
 debug = false
