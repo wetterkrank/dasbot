@@ -10,17 +10,17 @@ class Interface(object):
     TIME_OPTIONS = ["09:00", "12:00", "15:00", "18:00", "21:00", "00:00", "03:00", "06:00"]
     SETTINGS_MENU = {
         0: {
-            'main': {'row_len': 2, 'btns': [
+            'main': {'hint': 'Please select option', 'row_len': 2, 'btns': [
                 {'text': 'Quiz length', 'action': 'quiz-len'},
                 {'text': 'Daily quiz time', 'action': 'quiz-time'}
             ]}
         },
         1: {
-            'quiz-len': {'row_len': 4, 'btns': [
+            'quiz-len': {'hint': 'Please select the number of questions', 'row_len': 4, 'btns': [
                 {'text': n, 'action': n} for n in [5, 10, 20, 50]
             ]},
-            'quiz-time': {'row_len': 4, 'btns': [
-                {'text': t, 'action': t} for t in TIME_OPTIONS
+            'quiz-time': {'hint': 'Please select quiz time (time zone Berlin/CET)', 'row_len': 4, 'btns': [
+                {'text': t, 'action': t.replace(':', '')} for t in TIME_OPTIONS
             ] + [{'text': 'Unsubscribe', 'action': 'UNSUBSCRIBE'}]}
         }
     }
@@ -83,8 +83,13 @@ class Interface(object):
         return keyboard_markup
 
     async def settings_main(self, message, callback_gen):
-        await message.answer("Available settings:",
+        await message.answer("Please select option:",
                              reply_markup=Interface.settings_kb(callback_gen, 0, 'main'))
+
+    async def settings_menu(self, query, callback_gen, level, menu_id):
+        text = Interface.SETTINGS_MENU[level][menu_id]['hint']
+        markup = self.settings_kb(callback_gen, level, menu_id)
+        await query.message.edit_text(text=text, reply_markup=markup)
 
     async def settings_quiztime_request(self, message):
         await message.answer("Please select quiz time (time zone Berlin/CET)",
@@ -99,14 +104,14 @@ class Interface(object):
                                          text=text)
 
     @staticmethod
-    def settings_kb(callback_gen, level, selected_id):
-        menu = Interface.SETTINGS_MENU[level][selected_id]
+    def settings_kb(callback_gen, level, menu_id):
+        menu = Interface.SETTINGS_MENU[level][menu_id]
         row_width = menu['row_len']
         buttons = menu['btns']
         markup = types.InlineKeyboardMarkup(row_width=row_width)
 
         for i, button in enumerate(buttons):
-            callback_data = callback_gen(level=level + 1, selected_id=selected_id, action=button['action'])
+            callback_data = callback_gen(level=level + 1, menu_id=menu_id, selection=button['action'])
             if i % row_width == 0:
                 markup.row()
             markup.insert(types.InlineKeyboardButton(text=button['text'], callback_data=callback_data))

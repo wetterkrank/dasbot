@@ -8,34 +8,36 @@ from .interface import Interface
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-SETTINGS_ACTIONS = {
-    1: {'main': 'display_submenu'},
-    2: {
-        'quiz_time': 'set_quiz_time',
-        'quiz_len': 'set_quiz_length'
-    }
-}
-
 
 class MenuController(object):
     def __init__(self, bot, chats_repo):
         self.bot = bot
         self.chats_repo = chats_repo
         self.ui = Interface(bot)
-        self.callback = CallbackData('menu', 'level', 'id', 'action')  # menu:<level>:<id>:<action>
+        self.callback = CallbackData('menu', 'level', 'menu_id', 'selection')  # menu:<level>:<id>:<action>
 
     # respond to /settings
     async def main(self, message: Message):
         await self.ui.settings_main(message, self.callback_generator)
 
     async def navigate(self, query):
+        # TODO: Better error handling in case of bad data
         callback_data = self.callback.parse(query['data'])
-        current_level = callback_data.get('level')
-        menu_id = callback_data.get('id')
-        action = callback_data.get('action')
+        current_level = int(callback_data.get('level'))
+        menu_id = callback_data.get('menu_id')
+        selection = callback_data.get('selection')
+        log.debug(f'current level: {current_level}, parent menu: {menu_id}, selection: {selection}')
 
-        log.debug(f'parent menu: {menu_id}, current level: {current_level}, selected: {action}')
-        # await message.message.edit_reply_markup(markup)
+        settings_actions = {
+            1: {'main': self.ui.settings_menu},
+            2: {'quiz-time': None,  # self.set_quiz_time,
+                'quiz-len': None}  # self.set_quiz_length       }
+        }
+        action = settings_actions[current_level][menu_id]
+        await action(query, self.callback_generator, current_level, selection)
 
-    def callback_generator(self, level, selected_id, action):
-        return self.callback.new(level=level, id=selected_id, action=action)
+    async def display_submenu(self, query, level, menu_id):
+        self.ui.settings_submenu(query, self.callback_generator, level, menu_id)
+
+    def callback_generator(self, level, menu_id, selection):
+        return self.callback.new(level=level, menu_id=menu_id, selection=selection)
