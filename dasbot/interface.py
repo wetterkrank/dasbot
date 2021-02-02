@@ -7,7 +7,8 @@ log.setLevel(logging.DEBUG)
 
 
 class Interface(object):
-    TIME_OPTIONS = ["09:00", "12:00", "15:00", "18:00", "21:00", "00:00", "03:00", "06:00"]
+    TIME_OPTIONS = ["0900", "1200", "1500", "1800", "2100", "0000", "0300", "0600"]
+    LENGTH_OPTIONS = [5, 10, 20, 50]
     SETTINGS_MENU = {
         0: {
             'main': {'hint': 'Please select option', 'row_len': 2, 'btns': [
@@ -17,11 +18,11 @@ class Interface(object):
         },
         1: {
             'quiz-len': {'hint': 'Please select the number of questions', 'row_len': 4, 'btns': [
-                {'text': n, 'action': n} for n in [5, 10, 20, 50]
+                {'text': n, 'action': n} for n in LENGTH_OPTIONS
             ]},
             'quiz-time': {'hint': 'Please select quiz time (time zone Berlin/CET)', 'row_len': 4, 'btns': [
-                {'text': t, 'action': t.replace(':', '')} for t in TIME_OPTIONS
-            ] + [{'text': 'Unsubscribe', 'action': 'UNSUBSCRIBE'}]}
+                {'text': f"{t[:2]}:{t[2:]}", 'action': t} for t in TIME_OPTIONS
+            ] + [{'text': 'Daily quiz OFF', 'action': 'UNSUBSCRIBE'}]}
         }
     }
 
@@ -82,26 +83,25 @@ class Interface(object):
         keyboard_markup.row(*row_btns)
         return keyboard_markup
 
+    # TODO: Move the settings menu out of the UI?
     async def settings_main(self, message, callback_gen):
-        await message.answer("Please select option:",
+        await message.answer(text=Interface.SETTINGS_MENU[0]['main']['hint'],
                              reply_markup=Interface.settings_kb(callback_gen, 0, 'main'))
 
     async def settings_menu(self, query, callback_gen, level, menu_id):
-        text = Interface.SETTINGS_MENU[level][menu_id]['hint']
-        markup = self.settings_kb(callback_gen, level, menu_id)
-        await query.message.edit_text(text=text, reply_markup=markup)
+        await query.message.edit_text(text=Interface.SETTINGS_MENU[level][menu_id]['hint'],
+                                      reply_markup=self.settings_kb(callback_gen, level, menu_id))
 
-    async def settings_quiztime_request(self, message):
-        await message.answer("Please select quiz time (time zone Berlin/CET)",
-                             reply_markup=Interface.quiz_time_settings_kb())
-
-    async def settings_quiztime_set(self, query, pref):
-        text = f'Daily quiz time is set to {pref} (Berlin time)'
-        if pref == "UNSUBSCRIBE":
-            text = 'Daily quiz is off'
+    async def settings_confirm(self, query, text):
         await self.bot.edit_message_text(chat_id=query.message.chat.id,
                                          message_id=query.message.message_id,
                                          text=text)
+
+    def quiz_time_set(self, pref):
+        return (f'Daily quiz time is set to {pref} (Berlin time)', 'Daily quiz is off')[pref == "UNSUBSCRIBE"]
+
+    def quiz_length_set(self, pref):
+        return f'Quiz length is set to {pref} questions'
 
     @staticmethod
     def settings_kb(callback_gen, level, menu_id):
@@ -109,27 +109,12 @@ class Interface(object):
         row_width = menu['row_len']
         buttons = menu['btns']
         markup = types.InlineKeyboardMarkup(row_width=row_width)
-
         for i, button in enumerate(buttons):
             callback_data = callback_gen(level=level + 1, menu_id=menu_id, selection=button['action'])
             if i % row_width == 0:
                 markup.row()
             markup.insert(types.InlineKeyboardButton(text=button['text'], callback_data=callback_data))
-
         return markup
-
-    @staticmethod
-    def quiz_time_settings_kb():
-        """ Returns InlineKeyboardMarkup object with quiz options """
-        row_width = 4
-        inline_kb = types.InlineKeyboardMarkup(row_width=row_width)
-        for i, option in enumerate(Interface.TIME_OPTIONS):
-            if i % row_width == 0:
-                inline_kb.row()
-            inline_kb.insert(types.InlineKeyboardButton(option, callback_data=option))
-        inline_kb.row()
-        inline_kb.insert(types.InlineKeyboardButton("Daily quiz OFF", callback_data="UNSUBSCRIBE"))
-        return inline_kb
 
     def recognized(self, msg_text):
         return msg_text in ['der', 'die', 'das']
