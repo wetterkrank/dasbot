@@ -92,6 +92,9 @@ class Quiz(object):
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         return cards
 
+    def valid(self, answer):
+        return answer in ['der', 'die', 'das']
+
     # NOTE: Split into 2 parts?
     # TODO: An option of reporting an error
     def verify_and_update_score(self, answer):

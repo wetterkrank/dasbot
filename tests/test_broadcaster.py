@@ -1,3 +1,5 @@
+import logging
+
 import unittest
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock
@@ -27,33 +29,29 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
+        self.ui_mock = MagicMock()
+        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)
         current_quiz_time = datetime.fromisoformat('2011-11-04 12:05:23+00:00')
         expected_next_quiz_time = current_quiz_time.replace(
             year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
-
-        self.ui_mock = MagicMock()
         self.ui_mock.daily_hello = TestBroadcaster.success
         self.ui_mock.ask_question = TestBroadcaster.success
-        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         chat = Chat(chat_id=1001, quiz_scheduled_time=current_quiz_time)
         result = await self.broadcaster.send_quiz(chat)
 
         saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
-
         self.assertEqual(1, saved_chat.quiz.pos)
         self.assertEqual(expected_next_quiz_time, saved_chat.quiz_scheduled_time)
-
         self.assertTrue(result)
 
     async def test_send_quiz_fail_daily_hello(self):
-        self.ui_mock = MagicMock()
+        logging.disable(logging.ERROR)
         self.ui_mock.daily_hello = TestBroadcaster.failGeneric
         self.ui_mock.ask_question = TestBroadcaster.success
-        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
@@ -61,10 +59,9 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.assertFalse(result)
 
     async def test_send_quiz_fail_ask_question(self):
-        self.ui_mock = MagicMock()
+        logging.disable(logging.ERROR)
         self.ui_mock.daily_hello = TestBroadcaster.success
         self.ui_mock.ask_question = TestBroadcaster.failGeneric
-        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 
         ts = datetime.now(tz=timezone.utc)
         chat = Chat(chat_id=1001, quiz_scheduled_time=ts)
