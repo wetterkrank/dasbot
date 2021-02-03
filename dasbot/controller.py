@@ -31,7 +31,7 @@ class Controller(object):
     async def generic(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)
         answer = message.text.strip().lower()
-        if not (chat.quiz and chat.quiz.active and self.ui.recognized(answer)):
+        if not (chat.quiz and chat.quiz.active and chat.quiz.valid(answer)):
             return await self.ui.reply_with_help(message)
         result = chat.quiz.verify_and_update_score(answer)
         await self.ui.give_feedback(chat, message, result)

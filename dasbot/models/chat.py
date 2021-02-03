@@ -30,6 +30,9 @@ class Chat(object):
     def unsubscribe(self):
         self.subscribed = False
 
+    def subscribe(self):
+        self.subscribed = True
+
     def set_quiz_time(self, hhmm, now=None):
         """
         :param hhmm: string "HH:MM"
