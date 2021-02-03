@@ -45,29 +45,6 @@ class Controller(object):
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
-    # /settings
-    async def settings(self, message):
-        await self.ui.settings_root(message)
-
-    # /settings UNSUBSCRIBE
-    async def settings_unsubscribe(self, query):
-        await query.answer()  # To confirm reception
-        chat = self.chats_repo.load_chat(query.message.chat.id)
-        chat.unsubscribe()
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
-        await self.ui.settings_quiztime_set(query, "UNSUBSCRIBE")
-
-    # /settings HH:MM
-    async def settings_timepref(self, query):
-        await query.answer()
-        chat = self.chats_repo.load_chat(query.message.chat.id)
-        preferred_time = query.data
-        chat.set_quiz_time(preferred_time)
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
-        await self.ui.settings_quiztime_set(query, preferred_time)
-
 
 if __name__ == "__main__":
     pass

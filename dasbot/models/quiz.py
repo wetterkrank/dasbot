@@ -82,13 +82,18 @@ class Quiz(object):
         new_words = sorted(new_words, key=lambda k: dictionary.level(k))   # TODO: Avoid sorting the whole list
         new_words = [v for _, v in zip(range(new_words_num), new_words)]
         for word in review.keys():
-            cards.append({'word': word, 'articles': dictionary.articles(word)})
+            article = dictionary.articles(word)
+            if article:
+                cards.append({'word': word, 'articles': article})
+            else:
+                log.error('Error @ prepare_cards, missing dictionary word %s', word)
         for word in new_words:
             # NOTE: Store scores in cards?
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         return cards
 
     # NOTE: Split into 2 parts?
+    # TODO: An option of reporting an error
     def verify_and_update_score(self, answer):
         accepted_answers = self.answer.split("/")  # TODO: set in dictionary
         if answer in accepted_answers:
@@ -152,7 +157,7 @@ class QuizSchema(Schema):
     position = fields.Integer()
     correctly = fields.Integer()
     active = fields.Boolean(missing=False)
-    cards = fields.List(fields.Dict(keys=fields.Str(), values=fields.Str()))
+    cards = fields.List(fields.Dict(keys=fields.Str(), values=fields.Str(allow_none=True)))
     scores = fields.Dict(keys=fields.Str(),
                          values=fields.Tuple((fields.Integer(), fields.Raw())))
 
