@@ -7,7 +7,6 @@ from dasbot import util
 from dasbot.models.quiz import Quiz
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 class Broadcaster(object):
@@ -35,7 +34,7 @@ class Broadcaster(object):
             if any(match in str(err) for match in blocked):
                 chat.unsubscribe()
                 self.chats_repo.save_chat(chat)
-            log.info("Error: %s, chat id: %s", err, chat.id)
+            log.error("Error: %s, chat id: %s", err, chat.id)
             return False
 
     # Regularly called rouine that sends out the (over)due quizzes
