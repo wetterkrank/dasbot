@@ -1,4 +1,4 @@
-.PHONY: db db-stop run test docker-build
+.PHONY: db db-stop run test build
 VENV_NAME=.venv
 
 db:
@@ -8,10 +8,10 @@ db-stop:
 	docker stop mongo
 
 run:
-	${VENV_NAME}\Scripts\activate && python dasbot.py
+	. ${VENV_NAME}/bin/activate && python dasbot.py
 
 test: 
-	${VENV_NAME}\Scripts\activate && python -m unittest
+	. ${VENV_NAME}/bin/activate && python -m unittest
 
 build:
 	docker build -t dasbot .
