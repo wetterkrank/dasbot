@@ -1,3 +1,5 @@
+# TODO: Handle the situation when there are no new words left
+
 import logging
 from datetime import datetime, timedelta
 from pytz import timezone
