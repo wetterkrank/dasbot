@@ -3,9 +3,8 @@
 # dasbot
 A Telegram bot that helps you learn German der/die/das articles
 
-wetterkrank.github.io/dasbot/
+https://wetterkrank.github.io/dasbot/
 
-https://t.me/derdiedas_quizbot
 
 ## How to run
 - Clone the repo
