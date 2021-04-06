@@ -1,7 +1,7 @@
 import logging
 
 import asyncio
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram.utils.exceptions import Unauthorized, TelegramAPIError
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -28,12 +28,13 @@ class Broadcaster(object):
             self.chats_repo.save_chat(chat)
             await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
             return True
+        # Kicked, blocked etc.
+        except Unauthorized as err:
+            log.error("Error: %s, chat id: %s", err, chat.id)
+            chat.unsubscribe()
+            self.chats_repo.save_chat(chat)
+            return False
         except TelegramAPIError as err:
-            # due to a bug in Aiogram we're doing the reply string matching ourselves
-            blocked = ['bot was kicked from the group chat', 'bot was blocked by the user']
-            if any(match in str(err) for match in blocked):
-                chat.unsubscribe()
-                self.chats_repo.save_chat(chat)
             log.error("Error: %s, chat id: %s", err, chat.id)
             return False
 
