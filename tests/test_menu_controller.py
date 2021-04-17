@@ -9,9 +9,10 @@ from dasbot.menu_controller import MenuController
 
 class TestMenuController(aiounittest.AsyncTestCase):
     def setUp(self):
-        self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
+        self.chats_col = mongomock.MongoClient(tz_aware=True).db.collection
+        self.scores_col = mongomock.MongoClient(tz_aware=True).db.collection
+        self.stats_col = mongomock.MongoClient(tz_aware=True).db.collection
+        self.chats_repo = ChatsRepo(self.chats_col, self.scores_col, self.stats_col)
         self.ui = MagicMock()
         self.ui.settings_text = {
             'main-hint': 'Please select option',

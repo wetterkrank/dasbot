@@ -11,14 +11,15 @@ from dasbot.models.chat import Chat
 # TODO: Test save/load of a chat with attached quiz
 class TestChatsRepo(unittest.TestCase):
     def setUp(self):
-        self.chats_collection = mongomock.MongoClient().db.collection
-        self.scores_collection = mongomock.MongoClient().db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
+        self.chats_col = mongomock.MongoClient().db.collection
+        self.scores_col = mongomock.MongoClient().db.collection
+        self.stats_col = mongomock.MongoClient().db.collection
+        self.chats_repo = ChatsRepo(self.chats_col, self.scores_col, self.stats_col)
 
     def test_save_chat(self):
         chat = Chat(chat_id=1001)
         self.chats_repo.save_chat(chat)
-        saved_chats = list(self.chats_collection.find())
+        saved_chats = list(self.chats_col.find())
         self.assertEqual(1, len(saved_chats))
         self.assertEqual(1001, saved_chats[0]['chat_id'])
 

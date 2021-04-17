@@ -28,7 +28,8 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
     def setUp(self):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
+        self.stats_collection = mongomock.MongoClient(tz_aware=True).db.collection
+        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection, self.stats_collection)
         self.ui_mock = MagicMock()
         self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
 

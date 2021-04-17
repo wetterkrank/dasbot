@@ -8,9 +8,10 @@ log = logging.getLogger(__name__)
 
 
 class ChatsRepo(object):
-    def __init__(self, chats_col, scores_col):
+    def __init__(self, chats_col, scores_col, stats_col):
         self._chats = chats_col
         self._scores = scores_col
+        self._stats = stats_col
         self.__status()
 
     def __status(self):
@@ -19,7 +20,6 @@ class ChatsRepo(object):
     def load_chat(self, chat_id):
         """
         :param chat_id: Telegram chat id
-        :param now: datetime when the function is called
         :return: Chat instance, loaded from DB, or new if not found
         """
         chat_data = self._chats.find_one({"chat_id": chat_id}, {"_id": 0})
@@ -51,7 +51,7 @@ class ChatsRepo(object):
         chats = [ChatSchema().load(chat_data) for chat_data in results_from_db]
         return chats
 
-    # TODO: make Score into a separate model?
+    # TODO: make Score a separate model?
     def load_scores(self, chat):
         """
         :param chat: chat instance
@@ -71,9 +71,19 @@ class ChatsRepo(object):
         :return: pymongo UpdateResult instance
         """
         query = {"chat_id": chat.id, "word": word}
-        update = {"$set": {"chat_id": chat.id, "word": word, "score": score[0], "revisit": score[1]}}
+        update = {"$set": {"score": score[0], "revisit": score[1]}}
         result = self._scores.update_one(query, update, upsert=True)
         # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
+        return result
+
+    def save_stats(self, chat, word, result: bool):
+        """
+        :param chat: chat instance
+        :param word: word to save the result for
+        :param result: last answer correct?
+        """
+        update = {"chat_id": chat.id, "word": word, "correct": result, "date": datetime.now(tz=timezone.utc)}
+        result = self._stats.insert_one(update)
         return result
 
 
