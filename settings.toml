@@ -1,11 +1,12 @@
 [default]
 quiz_len = 10
 dict_file = 'data/dictionary_de.csv'
-db_address = 'mongodb://127.0.0.1:27017/'
 db_name = 'dasbot'
 
 [development]
+db_address = 'mongodb://127.0.0.1:27017/'
 debug = true
 
 [production]
+db_address = 'mongodb://mongo:27017/'
 debug = false
