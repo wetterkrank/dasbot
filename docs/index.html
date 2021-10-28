@@ -24,8 +24,8 @@
 <body class="d-flex flex-column h-100">
   <main>
     <div class="container">
-      <div class="row mt-xxl-4 mt-xl-1 mt-1">
-        <div class="col-md-7 mb-3 pt-2">
+      <div class="row py-3 py-md-5">
+        <div class="col-md-7">
           <svg id="bot-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30" x="0px" y="0px">
             <path
               d="M20.5,13H20V12a3,3,0,0,0-3-3H13V6.7226a2,2,0,1,0-2,0V9H7a3,3,0,0,0-3,3v1H3.5a1.5,1.5,0,0,0,0,3H4v1a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V16h.5a1.5,1.5,0,0,0,0-3ZM19,17a2.00226,2.00226,0,0,1-2,2H7a2.0023,2.0023,0,0,1-2-2V12a2.00226,2.00226,0,0,1,2-2H17a2.00222,2.00222,0,0,1,2,2Zm-9-2.5A1.5,1.5,0,1,1,8.5,13,1.5,1.5,0,0,1,10,14.5Zm7,0A1.5,1.5,0,1,1,15.5,13,1.5,1.5,0,0,1,17,14.5Z" />
@@ -47,28 +47,36 @@
           <p>
             For bug reports and suggestions, please send me a
             <a href="https://t.me/wetterkrank" class="link-secondary">Telegram message</a>
-            or <a class="link-secondary" href="mailto:wetterkrank@gmail.com">e-mail</a>.
+            or
+            <a class="link-secondary" href="mailto:wetterkrank@gmail.com">e-mail</a>.
           </p>
-          <a class="mx-auto telegram-button text-white btn btn-info fs-4 my-5 pl-5 position-relative"
-            href="https://t.me/derdiedas_quizbot" role="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-telegram"
-              viewBox="0 0 16 16">
-              <path
-                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z" />
-            </svg>
-            Get it here
-          </a>
+          <div class="d-flex justify-content-center justify-content-md-start">
+            <a class="
+                  telegram-button
+                  text-white
+                  btn btn-info
+                  fs-4
+                  my-5
+                  pl-5
+                  position-relative
+                " href="https://t.me/derdiedas_quizbot" role="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
+                class="bi bi-telegram" viewBox="0 0 16 16">
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z" />
+              </svg>
+              Get it here
+            </a>
+          </div>
         </div>
 
         <div class="
               col-md-5
-              mb-3
-              pt-2
               d-flex
               align-items-center
-              justify-content-end
+              justify-content-center justify-content-md-end
             ">
-          <img src="img/screenshot.jpg" class="rounded mw-100 d-block screenshot float-md-end" alt="..." />
+          <img src="img/screenshot.jpg" class="rounded mw-100 d-block screenshot" alt="..." />
         </div>
       </div>
     </div>
@@ -92,8 +100,8 @@
         </a>
       </span>
       <div class="text-end text-muted fw-light">
-        © 2020 Alex Antsiferov.<br />
-        Bot icon by Sophia Bai from the Noun Project.
+        © 2020 Alex Antsiferov<br />
+        Bot icon by Sophia Bai from the Noun Project
       </div>
     </div>
   </footer>
