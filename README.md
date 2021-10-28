@@ -19,6 +19,8 @@ https://wetterkrank.github.io/dasbot/
 - Statistics
 - Webhooks instead of long polling
 - i18n
+- Entry test
+- Reset command
 
 **Spaced repetition**
 
