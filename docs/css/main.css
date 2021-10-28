@@ -1,0 +1,38 @@
+/* Custom styles below */
+
+.screenshot {
+    max-height: 80vh;
+}
+
+svg#bot-icon {
+    height: 6em;
+    width: auto;
+}
+
+.lead {
+    color: #45A8E8;
+}
+
+.telegram {
+    background-color: #45A8E8;
+}
+
+p {
+    font-size: large;
+}
+
+@media (min-width: 1400px) {
+    html {
+        font-size: 1.1em;
+    }
+}
+@media (min-width: 1600px) {
+    html {
+        font-size: 1.2em;
+    }
+}
+@media (min-width: 2000px) {
+    html {
+        font-size: 1.4em;
+    }
+}
