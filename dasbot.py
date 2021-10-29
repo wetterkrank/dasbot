@@ -9,6 +9,8 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from pymongo import MongoClient
 
+#TODO: pass dictionary to controller methods
+from dasbot.dictionary import Dictionary
 from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
 from dasbot.chats_repo import ChatsRepo
@@ -54,6 +56,12 @@ if __name__ == '__main__':
         log.debug('callback query received: %s', query)
         await menucon.navigate(query)
 
+    # /stats command handler
+    @dp.message_handler(commands='stats')
+    async def stats_command(message: types.Message):
+        log.debug('/stats received: %s', message)
+        await chatcon.stats(message, dictionary)
+
     # generic message handler; should be last
     @dp.message_handler()
     async def all_other_messages(message: types.Message):
@@ -61,10 +69,11 @@ if __name__ == '__main__':
         await chatcon.generic(message)
 
     # TODO: Add DB auth
+    log.debug('connecting to database: %s', settings.DB_ADDRESS)
     client = MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
+    dictionary = Dictionary(settings.DICT_FILE)
     chats_repo = ChatsRepo(db['chats'], db['scores'], db['stats'])
-
     chatcon = Controller(bot, chats_repo)
     menucon = MenuController(Interface(bot), chats_repo)
     broadcaster = Broadcaster(Interface(bot), chats_repo)

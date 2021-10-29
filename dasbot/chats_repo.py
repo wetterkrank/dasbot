@@ -3,6 +3,9 @@ from datetime import datetime
 from datetime import timezone
 
 from dasbot.models.chat import Chat, ChatSchema
+from dasbot import util
+
+from pymongo.errors import DuplicateKeyError, OperationFailure
 
 log = logging.getLogger(__name__)
 
@@ -47,8 +50,8 @@ class ChatsRepo(object):
         if now is None:
             now = datetime.now(tz=timezone.utc)
         query = {"subscribed": True, "quiz_scheduled_time": {"$lte": now}}
-        results_from_db = self._chats.find(query, {"_id": 0})
-        chats = [ChatSchema().load(chat_data) for chat_data in results_from_db]
+        results_cursor = self._chats.find(query, {"_id": 0})
+        chats = [ChatSchema().load(chat_data) for chat_data in results_cursor]
         return chats
 
     # TODO: make Score a separate model?
@@ -58,11 +61,13 @@ class ChatsRepo(object):
         :return: dict of scores {word: (score, due_date)}
         """
         query = {"chat_id": chat.id}
-        results_from_db = self._scores.find(query, {"_id": 0})
-        scores = {item["word"]: (item["score"], item["revisit"]) for item in results_from_db}
+        results_cursor = self._scores.find(query, {"_id": 0})
+        scores = {item["word"]: (item["score"], item["revisit"])
+                  for item in results_cursor}
         # log.debug("loaded scores for chat %s, result: %s", chat.id, scores)
         return scores
 
+    # TODO: check if saved successfully?
     def save_score(self, chat, word, score):
         """
         :param chat: chat instance
@@ -82,9 +87,55 @@ class ChatsRepo(object):
         :param word: word to save the result for
         :param result: last answer correct?
         """
-        update = {"chat_id": chat.id, "word": word, "correct": result, "date": datetime.now(tz=timezone.utc)}
+        update = {"chat_id": chat.id, "word": word,
+                  "correct": result, "date": datetime.now(tz=timezone.utc)}
         result = self._stats.insert_one(update)
         return result
+
+    # TODO: generate the stats periodically in the background and save them in a separate collection
+    # NOTE: we could use $facet in the aggregation as an alternative (no indexes though)
+    def get_stats(self, chat_id, month_ago=None):
+        """
+        :param chat_id: chat id
+        :param month_ago: time when the function is called, minus 30 days
+        :return: smth...
+        """
+        stats = {}
+        if month_ago is None:
+            month_ago = util.month_ago()
+        pipe_30days = [
+            {
+                '$match': {
+                    'chat_id': chat_id,
+                    'correct': False,
+                    'date': {
+                        '$gt': month_ago
+                    }
+                }
+            },
+            {'$sortByCount': '$word'},
+            {'$limit': 5},
+            {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
+        ]
+        pipe_alltime = [
+            {
+                '$match': {
+                    'chat_id': chat_id,
+                    'correct': False
+                }
+            },
+            {'$sortByCount': '$word'},
+            {'$limit': 10},
+            {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
+        ]
+        query_progress = {'chat_id': chat_id, 'score': {'$gt': 0}}
+        count = self._scores.count_documents(query_progress)
+        stats['touched'] = count
+        results = self._stats.aggregate(pipe_30days)
+        stats['mistakes_30days'] = [item for item in results]
+        results = self._stats.aggregate(pipe_alltime)
+        stats['mistakes_alltime'] = [item for item in results]
+        return stats
 
 
 if __name__ == "__main__":

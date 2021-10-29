@@ -27,6 +27,11 @@ class Controller(object):
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
+    # /stats
+    async def stats(self, message, dictionary):
+        stats = self.chats_repo.get_stats(message.chat.id)
+        await self.ui.send_stats(message, stats, dictionary.wordcount())
+
     # not-a-command
     async def generic(self, message):
         chat = self.chats_repo.load_chat(message.chat.id)

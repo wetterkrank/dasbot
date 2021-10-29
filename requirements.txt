@@ -6,4 +6,3 @@ marshmallow>=3.14.0
 mongomock>=3.23.0
 pymongo>=3.12.1
 pytz>=2021.3
-typing-extensions>=3.10.0.2

@@ -23,8 +23,8 @@ class Interface(object):
     async def welcome(self, chat):
         text = ("Hi! I'm Dasbot. My mission is to help you memorize German articles.\n"
                 "I know about 2000 most frequently used German words, and I'll be sending you a short quiz every day.\n"
-                "To change the preferred quiz time (or turn it off), send /settings command.\n"
-                "You can also practice any time by typing /start.")
+                "To change the preferred quiz time (or turn it off), use /settings command.\n"
+                "You can also practice any time by sending /start.")
         await self.bot.send_message(chat.id, text)
 
     async def daily_hello(self, chat):
@@ -40,6 +40,7 @@ class Interface(object):
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "Incorrect, "
         text += f"{chat.quiz.answer} {chat.quiz.question}"
+        if correct: text += " ✅"
         await message.answer(text)
 
     async def announce_result(self, chat):
@@ -61,6 +62,22 @@ class Interface(object):
         else:
             msg = "."
         return msg
+
+
+    async def send_stats(self, message, stats, dict_length):
+        def bullet(item):
+            return f"• {item['word']}: {item['count']}  "
+        def wordlist(key):
+            return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
+        text = f"*Your progress* 📈\n{stats['touched']} words touched out of {dict_length}\n\n"
+        text += "*I recommend working on these words*:\n\n"
+        if len(stats['mistakes_30days']) > 0:
+            text += "Last 30 days' top 💔\n"
+            text += wordlist('mistakes_30days')
+        if len(stats['mistakes_alltime']) > 0:
+            text += "All-time top 💔\n"
+            text += wordlist('mistakes_alltime')
+        await message.answer(text, parse_mode='Markdown')
 
     @staticmethod
     def quiz_kb():

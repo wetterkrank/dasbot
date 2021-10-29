@@ -24,6 +24,12 @@ class TestUtil(unittest.TestCase):
         expected = datetime.fromisoformat('2011-11-02 15:00:00+01:00')
         self.assertEqual(expected, actual)
 
+    def test_month_ago(self):
+        now = datetime.fromisoformat('2011-12-01 01:02:03+00:00')
+        self.assertEqual(
+            datetime.fromisoformat('2011-11-01 01:02:03+00:00'),
+            util.month_ago(now))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,3 +1,5 @@
+# NOTE: We don't handle TZ changes
+
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -35,3 +37,14 @@ def next_quiz_time(last_quiz_time, now=None):
     return last_quiz_time.replace(year=tomorrow_date.year,
                                   month=tomorrow_date.month,
                                   day=tomorrow_date.day)
+
+
+def month_ago(now=None):
+    """
+    :param now: timestamp when the function is called
+    :return: same time - 30 days
+    """
+    if now is None:
+        now = datetime.now(tz=timezone.utc)
+    month_ago = now - timedelta(days=30)
+    return month_ago
