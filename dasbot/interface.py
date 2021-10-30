@@ -69,7 +69,7 @@ class Interface(object):
             return f"• {item['word']}: {item['count']}  "
         def wordlist(key):
             return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
-        text = f"*Your progress* 📈\n{stats['touched']} words touched out of {dict_length}\n\n"
+        text = f"📈 *Your progress*: \n{stats['touched']} words touched out of {dict_length}.\n\n"
         text += "*I recommend working on these words*:\n\n"
         if len(stats['mistakes_30days']) > 0:
             text += "Last 30 days' top 💔\n"

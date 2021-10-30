@@ -98,7 +98,7 @@ class ChatsRepo(object):
         """
         :param chat_id: chat id
         :param month_ago: time when the function is called, minus 30 days
-        :return: smth...
+        :return: dictionary
         """
         stats = {}
         if month_ago is None:
@@ -113,7 +113,8 @@ class ChatsRepo(object):
                     }
                 }
             },
-            {'$sortByCount': '$word'},
+            {'$group': { '_id': '$word', 'count': { '$sum': 1 } }},
+            {'$sort': { 'count': -1 }},
             {'$limit': 5},
             {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
         ]
@@ -124,7 +125,8 @@ class ChatsRepo(object):
                     'correct': False
                 }
             },
-            {'$sortByCount': '$word'},
+            {'$group': { '_id': '$word', 'count': { '$sum': 1 } }},
+            {'$sort': { 'count': -1 }},
             {'$limit': 10},
             {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
         ]

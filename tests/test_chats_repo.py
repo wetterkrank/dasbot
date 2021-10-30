@@ -59,6 +59,9 @@ class TestChatsRepo(unittest.TestCase):
         result = self.chats_repo.get_pending_chats(ts)
         self.assertEqual(0, len(result))
 
+    def test_get_stats_no_data(self):
+        stats = self.chats_repo.get_stats(1)
+        self.assertDictEqual({'touched': 0, 'mistakes_30days': [], 'mistakes_alltime': []}, stats)
 
 if __name__ == '__main__':
     unittest.main()
