@@ -16,7 +16,7 @@ https://wetterkrank.github.io/dasbot/
 **Todo**
 - Daily quiz ✔
 - Spaced repetition ✔
-- Statistics
+- Statistics ✔
 - Webhooks instead of long polling
 - i18n
 - Entry test
