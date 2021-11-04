@@ -2,10 +2,11 @@ import logging
 from datetime import datetime
 from datetime import timezone
 
+from aiogram.types import Chat as TelegramChat
+
 from dasbot.models.chat import Chat, ChatSchema
 from dasbot import util
 
-from pymongo.errors import DuplicateKeyError, OperationFailure
 
 log = logging.getLogger(__name__)
 
@@ -20,20 +21,21 @@ class ChatsRepo(object):
     def __status(self):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
 
-    def load_chat(self, chat_id):
+    def load_chat(self, tg_chat: TelegramChat):
         """
-        :param chat_id: Telegram chat id
+        :param chat: Telegram chat
         :return: Chat instance, loaded from DB, or new if not found
         """
-        chat_data = self._chats.find_one({"chat_id": chat_id}, {"_id": 0})
-        log.debug("requested chat %s, result: %s", chat_id, chat_data)
+        chat_data = self._chats.find_one({"chat_id": tg_chat.id}, {"_id": 0})
+        log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
         if chat_data:
             chat = ChatSchema().load(chat_data)
         else:
-            chat = Chat(chat_id)
+            user = {'username': tg_chat.username, 'first_name': tg_chat.first_name, 'last_name': tg_chat.last_name}
+            chat = Chat(tg_chat.id, user)
         return chat
 
-    def save_chat(self, chat):
+    def save_chat(self, chat: Chat):
         """ Returns pymongo UpdateResult instance """
         query = {"chat_id": chat.id}
         data = ChatSchema().dump(chat)
@@ -55,12 +57,12 @@ class ChatsRepo(object):
         return chats
 
     # TODO: make Score a separate model?
-    def load_scores(self, chat):
+    def load_scores(self, chat_id):
         """
-        :param chat: chat instance
+        :param chat_id: chat id
         :return: dict of scores {word: (score, due_date)}
         """
-        query = {"chat_id": chat.id}
+        query = {"chat_id": chat_id}
         results_cursor = self._scores.find(query, {"_id": 0})
         scores = {item["word"]: (item["score"], item["revisit"])
                   for item in results_cursor}
@@ -68,7 +70,7 @@ class ChatsRepo(object):
         return scores
 
     # TODO: check if saved successfully?
-    def save_score(self, chat, word, score):
+    def save_score(self, chat: Chat, word, score):
         """
         :param chat: chat instance
         :param word: word to save the score for
@@ -81,7 +83,7 @@ class ChatsRepo(object):
         # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
 
-    def save_stats(self, chat, word, result: bool):
+    def save_stats(self, chat: Chat, word, result: bool):
         """
         :param chat: chat instance
         :param word: word to save the result for
@@ -113,8 +115,8 @@ class ChatsRepo(object):
                     }
                 }
             },
-            {'$group': { '_id': '$word', 'count': { '$sum': 1 } }},
-            {'$sort': { 'count': -1 }},
+            {'$group': {'_id': '$word', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
             {'$limit': 5},
             {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
         ]
@@ -125,8 +127,8 @@ class ChatsRepo(object):
                     'correct': False
                 }
             },
-            {'$group': { '_id': '$word', 'count': { '$sum': 1 } }},
-            {'$sort': { 'count': -1 }},
+            {'$group': {'_id': '$word', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}},
             {'$limit': 10},
             {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
         ]

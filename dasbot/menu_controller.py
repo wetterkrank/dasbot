@@ -76,7 +76,7 @@ class MenuController(object):
 
     # TODO: Refactor into a generic function?
     async def set_quiz_time(self, query, level, selection):
-        chat = self.chats_repo.load_chat(query.message.chat.id)
+        chat = self.chats_repo.load_chat(query.message.chat)
         if selection == 'UNSUBSCRIBE':
             chat.unsubscribe()
         else:
@@ -89,7 +89,7 @@ class MenuController(object):
         await self.settings_confirm(query, self.ui.quiz_time_set(selection))
 
     async def set_quiz_length(self, query, level, selection):
-        chat = self.chats_repo.load_chat(query.message.chat.id)
+        chat = self.chats_repo.load_chat(query.message.chat)
         selection = re.search(r'^(\d)$|^(\d{2})$', selection).string or '10'
         selection = int(selection)
         chat.quiz_length = selection  # NOTE: We could do the validation in the model

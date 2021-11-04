@@ -5,6 +5,7 @@ from aiogram.utils.exceptions import Unauthorized, TelegramAPIError
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
+from dasbot.models.chat import Chat
 
 log = logging.getLogger(__name__)
 
@@ -14,14 +15,14 @@ class Broadcaster(object):
         self.ui = ui
         self.chats_repo = chats_repo
 
-    async def send_quiz(self, chat):
+    async def send_quiz(self, chat: Chat):
         """
         :param chat: chat with a pending quiz
         :return: `true` if quiz is successfully sent, `false` otherwise
         """
         try:
             await self.ui.daily_hello(chat)
-            scores = self.chats_repo.load_scores(chat)
+            scores = self.chats_repo.load_scores(chat.id)
             chat.quiz = Quiz.new(chat.quiz_length, scores)  # TODO: reuse the previously generated quiz?
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             await self.ui.ask_question(chat)

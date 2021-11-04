@@ -13,9 +13,10 @@ log = logging.getLogger(__name__)
 
 
 class Chat(object):
-    def __init__(self, chat_id, subscribed=True, last_seen=None, quiz=None,
+    def __init__(self, chat_id, user=None, subscribed=True, last_seen=None, quiz=None,
                  quiz_scheduled_time=None, quiz_length=None, now=None):
         self.id = chat_id
+        self.user = user
         self.subscribed = subscribed
         self.last_seen = last_seen
         self.quiz = quiz
@@ -43,12 +44,18 @@ class Chat(object):
         now = now or datetime.now().astimezone(berlin)
         self.quiz_scheduled_time = util.next_hhmm(hhmm, now)
 
+class UserSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE  # Skip unknown fields on deserialization
+    username = fields.String(missing=None)
+    first_name = fields.String(missing=None)
+    last_name = fields.String(missing=None)
 
 class ChatSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
-
     chat_id = fields.Integer()
+    user = fields.Nested(UserSchema, missing=None)
     subscribed = fields.Boolean(missing=True)
     last_seen = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
     quiz = fields.Nested(QuizSchema, missing=None)
