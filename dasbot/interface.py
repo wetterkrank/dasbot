@@ -18,13 +18,14 @@ class Interface(object):
         }
 
     async def reply_with_help(self, message):
-        await message.reply('Type /start to start the quiz, /settings to change the quiz time.')
+        await message.reply('Type /start to start the quiz, /settings to change the quiz time or length. Any issues -- please message @wetterkrank.')
 
     async def welcome(self, chat):
-        text = ("Hi! I'm Dasbot. My mission is to help you memorize German articles.\n"
-                "I know about 2000 most frequently used German words, and I'll be sending you a short quiz every day.\n"
-                "To change the preferred quiz time (or turn it off), use /settings command.\n"
-                "You can also practice any time by sending /start.")
+        text = ("Hi! I'm Dasbot. \nMy mission is to help you memorize German articles.\n"
+                "I'll be sending you a short quiz every day.\n\n"
+                "My dictionary has about 2000 most frequently used German nouns, and we'll start from the most common ones like Frau, Kind, Mann, and move on to less frequent words as you progress. \n\n"
+                "To change the preferred quiz time/length (or turn it off), use /settings command. Practice any time by sending /start.\n\n"
+                "Let's go!")
         await self.bot.send_message(chat.id, text)
 
     async def daily_hello(self, chat):

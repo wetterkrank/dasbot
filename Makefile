@@ -8,7 +8,7 @@ db-stop:
 	docker stop mongo
 
 run:
-	. ${VENV_NAME}/bin/activate && python dasbot.py
+	. ${VENV_NAME}/bin/activate && watchmedo auto-restart --recursive --pattern="*.py" --directory="." python dasbot.py
 
 test: 
 	. ${VENV_NAME}/bin/activate && python -m unittest

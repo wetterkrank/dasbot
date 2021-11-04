@@ -7,6 +7,12 @@ import mongomock
 from dasbot.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat
 
+class MockTGChat(object):
+    def __init__(self, id, username=None, first_name=None, last_name=None):
+        self.id = id
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
 
 # TODO: Test save/load of a chat with attached quiz
 class TestChatsRepo(unittest.TestCase):
@@ -26,12 +32,14 @@ class TestChatsRepo(unittest.TestCase):
     def test_load_saved_chat(self):
         chat = Chat(chat_id=1001, subscribed=False)
         self.chats_repo.save_chat(chat)
-        result = self.chats_repo.load_chat(1001)
+        result = self.chats_repo.load_chat(MockTGChat(1001))
         self.assertEqual(False, result.subscribed)
 
     def test_load_new_chat(self):
-        result = self.chats_repo.load_chat(1001)
-        self.assertEqual(result.id, 1001)
+        result: Chat = self.chats_repo.load_chat(MockTGChat(1001, 'vassily'))
+        self.assertEqual(1001, result.id)
+        self.assertEqual('vassily', result.user['username'])
+        self.assertEqual(None, result.user['first_name'])
         self.assertEqual(True, result.subscribed)
         self.assertEqual(None, result.last_seen)
 

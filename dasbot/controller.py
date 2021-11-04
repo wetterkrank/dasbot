@@ -1,5 +1,7 @@
 import logging
 
+from aiogram import types
+
 from dasbot.models.quiz import Quiz
 from .interface import Interface
 
@@ -13,28 +15,28 @@ class Controller(object):
         self.ui = Interface(bot)
 
     # /help
-    async def help(self, message):
+    async def help(self, message: types.Message):
         await self.ui.reply_with_help(message)
 
     # /start
-    async def start(self, message):
-        chat = self.chats_repo.load_chat(message.chat.id)
+    async def start(self, message: types.Message):
+        chat = self.chats_repo.load_chat(message.chat)
         if not chat.last_seen:
             await self.ui.welcome(chat)
-        scores = self.chats_repo.load_scores(chat)
+        scores = self.chats_repo.load_scores(chat.id)
         chat.quiz = Quiz.new(chat.quiz_length, scores)
         await self.ui.ask_question(chat)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
     # /stats
-    async def stats(self, message, dictionary):
+    async def stats(self, message: types.Message, dictionary):
         stats = self.chats_repo.get_stats(message.chat.id)
         await self.ui.send_stats(message, stats, dictionary.wordcount())
 
     # not-a-command
-    async def generic(self, message):
-        chat = self.chats_repo.load_chat(message.chat.id)
+    async def generic(self, message: types.Message):
+        chat = self.chats_repo.load_chat(message.chat)
         answer = message.text.strip().lower()
         if not (chat.quiz and chat.quiz.active and chat.quiz.valid(answer)):
             return await self.ui.reply_with_help(message)
