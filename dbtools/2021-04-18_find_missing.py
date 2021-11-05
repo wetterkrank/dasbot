@@ -19,7 +19,6 @@ log = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
-    print('HELLO')
     client = pymongo.MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
     scores_col = db['scores']
