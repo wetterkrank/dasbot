@@ -8,8 +8,14 @@ https://wetterkrank.github.io/dasbot/
 
 ## How to run
 - Clone the repo
+- Create and activate a virtual environment: `python3 -m .venv . && source ./.venv/bin/activate`
+- Install dependencies: `pip install -r requirements.txt`
 - Set the env variable `DYNACONF_TOKEN="your_Telegram_bot_token"` in the .env file
-- Run `docker-compose up`
+- Set the MongoDB address in the `settings.toml`
+- Run `make run`
+
+As an alternative,
+- Run `docker-compose up` after cloning the repo
 
 ## Notes
 
@@ -20,7 +26,8 @@ https://wetterkrank.github.io/dasbot/
 - Webhooks instead of long polling
 - i18n
 - Entry test
-- Reset command
+- Forget user command
+- Randomize quiz time on 1st start
 
 **Spaced repetition**
 
