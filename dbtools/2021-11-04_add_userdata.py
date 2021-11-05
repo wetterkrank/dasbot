@@ -1,17 +1,17 @@
-# Adds user names to the db
+# One-off script to add user names to the db
 
+from dynaconf import settings
+from aiogram.utils import exceptions, executor
+from aiogram.dispatcher import Dispatcher
+from aiogram import Bot
+import pymongo
+import asyncio
 import logging
 
 import sys
 from os.path import dirname, abspath
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
-import asyncio
-from aiogram import Bot
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import exceptions, executor
-from pymongo import MongoClient
-from dynaconf import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,7 +26,8 @@ async def get_chat_data(chat_id):
     except exceptions.ChatNotFound:
         log.error(f"Target [ID:{chat_id}]: invalid chat ID")
     except exceptions.RetryAfter as e:
-        log.error(f"Target [ID:{chat_id}]: Flood limit is exceeded. Sleep {e.timeout} seconds.")
+        log.error(
+            f"Target [ID:{chat_id}]: Flood limit is exceeded. Sleep {e.timeout} seconds.")
         await asyncio.sleep(e.timeout)
         return await get_chat_data(chat_id)
     except exceptions.UserDeactivated:
@@ -37,18 +38,37 @@ async def get_chat_data(chat_id):
         return chat_data
     return None
 
+
+def insert_data(chat_id, data):
+    query = {"chat_id": chat_id}
+    update = {"$set": data}
+    try:
+        result = chats_col.update_one(query, update, upsert=False)
+        return result.matched_count > 0
+    except pymongo.errors.PyMongoError as e:
+        log.debug(e)
+        return False
+
+
 async def process_chats(chats_col):
     chats = chats_col.find({})
     for chat in chats:
+        chat_id = chat['chat_id']
+        chat_data = await get_chat_data(chat_id)
+        if chat_data:
+            # chat_data.title for groups -- let's ignore for now
+            user_data = {'user': {'username': chat_data.username,
+                         'first_name': chat_data.first_name, 'last_name': chat_data.last_name}}
+            updated = insert_data(chat_id, user_data)
+            if updated:
+                print(chat_id, user_data, 'UPDATED')
+            else:
+                print(chat_id, user_data, 'NOT UPDATED')
         await asyncio.sleep(.1)
-        data = await get_chat_data(chat['chat_id'])
-        if data:
-            user_data = {'username': data.username or data.title, 'first_name': data.first_name, 'last_name': data.last_name}
-            print(chat['chat_id'], user_data)
 
 
 if __name__ == '__main__':
-    client = MongoClient(settings.DB_ADDRESS)
+    client = pymongo.MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
     chats_col = db['chats']
 
