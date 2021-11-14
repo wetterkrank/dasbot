@@ -29,6 +29,7 @@ As an alternative,
 - Entry test
 - Forget user command
 - Randomize quiz time on 1st start
+- Custom quiz intervals ("N times/day every 3 hours")
 
 **Spaced repetition**
 
