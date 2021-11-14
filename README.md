@@ -23,6 +23,7 @@ As an alternative,
 - Daily quiz ✔
 - Spaced repetition ✔
 - Statistics ✔
+- Hint: translation and/or context
 - Webhooks instead of long polling
 - i18n
 - Entry test
