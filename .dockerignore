@@ -2,5 +2,5 @@
 .env*
 __pycache__
 .mypy_cache
-
 .git
+.vscode
