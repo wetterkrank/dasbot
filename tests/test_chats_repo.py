@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import mongomock
 
-from dasbot.chats_repo import ChatsRepo
+from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat
 
 class MockTGChat(object):
@@ -18,9 +18,8 @@ class MockTGChat(object):
 class TestChatsRepo(unittest.TestCase):
     def setUp(self):
         self.chats_col = mongomock.MongoClient().db.collection
-        self.scores_col = mongomock.MongoClient().db.collection
-        self.stats_col = mongomock.MongoClient().db.collection
-        self.chats_repo = ChatsRepo(self.chats_col, self.scores_col, self.stats_col)
+        scores_col = mongomock.MongoClient().db.collection
+        self.chats_repo = ChatsRepo(self.chats_col, scores_col)
 
     def test_save_chat(self):
         chat = Chat(chat_id=1001)
@@ -67,9 +66,6 @@ class TestChatsRepo(unittest.TestCase):
         result = self.chats_repo.get_pending_chats(ts)
         self.assertEqual(0, len(result))
 
-    def test_get_stats_no_data(self):
-        stats = self.chats_repo.get_stats(1)
-        self.assertDictEqual({'touched': 0, 'mistakes_30days': [], 'mistakes_alltime': []}, stats)
 
 if __name__ == '__main__':
     unittest.main()

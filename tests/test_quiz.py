@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from dasbot.models.quiz import Quiz, SCHEDULE
+from dasbot.models.dictionary import Dictionary
 from dynaconf import settings
 
 
@@ -12,22 +13,8 @@ from dynaconf import settings
 class TestQuiz(unittest.TestCase):
     def setUp(self):
         self.now = datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # NOTE: We're using TZ-naive dt here
-
-    def test_new(self):
-        # TODO: Mock the dictionary as well
-        quiz = Quiz.new(settings.QUIZ_LEN, history={
-            'Tag': (1, None),
-            'Monat': (1, self.now - timedelta(days=1)),
-            'Jahr': (1, self.now + timedelta(days=1))
-        })
-        self.assertEqual(settings.QUIZ_LEN, quiz.length)
-        self.assertEqual(settings.QUIZ_LEN, len(quiz.cards))
-        self.assertEqual(1, len(quiz.scores), f'unexpected scores length; scores: {quiz.scores}; now: {self.now}')
-        self.assertEqual('Monat', quiz.cards[0]['word'])
-        self.assertEqual(0, quiz.position)
-        self.assertEqual(1, quiz.pos)
-        self.assertEqual(0, quiz.correctly)
-        self.assertEqual(True, quiz.active)
+        words = ['Tag', 'Monat', 'Jahr', 'Mal', 'Zeit', 'Beispiel', 'Deutsch', 'Frau', 'Kind', 'Aspekt', 'Mensch', 'Mann', 'Haus']
+        self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in words})
 
     def test_prepare_review(self):
         history = {
@@ -37,6 +24,23 @@ class TestQuiz(unittest.TestCase):
         }
         scores = Quiz.prepare_review(history, 3, self.now)
         self.assertEqual(2, len(scores))
+
+    def test_new(self):
+        history = {
+            'Tag': (1, None),
+            'Monat': (1, self.now - timedelta(days=1)),
+            'Jahr': (1, self.now + timedelta(days=1))
+        }
+        quiz = Quiz.new(settings.QUIZ_LEN, history, self.dictionary)
+
+        self.assertEqual(settings.QUIZ_LEN, quiz.length)
+        self.assertEqual(settings.QUIZ_LEN, len(quiz.cards))
+        self.assertEqual(1, len(quiz.scores), f'unexpected scores length; scores: {quiz.scores}; now: {self.now}')
+        self.assertEqual('Monat', quiz.cards[0]['word'])
+        self.assertEqual(0, quiz.position)
+        self.assertEqual(1, quiz.pos)
+        self.assertEqual(0, quiz.correctly)
+        self.assertEqual(True, quiz.active)
 
     def test_schedule_review(self):
         review_date = Quiz.next_review(0, self.now)
@@ -50,7 +54,7 @@ class TestQuiz(unittest.TestCase):
             'Tag': (1, self.now - timedelta(days=1)),  # in
             'Monat': (10, self.now - timedelta(days=1))  # in
         }
-        quiz = Quiz.new(settings.QUIZ_LEN, history)
+        quiz = Quiz.new(settings.QUIZ_LEN, history, self.dictionary)
         quiz.cards = [
             {'word': 'Zeit', 'articles': 'die'},
             {'word': 'Tag', 'articles': 'der'},

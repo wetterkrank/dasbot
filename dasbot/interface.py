@@ -33,16 +33,21 @@ class Interface(object):
         await self.bot.send_message(chat.id, text)
 
     async def ask_question(self, chat):
-        text = f"{chat.quiz.pos}/{chat.quiz.length}. "
-        text += f"What's the article for {chat.quiz.question}?"
-        result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb())
+        text = f"{chat.quiz.pos}/{chat.quiz.length}\. "
+        text += f"What's the article for *{chat.quiz.question}*?"
+        result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb(), parse_mode='MarkdownV2')
         log.debug("message sent, result: %s", result)
 
+    async def give_hint(self, quiz, message, dictionary):
+        translation = dictionary.translation(quiz.question, 'en') or '?'
+        text = f"Translation: {translation}"
+        await message.answer(text, parse_mode='MarkdownV2')
+
     async def give_feedback(self, chat, message, correct):
-        text = "Correct, " if correct else "Incorrect, "
-        text += f"{chat.quiz.answer} {chat.quiz.question}"
-        if correct: text += " ✅"
-        await message.answer(text)
+        text = "Correct, " if correct else "❌ Incorrect, "
+        text += f"*{chat.quiz.answer} {chat.quiz.question}*"
+        if correct: text += " ✅" 
+        await message.answer(text, parse_mode='MarkdownV2')
 
     async def announce_result(self, chat):
         text = f"{chat.quiz.correctly} out of {chat.quiz.length}"
@@ -67,23 +72,24 @@ class Interface(object):
 
     async def send_stats(self, message, stats, dict_length):
         def bullet(item):
-            return f"• {item['word']}: {item['count']}  "
+            return f"• {item['articles']} {item['word']}: {item['count']}  "
         def wordlist(key):
             return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
-        text = f"📈 *Your progress*: \n{stats['touched']} words touched out of {dict_length}.\n\n"
+        progress = f"{round(stats.get('touched') / dict_length * 100)}\%" or ''
+        text = f"📈 *Your progress*: {progress}\n{stats['touched']} words touched out of {dict_length}\n\n"
         text += "*I recommend working on these words*:\n\n"
         if len(stats['mistakes_30days']) > 0:
             text += "Last 30 days' top 💔\n"
             text += wordlist('mistakes_30days')
         if len(stats['mistakes_alltime']) > 0:
-            text += "All-time top 💔\n"
+            text += "All\-time top 💔\n"
             text += wordlist('mistakes_alltime')
-        await message.answer(text, parse_mode='Markdown')
+        await message.answer(text, parse_mode='MarkdownV2')
 
     @staticmethod
     def quiz_kb():
         """ Returns object of ReplyKeyboardMarkup type """
-        labels = ('der', 'die', 'das')
+        labels = ('der', 'die', 'das', '?')
         keyboard_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         row_btns = (types.KeyboardButton(text) for text in labels)
         keyboard_markup.row(*row_btns)

@@ -8,7 +8,7 @@ import aiounittest
 import mongomock
 from aiogram.utils.exceptions import TelegramAPIError
 
-from dasbot.chats_repo import ChatsRepo
+from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
 from dasbot.broadcaster import Broadcaster
 
@@ -29,9 +29,10 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.stats_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.chats_repo = ChatsRepo(self.chats_collection, self.scores_collection, self.stats_collection)
+        chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
-        self.broadcaster = Broadcaster(self.ui_mock, self.chats_repo)
+        dictionary = MagicMock()
+        self.broadcaster = Broadcaster(self.ui_mock, chats_repo, dictionary)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)

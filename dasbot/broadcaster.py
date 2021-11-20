@@ -11,9 +11,10 @@ log = logging.getLogger(__name__)
 
 
 class Broadcaster(object):
-    def __init__(self, ui, chats_repo):
+    def __init__(self, ui, chats_repo, dictionary):
         self.ui = ui
         self.chats_repo = chats_repo
+        self.dictionary = dictionary
 
     async def send_quiz(self, chat: Chat):
         """
@@ -23,7 +24,7 @@ class Broadcaster(object):
         try:
             await self.ui.daily_hello(chat)
             scores = self.chats_repo.load_scores(chat.id)
-            chat.quiz = Quiz.new(chat.quiz_length, scores)  # TODO: reuse the previously generated quiz?
+            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)  # TODO: reuse the previously generated quiz?
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             await self.ui.ask_question(chat)
             self.chats_repo.save_chat(chat)

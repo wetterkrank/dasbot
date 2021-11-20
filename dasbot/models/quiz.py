@@ -1,5 +1,3 @@
-# TODO: Handle the situation when there are no new words left
-
 import logging
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -7,13 +5,10 @@ from pytz import timezone
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
 from dynaconf import settings
-from dasbot.dictionary import Dictionary
 
 log = logging.getLogger(__name__)
 # log.setLevel(logging.DEBUG)
 
-
-dictionary = Dictionary(settings.DICT_FILE)
 
 SCHEDULE = {
     0: timedelta(0),
@@ -36,7 +31,7 @@ class Quiz(object):
         self.scores = scores
 
     @staticmethod
-    def new(length, history):
+    def new(length, history, dictionary):
         """ Returns a new fully setup Quiz
         :param history: dictionary {word: (score, due_date)}
         :return: new Quiz instance
@@ -73,6 +68,7 @@ class Quiz(object):
         """ Returns the question/answer cards list for the quiz
         :param length: number of cards to make
         :param review: dictionary of words to review, with scores
+        :param history: dictionary {word: (score, due_date)}
         :param dictionary: Dictionary instance
         :return: list of dicts, with word and articles keys
         """
@@ -80,7 +76,7 @@ class Quiz(object):
         new_words_num = length - len(review)
         # Random selection:
         # new_words = random.sample(dictionary.keys() - review.keys(), new_length)
-        new_words = dictionary.contents.keys() - history.keys()
+        new_words = dictionary.allwords() - history.keys()
         new_words = sorted(new_words, key=lambda k: dictionary.level(k))   # TODO: Avoid sorting the whole list
         new_words = [v for _, v in zip(range(new_words_num), new_words)]
         for word in review.keys():
@@ -94,8 +90,8 @@ class Quiz(object):
             cards.append({'word': word, 'articles': dictionary.articles(word)})
         return cards
 
-    def valid(self, answer):
-        return answer in ['der', 'die', 'das']
+    def expected(self, answer):
+        return self.active and answer in ['der', 'die', 'das', '?']
 
     # NOTE: Split into 2 parts?
     # TODO: An option of reporting an error
@@ -162,8 +158,8 @@ class QuizSchema(Schema):
     position = fields.Integer()
     correctly = fields.Integer()
     active = fields.Boolean(missing=False)
-    cards = fields.List(fields.Dict(keys=fields.Str(), values=fields.Str(allow_none=True)))
-    scores = fields.Dict(keys=fields.Str(),
+    cards = fields.List(fields.Dict(keys=fields.String(), values=fields.String(allow_none=True)))
+    scores = fields.Dict(keys=fields.String(),
                          values=fields.Tuple((fields.Integer(), fields.Raw())))
 
     @post_load

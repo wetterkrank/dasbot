@@ -3,18 +3,17 @@ from unittest.mock import AsyncMock, MagicMock, ANY
 import mongomock
 
 from aiogram import types
-from dasbot.chats_repo import ChatsRepo
+from dasbot.db.chats_repo import ChatsRepo
 from dasbot.menu_controller import MenuController
 
 
 class TestMenuController(aiounittest.AsyncTestCase):
     def setUp(self):
-        self.chats_col = mongomock.MongoClient(tz_aware=True).db.collection
-        self.scores_col = mongomock.MongoClient(tz_aware=True).db.collection
-        self.stats_col = mongomock.MongoClient(tz_aware=True).db.collection
-        self.chats_repo = ChatsRepo(self.chats_col, self.scores_col, self.stats_col)
-        self.ui = MagicMock()
-        self.ui.settings_text = {
+        chats_col = mongomock.MongoClient(tz_aware=True).db.collection
+        scores_col = mongomock.MongoClient(tz_aware=True).db.collection
+        chats_repo = ChatsRepo(chats_col, scores_col)
+        ui = MagicMock()
+        ui.settings_text = {
             'main-hint': 'Please select option',
             'main-btn1': '',
             'main-btn2': '',
@@ -22,7 +21,7 @@ class TestMenuController(aiounittest.AsyncTestCase):
             'quiz-time-hint': '',
             'quiz-time-btn': ''
         }
-        self.menucon = MenuController(self.ui, self.chats_repo)
+        self.menucon = MenuController(ui, chats_repo)
 
     async def test_main(self):
         message_mock = AsyncMock()

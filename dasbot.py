@@ -1,4 +1,3 @@
-# TODO: add Hint; reply once if /start is repeated; repeat last question if answer unclear
 # TODO: use Motor for Mongo?
 
 import logging
@@ -9,11 +8,11 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from pymongo import MongoClient
 
-#TODO: pass dictionary to controller methods
-from dasbot.dictionary import Dictionary
+from dasbot.db.dict_repo import DictRepo
+from dasbot.db.chats_repo import ChatsRepo
+from dasbot.db.stats_repo import StatsRepo
 from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
-from dasbot.chats_repo import ChatsRepo
 from dasbot.controller import Controller
 from dasbot.menu_controller import MenuController
 
@@ -72,11 +71,13 @@ if __name__ == '__main__':
     log.debug('connecting to database: %s', settings.DB_ADDRESS)
     client = MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
-    dictionary = Dictionary(settings.DICT_FILE)
-    chats_repo = ChatsRepo(db['chats'], db['scores'], db['stats'])
-    chatcon = Controller(bot, chats_repo)
+    
+    dictionary = DictRepo(db['dictionary']).load()
+    chats_repo = ChatsRepo(db['chats'], db['scores'])
+    stats_repo = StatsRepo(db['scores'], db['stats'])
+    chatcon = Controller(bot, chats_repo, stats_repo, dictionary)
+    broadcaster = Broadcaster(Interface(bot), chats_repo, dictionary)
     menucon = MenuController(Interface(bot), chats_repo)
-    broadcaster = Broadcaster(Interface(bot), chats_repo)
 
     loop = asyncio.get_event_loop()
     loop.create_task(broadcaster.run())

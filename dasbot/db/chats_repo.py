@@ -5,17 +5,15 @@ from datetime import timezone
 from aiogram.types import Chat as TelegramChat
 
 from dasbot.models.chat import Chat, ChatSchema
-from dasbot import util
 
 
 log = logging.getLogger(__name__)
 
 
 class ChatsRepo(object):
-    def __init__(self, chats_col, scores_col, stats_col):
+    def __init__(self, chats_col, scores_col):
         self._chats = chats_col
         self._scores = scores_col
-        self._stats = stats_col
         self.__status()
 
     def __status(self):
@@ -82,64 +80,6 @@ class ChatsRepo(object):
         result = self._scores.update_one(query, update, upsert=True)
         # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
-
-    def save_stats(self, chat: Chat, word, result: bool):
-        """
-        :param chat: chat instance
-        :param word: word to save the result for
-        :param result: last answer correct?
-        """
-        update = {"chat_id": chat.id, "word": word,
-                  "correct": result, "date": datetime.now(tz=timezone.utc)}
-        result = self._stats.insert_one(update)
-        return result
-
-    # TODO: generate the stats periodically in the background and save them in a separate collection
-    # NOTE: we could use $facet in the aggregation as an alternative (no indexes though)
-    def get_stats(self, chat_id, month_ago=None):
-        """
-        :param chat_id: chat id
-        :param month_ago: time when the function is called, minus 30 days
-        :return: dictionary
-        """
-        stats = {}
-        if month_ago is None:
-            month_ago = util.month_ago()
-        pipe_30days = [
-            {
-                '$match': {
-                    'chat_id': chat_id,
-                    'correct': False,
-                    'date': {
-                        '$gt': month_ago
-                    }
-                }
-            },
-            {'$group': {'_id': '$word', 'count': {'$sum': 1}}},
-            {'$sort': {'count': -1}},
-            {'$limit': 5},
-            {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
-        ]
-        pipe_alltime = [
-            {
-                '$match': {
-                    'chat_id': chat_id,
-                    'correct': False
-                }
-            },
-            {'$group': {'_id': '$word', 'count': {'$sum': 1}}},
-            {'$sort': {'count': -1}},
-            {'$limit': 10},
-            {'$project': {'word': '$_id', 'count': 1, '_id': 0}}
-        ]
-        query_progress = {'chat_id': chat_id, 'score': {'$gt': 0}}
-        count = self._scores.count_documents(query_progress)
-        stats['touched'] = count
-        results = self._stats.aggregate(pipe_30days)
-        stats['mistakes_30days'] = [item for item in results]
-        results = self._stats.aggregate(pipe_alltime)
-        stats['mistakes_alltime'] = [item for item in results]
-        return stats
 
 
 if __name__ == "__main__":
