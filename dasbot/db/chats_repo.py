@@ -18,6 +18,7 @@ class ChatsRepo(object):
 
     def __status(self):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
+        log.info("%s scores(s) in DB" % self._scores.count_documents({}))
 
     def load_chat(self, tg_chat: TelegramChat):
         """
