@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import types
+from aiogram.utils.markdown import escape_md as md
 
 log = logging.getLogger(__name__)
 
@@ -34,18 +35,18 @@ class Interface(object):
 
     async def ask_question(self, chat):
         text = f"{chat.quiz.pos}/{chat.quiz.length}\. "
-        text += f"What's the article for *{chat.quiz.question}*?"
+        text += f"What's the article for *{md(chat.quiz.question)}*?"
         result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb(), parse_mode='MarkdownV2')
         log.debug("message sent, result: %s", result)
 
     async def give_hint(self, quiz, message, dictionary):
         translation = dictionary.translation(quiz.question, 'en') or '?'
-        text = f"Translation: {translation}"
-        await message.answer(text, parse_mode='MarkdownV2')
+        text = f"{quiz.question}: {translation}"
+        await message.answer(text)
 
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "❌ Incorrect, "
-        text += f"*{chat.quiz.answer} {chat.quiz.question}*"
+        text += f"*{md(chat.quiz.answer)} {md(chat.quiz.question)}*"
         if correct: text += " ✅" 
         await message.answer(text, parse_mode='MarkdownV2')
 
@@ -72,7 +73,7 @@ class Interface(object):
 
     async def send_stats(self, message, stats, dict_length):
         def bullet(item):
-            return f"• {item['articles']} {item['word']}: {item['count']}  "
+            return f"• {md(item['articles'])} {md(item['word'])}: {item['count']}  "
         def wordlist(key):
             return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
         progress = f"{round(stats.get('touched') / dict_length * 100)}\%" or ''

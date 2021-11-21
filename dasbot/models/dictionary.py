@@ -32,8 +32,6 @@ class Dictionary(object):
 
     def translation(self, word, locale):
         """  Returns the word's translation """
-        log.debug(word)
-        log.debug(locale)
         return self._contents.get(word, {}).get("translation", {}).get(locale) or None
 
     def level(self, word):
