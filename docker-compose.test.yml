@@ -1,4 +1,4 @@
-sut:
-  build: .
-  command: python -m unittest
-  
+services:
+  tests:
+    build: .
+    command: python -m unittest

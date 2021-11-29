@@ -1,4 +1,5 @@
 # TODO: use Motor for Mongo?
+# TODO: fail if dictionary is empty
 
 import logging
 

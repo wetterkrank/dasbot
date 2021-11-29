@@ -15,7 +15,9 @@ class DictRepo(object):
         for item in data_cursor:
             dict_data.update(DictionaryEntrySchema().load(item))
 
-        log.debug("Loaded dictionary from DB, %s word(s)", len(dict_data))
+        log.info("%s dictionary word(s) in DB", len(dict_data))
+        if len(dict_data) == 0:
+            log.warning("Dictionary is empty")
         return Dictionary(dict_data)
 
 if __name__ == "__main__":
