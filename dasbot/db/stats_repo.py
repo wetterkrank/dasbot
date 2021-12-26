@@ -79,7 +79,7 @@ class StatsRepo(object):
             }},
             {'$project': {'articles': {'$first': '$dictionaryEntry.articles'}, 'word': '$_id', 'count': 1, '_id': 0}}
         ]
-        query_progress = {'chat_id': chat_id, 'score': {'$gt': 0}}
+        query_progress = {'chat_id': chat_id}
         count = self._scores.count_documents(query_progress)
         stats['touched'] = count
         results = self._stats.aggregate(pipe_30days)
