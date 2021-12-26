@@ -4,7 +4,6 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-
 def next_hhmm(hhmm, now):
     """
     :param hhmm: time of the day as a string "HH:MM"
@@ -48,3 +47,17 @@ def month_ago(now=None):
         now = datetime.now(tz=timezone.utc)
     month_ago = now - timedelta(days=30)
     return month_ago
+
+def equalizer(n: int, m: int, total: int):
+    """
+    Receives total, m and n [0..total]
+    Returns a tuple (a, b) so that their sum -> total, and a / b -> 1
+    """
+    oddity = total % 2
+    smallest = min(n, m, total // 2 + oddity)
+    if smallest == n:
+        return (n, min(m, total-n))
+    elif smallest == m:
+        return (min(n, total-m), m)
+    else:
+        return (total // 2, total // 2 + oddity)

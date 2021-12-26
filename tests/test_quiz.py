@@ -5,42 +5,48 @@ from pytz import timezone
 
 from dasbot.models.quiz import Quiz, SCHEDULE
 from dasbot.models.dictionary import Dictionary
-from dynaconf import settings
 
 
-# TODO: Split tests into separate cases?
-# TODO: Inject settings to Quiz and mock them instead of using real settings?
 class TestQuiz(unittest.TestCase):
     def setUp(self):
         self.now = datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # NOTE: We're using TZ-naive dt here
+        # 13 words in the dictionary
         words = ['Tag', 'Monat', 'Jahr', 'Mal', 'Zeit', 'Beispiel', 'Deutsch', 'Frau', 'Kind', 'Aspekt', 'Mensch', 'Mann', 'Haus']
         self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in words})
-
-    def test_prepare_review(self):
-        history = {
+        # of them, 3 overdue words to review
+        self.scores = {
             'Tag': (1, self.now - timedelta(days=1)),
             'Monat': (1, self.now - timedelta(days=1)),
-            'Jahr': (1, self.now + timedelta(days=1)),
+            'Jahr': (1, self.now - timedelta(days=1)),
         }
-        scores = Quiz.prepare_review(history, 3, self.now)
-        self.assertEqual(2, len(scores))
+
+    def test_get_review(self):
+        self.scores['Tag'] = (1, self.now + timedelta(days=1))
+        to_review = Quiz.get_review(self.scores, 5, self.now)
+        self.assertEqual(len(to_review), 2, f'review must be of correct length')
+        self.assertEqual(to_review.get('Tag'), None, f'review must not include non-overdue words')
+
+    def test_get_new_words(self):
+        new_words = Quiz.get_new_words(self.scores, 5, self.dictionary)
+        self.assertEqual(5, len(new_words))
+        new_words = Quiz.get_new_words(self.scores, 15, self.dictionary)
+        self.assertEqual(10, len(new_words))
 
     def test_new(self):
-        history = {
-            'Tag': (1, None),
-            'Monat': (1, self.now - timedelta(days=1)),
-            'Jahr': (1, self.now + timedelta(days=1))
-        }
-        quiz = Quiz.new(settings.QUIZ_LEN, history, self.dictionary)
-
-        self.assertEqual(settings.QUIZ_LEN, quiz.length)
-        self.assertEqual(settings.QUIZ_LEN, len(quiz.cards))
-        self.assertEqual(1, len(quiz.scores), f'unexpected scores length; scores: {quiz.scores}; now: {self.now}')
-        self.assertEqual('Monat', quiz.cards[0]['word'])
+        quiz = Quiz.new(10, self.scores, self.dictionary)
+        self.assertEqual(10, len(quiz.cards))
+        self.assertEqual(3, len(quiz.scores), f'unexpected scores length')
         self.assertEqual(0, quiz.position)
         self.assertEqual(1, quiz.pos)
         self.assertEqual(0, quiz.correctly)
         self.assertEqual(True, quiz.active)
+
+    # all dictionary words are already "touched" -> cards are built using review words only
+    def test_new_with_no_newwords(self):
+        scores = {word: (1, self.now - timedelta(days=1)) for word in self.dictionary.allwords()}
+        quiz = Quiz.new(10, scores, self.dictionary)
+        self.assertEqual(len(quiz.cards), 10)
+        self.assertTrue(not any([card['word'] in ['Haus', 'Mann', 'Mensch'] for card in quiz.cards]))
 
     def test_schedule_review(self):
         review_date = Quiz.next_review(0, self.now)
@@ -54,7 +60,7 @@ class TestQuiz(unittest.TestCase):
             'Tag': (1, self.now - timedelta(days=1)),  # in
             'Monat': (10, self.now - timedelta(days=1))  # in
         }
-        quiz = Quiz.new(settings.QUIZ_LEN, history, self.dictionary)
+        quiz = Quiz.new(10, history, self.dictionary)
         quiz.cards = [
             {'word': 'Zeit', 'articles': 'die'},
             {'word': 'Tag', 'articles': 'der'},
