@@ -24,11 +24,11 @@ As an alternative,
 - Daily quiz ✔
 - Spaced repetition ✔
 - Statistics ✔
-- Hint: translation and/or context
+- Hint: translation and/or context ✔
 - Webhooks instead of long polling
 - i18n
 - Entry test
-- Forget user command
+- "Forget me" command
 - Randomize quiz time on 1st start
 - Custom quiz intervals ("N times/day every 3 hours")
 
