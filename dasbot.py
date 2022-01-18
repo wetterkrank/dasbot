@@ -17,7 +17,13 @@ from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
 from dasbot.menu_controller import MenuController
 
-from dynaconf import settings
+from dynaconf import Dynaconf
+
+settings = Dynaconf(
+    environments=['default', 'production', 'development'],
+    settings_file='settings.toml',
+    load_dotenv=True
+)
 
 logging.basicConfig(
     level=logging.DEBUG if settings.DEBUG else logging.INFO,
@@ -72,7 +78,7 @@ if __name__ == '__main__':
     log.debug('connecting to database: %s', settings.DB_ADDRESS)
     client = MongoClient(settings.DB_ADDRESS)
     db = client[settings.DB_NAME]
-    
+
     dictionary = DictRepo(db['dictionary']).load()
     chats_repo = ChatsRepo(db['chats'], db['scores'])
     stats_repo = StatsRepo(db['scores'], db['stats'])
