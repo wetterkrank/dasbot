@@ -34,12 +34,12 @@ class TestQuiz(unittest.TestCase):
 
     def test_new(self):
         quiz = Quiz.new(10, self.scores, self.dictionary)
-        self.assertEqual(10, len(quiz.cards))
-        self.assertEqual(3, len(quiz.scores), f'unexpected scores length')
-        self.assertEqual(0, quiz.position)
-        self.assertEqual(1, quiz.pos)
-        self.assertEqual(0, quiz.correctly)
-        self.assertEqual(True, quiz.active)
+        self.assertEqual(len(quiz.cards), 10)
+        self.assertEqual(len(quiz.scores), 3, f'unexpected scores length')
+        self.assertEqual(quiz.position, 0)
+        self.assertEqual(quiz.pos, 1)
+        self.assertEqual(quiz.correctly, 0)
+        self.assertTrue(quiz.active)
 
     # all dictionary words are already "touched" -> cards are built using review words only
     def test_new_with_no_newwords(self):
