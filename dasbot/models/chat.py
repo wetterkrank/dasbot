@@ -4,10 +4,17 @@ from datetime import datetime
 from pytz import timezone
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
-from dynaconf import settings
+from dynaconf import Dynaconf
 
 from .quiz import QuizSchema
 from dasbot import util
+
+# TODO: receive settings from __main__? we'll have to pass them through several levels
+settings = Dynaconf(
+    environments=['default', 'production', 'development'],
+    settings_file='settings.toml',
+    load_dotenv=True
+)
 
 log = logging.getLogger(__name__)
 
