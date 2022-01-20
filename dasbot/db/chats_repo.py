@@ -65,7 +65,7 @@ class ChatsRepo(object):
         results_cursor = self._scores.find(query, {"_id": 0})
         scores = {item["word"]: (item["score"], item["revisit"])
                   for item in results_cursor}
-        # log.debug("loaded scores for chat %s, result: %s", chat.id, scores)
+        log.debug("loaded all scores for chat %s, count: %s", chat_id, len(scores))
         return scores
 
     # TODO: check if saved successfully?

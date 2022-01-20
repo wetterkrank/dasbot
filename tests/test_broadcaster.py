@@ -10,6 +10,7 @@ from aiogram.utils.exceptions import TelegramAPIError
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
+from dasbot.models.dictionary import Dictionary
 from dasbot.broadcaster import Broadcaster
 
 
@@ -31,8 +32,8 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.stats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
-        dictionary = MagicMock()
-        self.broadcaster = Broadcaster(self.ui_mock, chats_repo, dictionary)
+        self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in ['Tag', 'Monat', 'Jahr']})
+        self.broadcaster = Broadcaster(self.ui_mock, chats_repo, self.dictionary)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)

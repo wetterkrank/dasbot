@@ -27,7 +27,10 @@ class Controller(object):
             await self.ui.welcome(chat)
         scores = self.chats_repo.load_scores(chat.id)
         chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)
-        await self.ui.ask_question(chat)
+        if chat.quiz.has_questions:
+            await self.ui.ask_question(chat)
+        else:
+            await self.ui.quiz_empty(message)
         chat.stamp_time()
         self.chats_repo.save_chat(chat)
 
