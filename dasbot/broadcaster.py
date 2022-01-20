@@ -16,21 +16,25 @@ class Broadcaster(object):
         self.chats_repo = chats_repo
         self.dictionary = dictionary
 
-    async def send_quiz(self, chat: Chat):
+    async def send_quiz(self, chat: Chat) -> bool:
         """
         :param chat: chat with a pending quiz
         :return: `true` if quiz is successfully sent, `false` otherwise
         """
         try:
-            await self.ui.daily_hello(chat)
             scores = self.chats_repo.load_scores(chat.id)
-            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)  # TODO: reuse the previously generated quiz?
+            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
-            await self.ui.ask_question(chat)
             self.chats_repo.save_chat(chat)
-            await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
-            return True
-        # Kicked, blocked etc.
+            if chat.quiz.has_questions:
+                await self.ui.daily_hello(chat)
+                await self.ui.ask_question(chat)
+                await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
+                self.chats_repo.save_chat(chat)
+                return True
+            else: 
+                return False
+        # Kicked, blocked etc:
         except Unauthorized as err:
             log.error("Error: %s, chat id: %s", err, chat.id)
             chat.unsubscribe()

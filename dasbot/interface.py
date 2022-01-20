@@ -71,6 +71,9 @@ class Interface(object):
         return msg
 
 
+    async def quiz_empty(self, message):
+        await message.reply("Hmm, I couldn't find any new words or words to review. Well done! Come back later!")
+
     async def send_stats(self, message, stats, dict_length):
         def bullet(item):
             return f"• {md(item['articles'])} {md(item['word'])}: {item['count']}  "

@@ -79,6 +79,7 @@ class Quiz(object):
         now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)
         overdue = filter(lambda rec: rec[1][1] and now > rec[1][1], scores.items())
         review = {k: v for _, (k, v) in zip(range(max_len), overdue)}
+        log.debug("overdue scores: %s", len(review))
         return review
 
     @staticmethod
