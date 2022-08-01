@@ -59,7 +59,12 @@ class StatsRepo(object):
                 'foreignField': 'word',
                 'as': 'dictionaryEntry'
             }},
-            {'$project': {'articles': {'$first': '$dictionaryEntry.articles'}, 'word': '$_id', 'count': 1, '_id': 0}}
+            {'$project': {
+                'articles': {'$ifNull': [{'$first': '$dictionaryEntry.articles'}, '?']}, 
+                'word': '$_id', 
+                'count': 1, 
+                '_id': 0
+            }}
         ]
         pipe_alltime = [
             {
