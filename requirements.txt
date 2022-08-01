@@ -1,9 +1,9 @@
-﻿aiogram>=2.15
-aiohttp>=3.7.4.post0
-aiounittest>=1.4.1
-dynaconf>=3.1.7
-marshmallow>=3.14.0
-mongomock>=3.23.0
-pymongo>=3.12.1
-pytz>=2021.3
+﻿aiogram>=2.21
+aiohttp>=3.8.1
+aiounittest>=1.4.2
+dynaconf>=3.1.9
+marshmallow>=3.17.0
+mongomock>=4.1.2
+pymongo>=4.2.0
+pytz>=2022.1
 watchdog[watchmedo]>=2.1.6

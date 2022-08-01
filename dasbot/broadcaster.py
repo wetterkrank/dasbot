@@ -40,8 +40,17 @@ class Broadcaster(object):
             chat.unsubscribe()
             self.chats_repo.save_chat(chat)
             return False
+        # API and network errors:
         except TelegramAPIError as err:
             log.error("Error: %s, chat id: %s", err, chat.id)
+            return False
+        except TimeoutError as err:
+            log.error("Error: %s", err)
+            await asyncio.sleep(30)
+            return False
+        except NetworkError as err:
+            log.error("Error: %s", err)
+            await asyncio.sleep(30)
             return False
 
     # Regularly called rouine that sends out the (over)due quizzes
