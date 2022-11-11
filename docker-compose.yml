@@ -15,6 +15,8 @@ services:
       - mongo
     depends_on:
       - mongo
+    ports:
+      - "127.0.0.1:8082:8082"
     restart: always
     env_file: .env
     logging:
