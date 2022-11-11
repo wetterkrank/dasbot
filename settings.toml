@@ -1,12 +1,13 @@
 [default]
-quiz_len = 10
-dict_file = 'data/dictionary_de.csv'
+quiz_length = 10
 db_name = 'dasbot'
 
 [development]
+mode = 'polling'
 db_address = 'mongodb://127.0.0.1:27017/'
 debug = true
 
 [production]
+mode = 'webhook'
 db_address = 'mongodb://mongo:27017/'
 debug = false

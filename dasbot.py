@@ -1,6 +1,3 @@
-# TODO: use Motor for Mongo?
-# TODO: fail if dictionary is empty
-
 import logging
 
 import asyncio
@@ -88,4 +85,24 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     loop.create_task(broadcaster.run())
-    executor.start_polling(dp)
+
+    if settings.MODE.lower() == 'webhook':
+        async def on_startup(dp):
+            webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
+            log.info('setting webhook: %s', webhook_url)
+            await bot.set_webhook(webhook_url)
+
+        async def on_shutdown(dp):
+            await bot.delete_webhook()
+
+        executor.start_webhook(
+            dispatcher=dp,
+            webhook_path=settings.WEBHOOK_PATH,
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            skip_updates=True,
+            host=settings.WEBAPP_HOST,
+            port=settings.WEBAPP_PORT
+        )
+    else:
+        executor.start_polling(dp, skip_updates=True)

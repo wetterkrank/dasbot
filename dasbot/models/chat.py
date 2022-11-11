@@ -28,7 +28,7 @@ class Chat(object):
         self.last_seen = last_seen
         self.quiz = quiz
         self.quiz_scheduled_time = quiz_scheduled_time
-        self.quiz_length = quiz_length or settings.QUIZ_LEN
+        self.quiz_length = quiz_length or settings.QUIZ_LENGTH
         if self.quiz_scheduled_time is None:
             self.set_quiz_time("12:00", now)  # Default: nearest noon
 
