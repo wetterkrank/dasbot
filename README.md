@@ -25,7 +25,7 @@ As an alternative,
 - Spaced repetition ✔
 - Statistics ✔
 - Hint: translation and/or context ✔
-- Webhooks instead of long polling
+- Webhooks instead of long polling ✔
 - i18n
 - Entry test
 - "Forget me" command
