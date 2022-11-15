@@ -26,6 +26,7 @@ As an alternative,
 - Statistics ✔
 - Hint: translation and/or context ✔
 - Webhooks instead of long polling ✔
+- Add Docker build/push actions to CI
 - Revise the words database
 - i18n
 - Entry test
@@ -33,6 +34,7 @@ As an alternative,
 - Randomize quiz time on 1st start
 - Custom quiz intervals ("N times/day every 3 hours")
 - Postpone broadcast when restarting after outage (db script?)
+- Move DB (Mongo Atlas?)
 
 **Spaced repetition**
 
