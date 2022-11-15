@@ -26,11 +26,13 @@ As an alternative,
 - Statistics ✔
 - Hint: translation and/or context ✔
 - Webhooks instead of long polling ✔
+- Revise the words database
 - i18n
 - Entry test
 - "Forget me" command
 - Randomize quiz time on 1st start
 - Custom quiz intervals ("N times/day every 3 hours")
+- Postpone broadcast when restarting after outage (db script?)
 
 **Spaced repetition**
 
