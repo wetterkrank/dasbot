@@ -32,7 +32,7 @@ class Broadcaster(object):
                 await asyncio.sleep(.5)  # FYI, TG limit: 30 messages/second
                 self.chats_repo.save_chat(chat)
                 return True
-            else: 
+            else:
                 return False
         # Kicked, blocked etc:
         except Unauthorized as err:
@@ -45,10 +45,6 @@ class Broadcaster(object):
             log.error("Error: %s, chat id: %s", err, chat.id)
             return False
         except TimeoutError as err:
-            log.error("Error: %s", err)
-            await asyncio.sleep(30)
-            return False
-        except NetworkError as err:
             log.error("Error: %s", err)
             await asyncio.sleep(30)
             return False
