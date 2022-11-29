@@ -46,8 +46,8 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(util.equalizer(1, 20, 9), (1, 8))
         self.assertEqual(util.equalizer(1, 5, 9), (1, 5))
 
-    def test_random_time(self):
-        self.assertEqual(util.random_time(9, 21, 0), '15:48')
+    def test_random_hhmm(self):
+        self.assertEqual(util.random_hhmm(9, 21, 0), '15:48')
 
 if __name__ == '__main__':
     unittest.main()

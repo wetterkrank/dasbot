@@ -30,8 +30,7 @@ class Chat(object):
         self.quiz_scheduled_time = quiz_scheduled_time
         self.quiz_length = quiz_length or settings.QUIZ_LENGTH
         if self.quiz_scheduled_time is None:
-            random_hhmm = util.random_time(9, 20)
-            self.set_quiz_time(random_hhmm, now)  # Default: random btw 09:00 and 20:59
+            self.set_quiz_time(util.random_hhmm(9, 21), now)  # Default: random btw 09:00 and 20:59
 
     def stamp_time(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))

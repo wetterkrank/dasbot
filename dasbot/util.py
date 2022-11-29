@@ -37,15 +37,15 @@ def next_quiz_time(last_quiz_time, now=None):
                                   month=tomorrow_date.month,
                                   day=tomorrow_date.day)
 
-def random_time(start_hour, end_hour, seed=None):
+def random_hhmm(start_hour, end_hour, seed=None):
     """
-    :param start_hour: start hour, inclusive
-    :param end_hour: end hour, inclusive
+    :param start_hour: start hour, example: 0
+    :param end_hour: end hour, example: 24
     :param seed: random generator seed, for testing
     :return: random time as a string 'HH:MM'
     """
     random.seed(seed)
-    hour = random.randint(start_hour, end_hour)
+    hour = random.randint(start_hour, end_hour - 1)
     minute = random.randint(0, 59)
     return '{0:02}:{1:02}'.format(hour, minute)
 

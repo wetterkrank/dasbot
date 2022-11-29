@@ -7,7 +7,7 @@ from dasbot.models.chat import Chat
 
 
 class TestChat(unittest.TestCase):
-    @patch('random.randint', return_value=12)
+    @patch('dasbot.util.random_hhmm', return_value='12:12')
     def test_init(self, _mock):
         now = datetime.fromisoformat('2020-11-01 11:05:00+00:00')
         chat = Chat(chat_id=1001, now=now)
