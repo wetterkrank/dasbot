@@ -5,7 +5,7 @@ from datetime import timedelta
 from datetime import timezone
 import random
 
-def next_hhmm(hhmm, now):
+def next_hhmm(hhmm, now, skip_today=False):
     """
     :param hhmm: time of the day as a string "HH:MM"
     :param now: datetime when the function is called
@@ -13,7 +13,7 @@ def next_hhmm(hhmm, now):
     """
     h, m = (int(x) for x in hhmm.split(":"))
     base_date = now.date()
-    if now.hour >= h:
+    if (now.hour >= h) or skip_today:
         base_date = base_date + timedelta(days=1)
     target = datetime(
         year=base_date.year,
