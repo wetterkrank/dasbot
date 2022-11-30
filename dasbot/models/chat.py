@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 class Chat(object):
     def __init__(self, chat_id, user=None, subscribed=True, last_seen=None, quiz=None,
-                 quiz_scheduled_time=None, quiz_length=None, now=None):
+                 quiz_scheduled_time=None, quiz_length=None):
         self.id = chat_id
         self.user = user
         self.subscribed = subscribed
@@ -30,7 +30,8 @@ class Chat(object):
         self.quiz_scheduled_time = quiz_scheduled_time
         self.quiz_length = quiz_length or settings.QUIZ_LENGTH
         if self.quiz_scheduled_time is None:
-            self.set_quiz_time("12:00", now)  # Default: nearest noon
+            # For new chats: random time btw 09:00 and 20:59 tomorrow
+            self.set_quiz_time(util.random_hhmm(9, 21), skip_today=True)
 
     def stamp_time(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))
@@ -41,15 +42,15 @@ class Chat(object):
     def subscribe(self):
         self.subscribed = True
 
-    def set_quiz_time(self, hhmm, now=None):
+    def set_quiz_time(self, hhmm, skip_today=False):
         """
         :param hhmm: string "HH:MM"
-        :param now: datetime, if None then current datetime in Berlin TZ will be used
+        :param skip_today: skip nearest HH:MM if today
         :return: nothing, changes the Chat instance
         """
         berlin = timezone('Europe/Berlin')
-        now = now or datetime.now().astimezone(berlin)
-        self.quiz_scheduled_time = util.next_hhmm(hhmm, now)
+        now = datetime.now().astimezone(berlin)
+        self.quiz_scheduled_time = util.next_hhmm(hhmm, now, skip_today=skip_today)
 
 class UserSchema(Schema):
     class Meta:

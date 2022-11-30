@@ -31,8 +31,7 @@ class Controller(object):
             await self.ui.ask_question(chat)
         else:
             await self.ui.quiz_empty(message)
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
+        self.chats_repo.save_chat(chat, update_last_seen=True)
 
     # /stats
     async def stats(self, message: types.Message, dictionary):
@@ -45,7 +44,7 @@ class Controller(object):
         chat = self.chats_repo.load_chat(message.chat)
         quiz = chat.quiz
 
-        if not (quiz and quiz.expected(answer)): 
+        if not (quiz and quiz.expected(answer)):
             return await self.ui.reply_with_help(message)
         if answer == '?': return await self.ui.give_hint(quiz, message, self.dictionary)
 
@@ -59,8 +58,7 @@ class Controller(object):
         else:
             await self.ui.announce_result(chat)
             quiz.stop()
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
+        self.chats_repo.save_chat(chat, update_last_seen=True)
 
 
 if __name__ == "__main__":

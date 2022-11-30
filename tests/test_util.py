@@ -25,7 +25,7 @@ class TestUtil(unittest.TestCase):
 
     def test_month_ago(self):
         now = datetime.fromisoformat('2011-12-01 01:02:03+00:00')
-        self.assertEqual(util.month_ago(now), 
+        self.assertEqual(util.month_ago(now),
             datetime.fromisoformat('2011-11-01 01:02:03+00:00'))
 
     def test_equalizer(self):
@@ -37,7 +37,7 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(util.equalizer(1, 5, 10), (1, 5))
         self.assertEqual(util.equalizer(20, 1, 10), (9, 1))
         self.assertEqual(util.equalizer(5, 1, 10), (5, 1))
-        # Odd total 
+        # Odd total
         self.assertEqual(util.equalizer(4, 5, 9), (4, 5))
         self.assertEqual(util.equalizer(10, 10, 9), (4, 5))
         self.assertEqual(util.equalizer(1, 1, 9), (1, 1))
@@ -46,6 +46,8 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(util.equalizer(1, 20, 9), (1, 8))
         self.assertEqual(util.equalizer(1, 5, 9), (1, 5))
 
+    def test_random_hhmm(self):
+        self.assertEqual(util.random_hhmm(9, 21, 0), '15:48')
 
 if __name__ == '__main__':
     unittest.main()

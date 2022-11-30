@@ -1,6 +1,5 @@
 import logging
 
-import re
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
@@ -11,8 +10,9 @@ class MenuController(object):
     def __init__(self, ui, chats_repo):
         self.chats_repo = chats_repo
         self.ui = ui
-        self.TIME_OPTIONS = ["0900", "1200", "1500", "1800", "2100", "0000", "0300", "0600"]
-        self.LENGTH_OPTIONS = [5, 10, 20, 50]
+        # NOTE: Can't use colon in callback actions, it's used as a separator
+        self.TIME_OPTIONS = ['0900', '1200', '1500', '1800', '2100', '0000', '0300', '0600']
+        self.LENGTH_OPTIONS = ['5', '10', '20', '50']
         self.SETTINGS = {
             0: {
                 'main': {'hint': self.ui.settings_text['main-hint'], 'row_len': 2, 'btns': [
@@ -75,27 +75,24 @@ class MenuController(object):
         return markup
 
     # TODO: Refactor into a generic function?
-    async def set_quiz_time(self, query, level, selection):
+    async def set_quiz_time(self, query, _level, selection):
         chat = self.chats_repo.load_chat(query.message.chat)
         if selection == 'UNSUBSCRIBE':
             chat.unsubscribe()
             log.debug('Chat %s unsubscribed', chat.id)
         else:
-            selection = re.search(r'^\d{4}$', selection).string or '1200'
+            if not (selection in self.TIME_OPTIONS):
+                selection = '1200'
             selection = f"{selection[:2]}:{selection[2:]}"
             chat.set_quiz_time(selection)
             chat.subscribe()
             log.debug('Chat %s changed quiz time to %s', chat.id, selection)
-
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
+        self.chats_repo.save_chat(chat, update_last_seen=True)
         await self.settings_confirm(query, self.ui.quiz_time_set(selection))
 
-    async def set_quiz_length(self, query, level, selection):
+    async def set_quiz_length(self, query, _level, selection):
         chat = self.chats_repo.load_chat(query.message.chat)
-        selection = re.search(r'^(\d)$|^(\d{2})$', selection).string or '10'
-        selection = int(selection)
-        chat.quiz_length = selection  # NOTE: We could do the validation in the model
-        chat.stamp_time()
-        self.chats_repo.save_chat(chat)
-        await self.settings_confirm(query, self.ui.quiz_length_set(selection))
+        new_length = int(selection) if selection in self.LENGTH_OPTIONS else 10
+        chat.quiz_length = new_length
+        self.chats_repo.save_chat(chat, update_last_seen=True)
+        await self.settings_confirm(query, self.ui.quiz_length_set(new_length))
