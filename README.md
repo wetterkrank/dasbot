@@ -26,7 +26,7 @@ As an alternative,
 - Statistics ✔
 - Hint: translation and/or context ✔
 - Webhooks instead of long polling ✔
-- Add Docker build/push actions to CI
+- Add Docker build/push actions to CI ✔
 - Revise the words database
 - i18n
 - Entry test
