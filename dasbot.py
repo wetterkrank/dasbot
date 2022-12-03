@@ -5,6 +5,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from pymongo import MongoClient
+from urllib.parse import urlparse, quote_plus
 
 from dasbot.db.dict_repo import DictRepo
 from dasbot.db.chats_repo import ChatsRepo
@@ -16,18 +17,14 @@ from dasbot.menu_controller import MenuController
 
 from dynaconf import Dynaconf
 
-settings = Dynaconf(
-    environments=['default', 'production', 'development'],
-    settings_file='settings.toml',
-    load_dotenv=True
-)
+settings = Dynaconf(environments=['default', 'production', 'development'],
+                    settings_file='settings.toml',
+                    load_dotenv=True)
 
-logging.basicConfig(
-    level=logging.DEBUG if settings.DEBUG else logging.INFO,
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    datefmt='%m.%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG if settings.get('DEBUG') else logging.INFO,
+                    format='%(asctime)s %(levelname)-8s %(message)s',
+                    datefmt='%m.%d %H:%M:%S')
 log = logging.getLogger(__name__)
-
 
 if __name__ == '__main__':
 
@@ -71,9 +68,15 @@ if __name__ == '__main__':
         log.debug('generic message received: %s', message)
         await chatcon.generic(message)
 
-    # TODO: Add DB auth
     log.debug('connecting to database: %s', settings.DB_ADDRESS)
-    client = MongoClient(settings.DB_ADDRESS)
+    db_uri = urlparse(settings.DB_ADDRESS)
+    if settings.get('DB_USERNAME'):
+        creds = ':'.join([
+            quote_plus(settings.DB_USERNAME),
+            quote_plus(settings.get('DB_PASSWORD'))
+        ])
+        db_uri = db_uri._replace(netloc='@'.join([creds, db_uri.hostname]))
+    client = MongoClient(db_uri.geturl())
     db = client[settings.DB_NAME]
 
     dictionary = DictRepo(db['dictionary']).load()
@@ -83,26 +86,24 @@ if __name__ == '__main__':
     broadcaster = Broadcaster(Interface(bot), chats_repo, dictionary)
     menucon = MenuController(Interface(bot), chats_repo)
 
-    if settings.MODE.lower() == 'webhook':
+    if settings.get('MODE').lower() == 'webhook':
         async def on_startup(dp):
             webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
             log.info('setting webhook: %s', webhook_url)
             await bot.set_webhook(webhook_url)
             asyncio.create_task(broadcaster.run())
-
         async def on_shutdown(dp):
             await bot.delete_webhook()
 
-        executor.start_webhook(
-            dispatcher=dp,
-            webhook_path=settings.WEBHOOK_PATH,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            skip_updates=True,
-            host=settings.WEBAPP_HOST,
-            port=settings.WEBAPP_PORT
-        )
+        executor.start_webhook(dispatcher=dp,
+                               webhook_path=settings.WEBHOOK_PATH,
+                               on_startup=on_startup,
+                               on_shutdown=on_shutdown,
+                               skip_updates=True,
+                               host=settings.WEBAPP_HOST,
+                               port=settings.WEBAPP_PORT)
     else:
         async def on_startup(dp):
             asyncio.create_task(broadcaster.run())
+
         executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
