@@ -3,8 +3,9 @@
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+import random
 
-def next_hhmm(hhmm, now):
+def next_hhmm(hhmm, now, skip_today=False):
     """
     :param hhmm: time of the day as a string "HH:MM"
     :param now: datetime when the function is called
@@ -12,7 +13,7 @@ def next_hhmm(hhmm, now):
     """
     h, m = (int(x) for x in hhmm.split(":"))
     base_date = now.date()
-    if now.hour >= h:
+    if (now.hour >= h) or skip_today:
         base_date = base_date + timedelta(days=1)
     target = datetime(
         year=base_date.year,
@@ -22,7 +23,6 @@ def next_hhmm(hhmm, now):
         minute=m,
         tzinfo=now.tzinfo)
     return target
-
 
 def next_quiz_time(last_quiz_time, now=None):
     """
@@ -37,6 +37,17 @@ def next_quiz_time(last_quiz_time, now=None):
                                   month=tomorrow_date.month,
                                   day=tomorrow_date.day)
 
+def random_hhmm(start_hour, end_hour, seed=None):
+    """
+    :param start_hour: start hour, example: 0
+    :param end_hour: end hour, example: 24
+    :param seed: random generator seed, for testing
+    :return: random time as a string 'HH:MM'
+    """
+    random.seed(seed)
+    hour = random.randint(start_hour, end_hour - 1)
+    minute = random.randint(0, 59)
+    return '{0:02}:{1:02}'.format(hour, minute)
 
 def month_ago(now=None):
     """
@@ -50,8 +61,11 @@ def month_ago(now=None):
 
 def equalizer(n: int, m: int, total: int):
     """
-    Receives total, m and n [0..total]
-    Returns a tuple (a, b) so that their sum -> total, and a / b -> 1
+    Receives total, m, and n (both within [0..total])
+    Returns a tuple (a, b) so that
+    - a <= m, b <= n
+    - their sum is as close as possible to total, not exceeding it
+    - ideally, a and b are equal
     """
     oddity = total % 2
     smallest = min(n, m, total // 2 + oddity)
