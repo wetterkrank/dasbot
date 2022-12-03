@@ -31,7 +31,7 @@ As an alternative,
 - i18n
 - Entry test
 - "Forget me" command
-- Randomize quiz time on 1st start
+- Randomize quiz time on 1st start ✔
 - Custom quiz intervals ("N times/day every 3 hours")
 - Postpone broadcast when restarting after outage (db script?)
 - Move DB (Mongo Atlas?)
