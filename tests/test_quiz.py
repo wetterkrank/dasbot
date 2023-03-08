@@ -11,8 +11,12 @@ class TestQuiz(unittest.TestCase):
     def setUp(self):
         self.now = datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # NOTE: We're using TZ-naive dt here
         # 13 words in the dictionary
-        words = ['Tag', 'Monat', 'Jahr', 'Mal', 'Zeit', 'Beispiel', 'Deutsch', 'Frau', 'Kind', 'Aspekt', 'Mensch', 'Mann', 'Haus']
-        self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in words})
+        words = [
+            ('Tag', 1), ('Monat', 1), ('Jahr', 1),
+            ('Mal', 100), ('Zeit', 100), ('Beispiel', 100), ('Deutsch', 100), ('Frau', 100),
+            ('Kind', 1), ('Aspekt', 2), ('Mensch', 3), ('Mann', 4), ('Haus', 5)
+        ]
+        self.dictionary = Dictionary({word: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': level} for (word, level) in words})
         # of them, 3 overdue words to review
         self.scores = {
             'Tag': (1, self.now - timedelta(days=1)),
@@ -29,6 +33,10 @@ class TestQuiz(unittest.TestCase):
     def test_get_new_words(self):
         new_words = Quiz.get_new_words(self.scores, 5, self.dictionary)
         self.assertEqual(5, len(new_words))
+        self.assertEqual(
+            set(new_words), set(['Kind', 'Aspekt', 'Mensch', 'Mann', 'Haus']),
+            f'new words must be selected by ascending level'
+        )
         new_words = Quiz.get_new_words(self.scores, 15, self.dictionary)
         self.assertEqual(10, len(new_words))
 
