@@ -9,7 +9,7 @@ services:
       - "127.0.0.1:27017:27017"
 
   dasbot:
-    image: wetterkrank/dasbot:latest
+    image: tripleight/dasbot:latest
     container_name: dasbot_app
     links:
       - mongo
@@ -22,5 +22,5 @@ services:
     logging:
       driver: json-file
       options:
-          max-file: "5"
-          max-size: "10m"
+        max-file: "5"
+        max-size: "10m"
