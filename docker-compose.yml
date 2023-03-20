@@ -9,7 +9,7 @@ services:
       - "127.0.0.1:27017:27017"
 
   dasbot:
-    image: tripleight/dasbot:latest
+    image: wetterkrank/dasbot:latest
     container_name: dasbot_app
     links:
       - mongo
