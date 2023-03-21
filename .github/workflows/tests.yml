@@ -13,10 +13,13 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
       - name: Build image
         run: |
           docker-compose -f docker-compose.test.yml build
+
       - name: Run tests
         run: |
           docker-compose -f docker-compose.test.yml run --rm tests
