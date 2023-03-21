@@ -10,7 +10,7 @@ https://wetterkrank.github.io/dasbot/
 - Clone the repo
 - Set the env variable `DYNACONF_TOKEN="your_Telegram_bot_token"` (can use .env file)
 
-- Create and activate a virtual environment: `python3 -m venv . && source ./.venv/bin/activate`
+- Create and activate a virtual environment: `python3 -m venv .venv && source ./.venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`
 - Set the MongoDB address in the `settings.toml`
 - Run `make run`
