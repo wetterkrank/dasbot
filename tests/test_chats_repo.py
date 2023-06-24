@@ -1,4 +1,5 @@
 import unittest
+import logging
 from datetime import datetime, timezone
 from datetime import timedelta
 
@@ -14,12 +15,24 @@ class MockTGChat(object):
         self.first_name = first_name
         self.last_name = last_name
 
+class MockTGMessage(object):
+    def __init__(self, chat, from_user):
+        self.chat = chat
+        self.from_user = from_user
+
+class MockTGUser(object):
+    def __init__(self, locale):
+        self.locale = locale
+
 # TODO: Test save/load of a chat with attached quiz
 class TestChatsRepo(unittest.TestCase):
     def setUp(self):
         self.chats_col = mongomock.MongoClient().db.collection
         scores_col = mongomock.MongoClient().db.collection
         self.chats_repo = ChatsRepo(self.chats_col, scores_col)
+
+        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
 
     def test_save_chat(self):
         chat = Chat(chat_id=1001)
@@ -29,13 +42,15 @@ class TestChatsRepo(unittest.TestCase):
         self.assertEqual(1001, saved_chats[0]['chat_id'])
 
     def test_load_saved_chat(self):
+        mock_message = MockTGMessage(chat=MockTGChat(1001), from_user=MockTGUser(locale='xx'))
         chat = Chat(chat_id=1001, subscribed=False)
         self.chats_repo.save_chat(chat)
-        result = self.chats_repo.load_chat(MockTGChat(1001))
+        result = self.chats_repo.load_chat(mock_message)
         self.assertEqual(False, result.subscribed)
 
     def test_load_new_chat(self):
-        result: Chat = self.chats_repo.load_chat(MockTGChat(1001, 'vassily'))
+        mock_message = MockTGMessage(chat=MockTGChat(1001, 'vassily'), from_user=MockTGUser(locale='xx'))
+        result: Chat = self.chats_repo.load_chat(mock_message)
         self.assertEqual(1001, result.id)
         self.assertEqual('vassily', result.user['username'])
         self.assertEqual(None, result.user['first_name'])

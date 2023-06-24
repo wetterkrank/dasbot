@@ -3,12 +3,14 @@ import logging
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
+from dasbot.db.chats_repo import ChatsRepo
+
 log = logging.getLogger(__name__)
 
 
 class MenuController(object):
     def __init__(self, ui, chats_repo):
-        self.chats_repo = chats_repo
+        self.chats_repo: ChatsRepo = chats_repo
         self.ui = ui
         # NOTE: Can't use colon in callback actions, it's used as a separator
         self.TIME_OPTIONS = ['0900', '1200', '1500', '1800', '2100', '0000', '0300', '0600']
@@ -76,7 +78,7 @@ class MenuController(object):
 
     # TODO: Refactor into a generic function?
     async def set_quiz_time(self, query, _level, selection):
-        chat = self.chats_repo.load_chat(query.message.chat)
+        chat = self.chats_repo.load_chat(query.message)
         if selection == 'UNSUBSCRIBE':
             chat.unsubscribe()
             log.debug('Chat %s unsubscribed', chat.id)
@@ -91,7 +93,7 @@ class MenuController(object):
         await self.settings_confirm(query, self.ui.quiz_time_set(selection))
 
     async def set_quiz_length(self, query, _level, selection):
-        chat = self.chats_repo.load_chat(query.message.chat)
+        chat = self.chats_repo.load_chat(query.message)
         new_length = int(selection) if selection in self.LENGTH_OPTIONS else 10
         chat.quiz_length = new_length
         self.chats_repo.save_chat(chat, update_last_seen=True)

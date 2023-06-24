@@ -20,10 +20,10 @@ log = logging.getLogger(__name__)
 
 
 class Chat(object):
-    def __init__(self, chat_id, user=None, subscribed=True, last_seen=None, quiz=None,
+    def __init__(self, chat_id, user={}, subscribed=True, last_seen=None, quiz=None,
                  quiz_scheduled_time=None, quiz_length=None):
         self.id = chat_id
-        self.user = user
+        self.user = user # our User is just a dictionary so far
         self.subscribed = subscribed
         self.last_seen = last_seen
         self.quiz = quiz
@@ -52,18 +52,21 @@ class Chat(object):
         now = datetime.now().astimezone(berlin)
         self.quiz_scheduled_time = util.next_hhmm(hhmm, now, skip_today=skip_today)
 
+# TODO: Add Account object instead of current User dictionary
 class UserSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
     username = fields.String(missing=None)
     first_name = fields.String(missing=None)
     last_name = fields.String(missing=None)
+    locale = fields.String(missing=None)
+    last_used_locale = fields.String(missing=None)
 
 class ChatSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
     chat_id = fields.Integer()
-    user = fields.Nested(UserSchema, missing=None)
+    user = fields.Nested(UserSchema, missing={})
     subscribed = fields.Boolean(missing=True)
     last_seen = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
     quiz = fields.Nested(QuizSchema, missing=None)

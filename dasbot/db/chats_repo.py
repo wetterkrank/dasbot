@@ -2,15 +2,15 @@ import logging
 from datetime import datetime
 from datetime import timezone
 
-from aiogram.types import Chat as TelegramChat
+from aiogram.types import Message
 
 from dasbot.models.chat import Chat, ChatSchema
-
 
 log = logging.getLogger(__name__)
 
 
 class ChatsRepo(object):
+
     def __init__(self, chats_col, scores_col):
         self._chats = chats_col
         self._scores = scores_col
@@ -20,17 +20,27 @@ class ChatsRepo(object):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
         log.info("%s scores(s) in DB" % self._scores.count_documents({}))
 
-    def load_chat(self, tg_chat: TelegramChat):
+    # NOTE: Could make this more explicit by separating load_chat and create_chat methods
+    def load_chat(self, message: Message):
         """
-        :param chat: Telegram chat
+        :param message: Telegram message
         :return: Chat instance, loaded from DB, or new if not found
         """
+        tg_chat = message.chat  # NOTE: Chat may be a group etc and have many users
+        locale = message.from_user.locale if message.from_user else None
         chat_data = self._chats.find_one({"chat_id": tg_chat.id}, {"_id": 0})
         log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
         if chat_data:
-            chat = ChatSchema().load(chat_data)
+            chat: Chat = ChatSchema().load(chat_data)
+            chat.user['last_used_locale'] = locale # locale may change over time and depend on device
         else:
-            user = {'username': tg_chat.username, 'first_name': tg_chat.first_name, 'last_name': tg_chat.last_name}
+            user = {
+                'username': tg_chat.username,
+                'first_name': tg_chat.first_name,
+                'last_name': tg_chat.last_name,
+                'locale': locale,
+                'last_used_locale': locale,
+            }
             chat = Chat(tg_chat.id, user)
         return chat
 
@@ -65,9 +75,12 @@ class ChatsRepo(object):
         """
         query = {"chat_id": chat_id}
         results_cursor = self._scores.find(query, {"_id": 0})
-        scores = {item["word"]: (item["score"], item["revisit"])
-                  for item in results_cursor}
-        log.debug("loaded all scores for chat %s, count: %s", chat_id, len(scores))
+        scores = {
+            item["word"]: (item["score"], item["revisit"])
+            for item in results_cursor
+        }
+        log.debug("loaded all scores for chat %s, count: %s", chat_id,
+                  len(scores))
         return scores
 
     # TODO: check if saved successfully?
