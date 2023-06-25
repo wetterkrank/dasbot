@@ -86,12 +86,14 @@ if __name__ == '__main__':
     broadcaster = Broadcaster(Interface(bot), chats_repo, dictionary)
     menucon = MenuController(Interface(bot), chats_repo)
 
+    broadcast_enabled = settings.get('BROADCAST')
     if settings.get('MODE').lower() == 'webhook':
         async def on_startup(dp):
             webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
             log.info('setting webhook: %s', webhook_url)
             await bot.set_webhook(webhook_url)
-            asyncio.create_task(broadcaster.run())
+            if broadcast_enabled:
+                asyncio.create_task(broadcaster.run())
         async def on_shutdown(dp):
             await bot.delete_webhook()
 
@@ -104,6 +106,7 @@ if __name__ == '__main__':
                                port=settings.WEBAPP_PORT)
     else:
         async def on_startup(dp):
-            asyncio.create_task(broadcaster.run())
+            if broadcast_enabled:
+                asyncio.create_task(broadcaster.run())
 
         executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
