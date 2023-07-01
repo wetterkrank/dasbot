@@ -6,7 +6,7 @@ https://wetterkrank.github.io/dasbot/
 
 ## How to run
 - Clone the repo
-- Set the env variable `DYNACONF_TOKEN="your_Telegram_bot_token"` (can use .env file)
+- Set the env variable `DYNACONF_TELEGRAM_TOKEN="your_Telegram_bot_token"` (can use .env file)
 
 - Create and activate a virtual environment: `python3 -m venv .venv && source ./.venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`

@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 if __name__ == '__main__':
 
     # Initialize bot & dispatcher
-    bot = Bot(token=settings.TOKEN)
+    bot = Bot(token=settings.TELEGRAM_TOKEN)
     dp = Dispatcher(bot)
 
     # /help command handler

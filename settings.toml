@@ -4,12 +4,10 @@ db_name = 'dasbot'
 
 [development]
 mode = 'polling'
-db_address = 'mongodb://127.0.0.1:27017/'
 broadcast = false
 debug = true
 
 [production]
 mode = 'webhook'
-db_address = 'mongodb://mongo:27017/'
 broadcast = true
 debug = false
