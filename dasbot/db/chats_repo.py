@@ -55,6 +55,7 @@ class ChatsRepo(object):
         log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
 
+    # TODO: return ids instead of full objects, or do it in batches
     def get_pending_chats(self, now=None):
         """
         :param now: timestamp when the function is called
@@ -96,7 +97,6 @@ class ChatsRepo(object):
         result = self._scores.update_one(query, update, upsert=True)
         # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
-
 
 if __name__ == "__main__":
     pass

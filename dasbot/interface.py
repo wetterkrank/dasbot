@@ -36,7 +36,10 @@ class Interface(object):
     async def ask_question(self, chat):
         text = f"{chat.quiz.pos}/{chat.quiz.length}\. "
         text += f"What's the article for *{md(chat.quiz.question)}*?"
-        result = await self.bot.send_message(chat.id, text, reply_markup=Interface.quiz_kb(), parse_mode='MarkdownV2')
+        result = await self.bot.send_message(chat.id, text,
+                                             reply_markup=Interface.quiz_kb(),
+                                             parse_mode='MarkdownV2',
+                                             disable_notification=True)
         log.debug("message sent, result: %s", result)
 
     async def give_hint(self, quiz, message, dictionary):
@@ -47,7 +50,7 @@ class Interface(object):
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "❌ Incorrect, "
         text += f"*{md(chat.quiz.answer)} {md(chat.quiz.question)}*"
-        if correct: text += " ✅" 
+        if correct: text += " ✅"
         await message.answer(text, parse_mode='MarkdownV2')
 
     async def announce_result(self, chat):
