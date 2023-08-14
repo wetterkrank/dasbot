@@ -26,6 +26,7 @@ As an alternative,
 - Webhooks instead of long polling ✔
 - Add Docker build/push actions to CI ✔
 - Revise the words database
+- Let users add their words
 - i18n
 - Entry test
 - "Forget me" command
