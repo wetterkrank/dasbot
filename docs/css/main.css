@@ -4,11 +4,6 @@
     max-height: 40em;
 }
 
-svg#bot-icon {
-    height: 6em;
-    width: auto;
-}
-
 .lead {
     color: #45A8E8;
 }
@@ -39,4 +34,14 @@ p {
     html {
         font-size: 1.2em;
     }
+}
+
+.container {
+  max-width: 1140px;
+  margin: auto;
+}
+
+svg#bot-icon {
+  height: 90px;
+  width: auto;
 }
