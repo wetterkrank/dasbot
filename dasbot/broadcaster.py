@@ -1,7 +1,7 @@
 import logging
 
 import asyncio
-from aiogram.utils.exceptions import Unauthorized, TelegramAPIError
+from aiogram.exceptions import TelegramForbiddenError, TelegramAPIError
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -36,7 +36,7 @@ class Broadcaster(object):
             else:
                 return False
         # Kicked, blocked etc:
-        except Unauthorized as err:
+        except TelegramForbiddenError as err:
             log.error("Error: %s, chat id: %s", err, chat.id)
             chat.unsubscribe()
             self.chats_repo.save_chat(chat)

@@ -6,7 +6,8 @@ from unittest.mock import MagicMock
 
 import aiounittest
 import mongomock
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram.exceptions import TelegramAPIError
+from aiogram.methods import SendMessage
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
@@ -24,7 +25,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
 
     @staticmethod
     async def failGeneric(chat):
-        raise TelegramAPIError("foobar")
+        raise TelegramAPIError(method=SendMessage, message="foobar")
 
     def setUp(self):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection

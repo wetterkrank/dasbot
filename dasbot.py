@@ -1,9 +1,14 @@
 import logging
 
 import asyncio
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command, CommandStart
+from aiogram.enums import ParseMode
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+
+from aiohttp import web
+
 from pymongo import MongoClient
 from urllib.parse import urlparse, quote_plus
 
@@ -13,7 +18,7 @@ from dasbot.db.stats_repo import StatsRepo
 from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
-from dasbot.menu_controller import MenuController
+from dasbot.menu_controller import MenuController, MenuCallback
 
 from dynaconf import Dynaconf
 
@@ -26,47 +31,10 @@ logging.basicConfig(level=logging.DEBUG if settings.get('DEBUG') else logging.IN
                     datefmt='%m.%d %H:%M:%S')
 log = logging.getLogger(__name__)
 
-if __name__ == '__main__':
 
-    # Initialize bot & dispatcher
-    bot = Bot(token=settings.TELEGRAM_TOKEN)
-    dp = Dispatcher(bot)
-
-    # /help command handler
-    @dp.message_handler(commands='help')
-    async def help_command(message: types.Message):
-        log.debug('/help received: %s', message)
-        await chatcon.help(message)
-
-    # /start command handler
-    @dp.message_handler(commands='start')
-    async def start_command(message: types.Message):
-        log.debug('/start received: %s', message)
-        await chatcon.start(message)
-
-    # /settings command handler
-    @dp.message_handler(commands='settings')
-    async def settings_command(message: types.Message):
-        log.debug('/settings received: %s', message)
-        await menucon.main(message)
-
-    # handler for the settings menu callbacks
-    @dp.callback_query_handler()
-    async def settings_select(query: types.CallbackQuery):
-        log.debug('callback query received: %s', query)
-        await menucon.navigate(query)
-
-    # /stats command handler
-    @dp.message_handler(commands='stats')
-    async def stats_command(message: types.Message):
-        log.debug('/stats received: %s', message)
-        await chatcon.stats(message, dictionary)
-
-    # generic message handler; should be last
-    @dp.message_handler()
-    async def all_other_messages(message: types.Message):
-        log.debug('generic message received: %s', message)
-        await chatcon.generic(message)
+def main() -> None:
+    dp = Dispatcher()
+    bot = Bot(settings.TELEGRAM_TOKEN, parse_mode=ParseMode.HTML)
 
     log.debug('connecting to database: %s', settings.DB_ADDRESS)
     db_uri = urlparse(settings.DB_ADDRESS)
@@ -86,27 +54,70 @@ if __name__ == '__main__':
     broadcaster = Broadcaster(Interface(bot), chats_repo, dictionary)
     menucon = MenuController(Interface(bot), chats_repo)
 
+
+    # /help command handler
+    @dp.message(Command('help'))
+    async def help_command(message: Message):
+        log.debug('/help received: %s', message)
+        await chatcon.help(message)
+
+    # /start command handler
+    @dp.message(CommandStart())
+    async def start_command(message: Message):
+        log.debug('/start received: %s', message)
+        await chatcon.start(message)
+
+    # /settings command handler
+    @dp.message(Command('settings'))
+    async def settings_command(message: Message):
+        log.debug('/settings received: %s', message)
+        await menucon.main(message)
+
+    # handler for the settings menu callbacks
+    @dp.callback_query(MenuCallback.filter())
+    async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
+        log.debug('callback query received: %s', query)
+        await menucon.navigate(query, callback_data)
+
+    # /stats command handler
+    @dp.message(Command('stats'))
+    async def stats_command(message: Message):
+        log.debug('/stats received: %s', message)
+        await chatcon.stats(message, dictionary)
+
+    # generic message handler; should be last
+    @dp.message()
+    async def all_other_messages(message: Message):
+        log.debug('generic message received: %s', message)
+        await chatcon.generic(message)
+
+
     broadcast_enabled = settings.get('BROADCAST')
     if settings.get('MODE').lower() == 'webhook':
-        async def on_startup(dp):
+        async def on_startup(bot: Bot):
             webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
             log.info('setting webhook: %s', webhook_url)
-            await bot.set_webhook(webhook_url)
+            await bot.delete_webhook(drop_pending_updates=True)
+            await bot.set_webhook(webhook_url,  secret_token=settings.WEBHOOK_SECRET)
             if broadcast_enabled:
                 asyncio.create_task(broadcaster.run())
-        async def on_shutdown(dp):
-            await bot.delete_webhook()
 
-        executor.start_webhook(dispatcher=dp,
-                               webhook_path=settings.WEBHOOK_PATH,
-                               on_startup=on_startup,
-                               on_shutdown=on_shutdown,
-                               skip_updates=True,
-                               host=settings.WEBAPP_HOST,
-                               port=settings.WEBAPP_PORT)
+        dp.startup.register(on_startup)
+        app = web.Application()
+        webhook_requests_handler = SimpleRequestHandler(
+            dispatcher=dp,
+            bot=bot,
+            secret_token=settings.WEBHOOK_SECRET,
+        )
+        webhook_requests_handler.register(app, path=settings.WEBHOOK_PATH)
+        setup_application(app, dp, bot=bot)
+        web.run_app(app, host=settings.WEBAPP_HOST, port=settings.WEBAPP_PORT)
     else:
-        async def on_startup(dp):
-            if broadcast_enabled:
-                asyncio.create_task(broadcaster.run())
+        if broadcast_enabled:
+            asyncio.create_task(broadcaster.run())
+        bot.delete_webhook(drop_pending_updates=True) # ok for polling too
+        dp.start_polling(bot)
 
-        executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
+
+if __name__ == '__main__':
+    main()

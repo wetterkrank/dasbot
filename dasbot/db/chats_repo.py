@@ -27,7 +27,7 @@ class ChatsRepo(object):
         :return: Chat instance, loaded from DB, or new if not found
         """
         tg_chat = message.chat  # NOTE: Chat may be a group etc and have many users
-        locale = message.from_user.locale if message.from_user else None
+        locale = message.from_user.language_code if message.from_user else None
         chat_data = self._chats.find_one({"chat_id": tg_chat.id}, {"_id": 0})
         log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
         if chat_data:

@@ -1,12 +1,17 @@
 import logging
 
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import Message, CallbackQuery
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters.callback_data import CallbackData
 
 from dasbot.db.chats_repo import ChatsRepo
 
 log = logging.getLogger(__name__)
 
+class MenuCallback(CallbackData, prefix="menu"):
+    level: int
+    menu_id: str
+    selection: str
 
 class MenuController(object):
     def __init__(self, ui, chats_repo):
@@ -31,10 +36,11 @@ class MenuController(object):
                 ] + [{'text': self.ui.settings_text['quiz-time-btn'], 'action': 'UNSUBSCRIBE'}]}
             }
         }
-        self.callback = CallbackData('menu', 'level', 'menu_id', 'selection')  # menu:<level>:<id>:<action>
-
-    def callback_generator(self, level, menu_id, selection):
-        return self.callback.new(level=level, menu_id=menu_id, selection=selection)
+        self.ACTIONS = {
+            1: {'main': self.settings_menu},
+            2: {'quiz-time': self.set_quiz_time,
+                'quiz-len': self.set_quiz_length}
+        }
 
     # respond to /settings
     async def main(self, message: Message):
@@ -43,18 +49,9 @@ class MenuController(object):
         await message.answer(text=text, reply_markup=keyboard)
 
     # respond to callback queries
-    async def navigate(self, query: CallbackQuery):
-        cb_data = self.callback.parse(query['data'])
-        current_level = int(cb_data['level'])
-        menu_id = cb_data['menu_id']
-        selection = cb_data['selection']
-        ACTIONS = {
-            1: {'main': self.settings_menu},
-            2: {'quiz-time': self.set_quiz_time,
-                'quiz-len': self.set_quiz_length}
-        }
-        action = ACTIONS[current_level][menu_id]
-        await action(query, current_level, selection)
+    async def navigate(self, query: CallbackQuery, data: MenuCallback):
+        action = self.ACTIONS[data.level][data.menu_id]
+        await action(query, data.level, data.selection)
 
     async def settings_menu(self, query, level, menu_id):
         text = self.SETTINGS[level][menu_id]['hint']
@@ -68,13 +65,13 @@ class MenuController(object):
         menu = self.SETTINGS[level][menu_id]
         row_width = menu['row_len']
         buttons = menu['btns']
-        markup = InlineKeyboardMarkup(row_width=row_width)
-        for i, button in enumerate(buttons):
-            callback = self.callback_generator(level=level + 1, menu_id=menu_id, selection=button['action'])
-            if i % row_width == 0:
-                markup.row()
-            markup.insert(InlineKeyboardButton(text=button['text'], callback_data=callback))
-        return markup
+        builder = InlineKeyboardBuilder()
+        for button in buttons:
+            # menu:<level>:<menu_id>:<action>
+            callback = MenuCallback(level=level + 1, menu_id=menu_id, selection=button['action']).pack()
+            builder.button(text=button['text'], callback_data=callback)
+        builder.adjust(row_width)
+        return builder.as_markup()
 
     # TODO: Refactor into a generic function?
     async def set_quiz_time(self, query, _level, selection):

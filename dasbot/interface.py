@@ -1,7 +1,7 @@
 import logging
 
-from aiogram import types
-from aiogram.utils.markdown import escape_md as md
+from aiogram import html
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 log = logging.getLogger(__name__)
 
@@ -34,11 +34,10 @@ class Interface(object):
         await self.bot.send_message(chat.id, text)
 
     async def ask_question(self, chat):
-        text = f"{chat.quiz.pos}/{chat.quiz.length}\. "
-        text += f"What's the article for *{md(chat.quiz.question)}*?"
+        text = f"{chat.quiz.pos}/{chat.quiz.length}. "
+        text += f"What's the article for <b>{html.quote(chat.quiz.question)}</b>?"
         result = await self.bot.send_message(chat.id, text,
                                              reply_markup=Interface.quiz_kb(),
-                                             parse_mode='MarkdownV2',
                                              disable_notification=True)
         log.debug("message sent, result: %s", result)
 
@@ -49,15 +48,15 @@ class Interface(object):
 
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "❌ Incorrect, "
-        text += f"*{md(chat.quiz.answer)} {md(chat.quiz.question)}*"
+        text += f"<b>{html.quote(chat.quiz.answer)} {html.quote(chat.quiz.question)}</b>"
         if correct: text += " ✅"
-        await message.answer(text, parse_mode='MarkdownV2')
+        await message.answer(text)
 
     async def announce_result(self, chat):
         text = f"{chat.quiz.correctly} out of {chat.quiz.length}"
         text += self.rate(chat.quiz.correctly, chat.quiz.length) + "\n"
         text += "To start over, type /start, or /help for more info."
-        await self.bot.send_message(chat.id, text, reply_markup=types.ReplyKeyboardRemove())
+        await self.bot.send_message(chat.id, text, reply_markup=ReplyKeyboardRemove())
 
     def rate(self, correctly, total):
         ratio = round(correctly / total * 10)
@@ -79,28 +78,26 @@ class Interface(object):
 
     async def send_stats(self, message, stats, dict_length):
         def bullet(item):
-            return f"• {md(item['articles'])} {md(item['word'])}: {item['count']}  "
+            return f"• {html.quote(item['articles'])} {html.quote(item['word'])}: {item['count']}  "
         def wordlist(key):
             return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
-        progress = f"{round(stats.get('touched') / dict_length * 100)}\%" or ''
-        text = f"📈 *Your progress*: {progress}\n{stats['touched']} words touched out of {dict_length}\n\n"
-        text += "*I recommend working on these words*:\n\n"
+        progress = f"{round(stats.get('touched') / dict_length * 100)}%" or ''
+        text = f"📈 <b>Your progress</b>: {progress}\n{stats['touched']} words touched out of {dict_length}\n\n"
+        text += "<b>I recommend working on these words</b>:\n\n"
         if len(stats['mistakes_30days']) > 0:
             text += "Last 30 days' top ❌\n"
             text += wordlist('mistakes_30days')
         if len(stats['mistakes_alltime']) > 0:
-            text += "All\-time top ❌\n"
+            text += "All-time top ❌\n"
             text += wordlist('mistakes_alltime')
-        await message.answer(text, parse_mode='MarkdownV2')
+        await message.answer(text)
 
     @staticmethod
-    def quiz_kb():
-        """ Returns object of ReplyKeyboardMarkup type """
+    def quiz_kb() -> ReplyKeyboardMarkup:
         labels = ('der', 'die', 'das', '?')
-        keyboard_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        row_btns = (types.KeyboardButton(text) for text in labels)
-        keyboard_markup.row(*row_btns)
-        return keyboard_markup
+        buttons = [(KeyboardButton(text=text) for text in labels)]
+        keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
+        return keyboard
 
     def quiz_time_set(self, pref):
         return (f'Daily quiz time is set to {pref} (Berlin time)', 'Daily quiz is off')[pref == "UNSUBSCRIBE"]

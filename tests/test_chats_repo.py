@@ -22,7 +22,7 @@ class MockTGMessage(object):
 
 class MockTGUser(object):
     def __init__(self, locale):
-        self.locale = locale
+        self.language_code = locale
 
 # TODO: Test save/load of a chat with attached quiz
 class TestChatsRepo(unittest.TestCase):

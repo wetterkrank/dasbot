@@ -2,7 +2,7 @@ import aiounittest
 from unittest.mock import AsyncMock, MagicMock, ANY
 import mongomock
 
-from aiogram import types
+from aiogram.types import InlineKeyboardMarkup
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.menu_controller import MenuController
 
@@ -32,6 +32,6 @@ class TestMenuController(aiounittest.AsyncTestCase):
         level = 1
         menu_id = 'quiz-time'
         keyboard = self.menucon.settings_kb(level, menu_id)
-        self.assertIsInstance(keyboard, types.inline_keyboard.InlineKeyboardMarkup)
-        self.assertEqual(keyboard.row_width, 4)
-        self.assertEqual(keyboard['inline_keyboard'][-1][0].callback_data, 'menu:2:quiz-time:UNSUBSCRIBE')
+        self.assertIsInstance(keyboard, InlineKeyboardMarkup)
+        self.assertEqual(len(keyboard.inline_keyboard), 3)
+        self.assertEqual(keyboard.inline_keyboard[-1][0].callback_data, 'menu:2:quiz-time:UNSUBSCRIBE')
