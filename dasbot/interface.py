@@ -44,13 +44,13 @@ class Interface(object):
     async def give_hint(self, quiz, message, dictionary):
         translation = dictionary.translation(quiz.question, 'en') or '?'
         text = f"{quiz.question}: {translation}"
-        await message.answer(text)
+        await message.answer(text, disable_notification=True)
 
     async def give_feedback(self, chat, message, correct):
         text = "Correct, " if correct else "❌ Incorrect, "
         text += f"<b>{html.quote(chat.quiz.answer)} {html.quote(chat.quiz.question)}</b>"
         if correct: text += " ✅"
-        await message.answer(text)
+        await message.answer(text, disable_notification=True)
 
     async def announce_result(self, chat):
         text = f"{chat.quiz.correctly} out of {chat.quiz.length}"
