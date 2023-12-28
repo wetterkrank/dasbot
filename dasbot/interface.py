@@ -87,9 +87,6 @@ class Interface(object):
         if len(stats['mistakes_30days']) > 0:
             text += "Last 30 days' top ❌\n"
             text += wordlist('mistakes_30days')
-        if len(stats['mistakes_alltime']) > 0:
-            text += "All-time top ❌\n"
-            text += wordlist('mistakes_alltime')
         await message.answer(text)
 
     @staticmethod

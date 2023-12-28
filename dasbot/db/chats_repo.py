@@ -1,6 +1,5 @@
 import logging
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 
 from aiogram.types import Message
 

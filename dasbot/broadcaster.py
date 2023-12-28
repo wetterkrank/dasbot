@@ -53,7 +53,7 @@ class Broadcaster(object):
     # Regularly called rouine that sends out the (over)due quizzes
     async def broadcast(self):
         pending_chats = self.chats_repo.get_pending_chats()
-        # Consider adding +1 day to overdue chats if bot is started
+        # TODO: Consider adding +1 day to overdue chats if bot is started
         # after a downtime, so they get their quizzes on preferred time
         log.debug("Broadcast: %s pending", len(pending_chats))
         sent = 0
@@ -65,7 +65,7 @@ class Broadcaster(object):
 
     # Runs the broadcast loop
     async def run(self):
-        log.info("Broadcaster started")
+        log.info("Broadcaster on")
         while True:
             await asyncio.sleep(60)
             await self.broadcast()

@@ -1,20 +1,19 @@
 # dasbot
 A Telegram bot that helps you learn German der/die/das articles
 
-https://wetterkrank.github.io/dasbot/
+https://dasbot.yak.supplies
 
 
 ## How to run
 - Clone the repo
-- Set the env variable `DYNACONF_TELEGRAM_TOKEN="your_Telegram_bot_token"` (can use .env file)
+- Edit settings/set the env variables (see `settings.toml` and `.env.example`)
 
 - Create and activate a virtual environment: `python3 -m venv .venv && source ./.venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`
-- Set the MongoDB address in the `settings.toml`
 - Run `make run`
 
 As an alternative,
-- Just run `docker-compose up` after the first two steps
+- Run `docker-compose up` after the first two steps
 
 ## Notes
 
@@ -25,15 +24,14 @@ As an alternative,
 - Hint: translation and/or context ✔
 - Webhooks instead of long polling ✔
 - Add Docker build/push actions to CI ✔
+- Randomize quiz time on 1st start ✔
+- Move DB to MongoDB Atlas ✔
+- i18n
 - Revise the words database
 - Let users add their words
-- i18n
-- Entry test
 - "Forget me" command
-- Randomize quiz time on 1st start ✔
 - Custom quiz intervals ("N times/day every 3 hours")
-- Postpone broadcast when restarting after outage (db script?)
-- Move DB (Mongo Atlas?) ✔
+- Postpone broadcast when restarting after outage (use a one-off script?)
 
 **Spaced repetition**
 

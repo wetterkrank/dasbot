@@ -30,7 +30,6 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
     def setUp(self):
         self.chats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
-        self.stats_collection = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
         self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in ['Tag', 'Monat', 'Jahr']})

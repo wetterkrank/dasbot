@@ -14,7 +14,7 @@ class TestStatsRepo(unittest.TestCase):
     def test_get_stats_no_data(self):
         stats = self.stats_repo.get_stats(1)
         self.assertDictEqual(
-            {'touched': 0, 'mistakes_30days': [], 'mistakes_alltime': []}, stats)
+            {'touched': 0, 'mistakes_30days': []}, stats)
 
 
 if __name__ == '__main__':

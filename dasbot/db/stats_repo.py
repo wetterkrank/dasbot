@@ -60,32 +60,9 @@ class StatsRepo(object):
                 'as': 'dictionaryEntry'
             }},
             {'$project': {
-                'articles': {'$ifNull': [{'$first': '$dictionaryEntry.articles'}, '?']}, 
-                'word': '$_id', 
-                'count': 1, 
-                '_id': 0
-            }}
-        ]
-        pipe_alltime = [
-            {
-                '$match': {
-                    'chat_id': chat_id,
-                    'correct': False
-                }
-            },
-            {'$group': {'_id': '$word', 'count': {'$sum': 1}}},
-            {'$sort': {'count': -1}},
-            {'$limit': 10},
-            {'$lookup': {
-                'from': 'dictionary',
-                'localField': '_id',
-                'foreignField': 'word',
-                'as': 'dictionaryEntry'
-            }},
-            {'$project': {
-                'articles': {'$ifNull': [{'$first': '$dictionaryEntry.articles'}, '?']}, 
-                'word': '$_id', 
-                'count': 1, 
+                'articles': {'$ifNull': [{'$first': '$dictionaryEntry.articles'}, '?']},
+                'word': '$_id',
+                'count': 1,
                 '_id': 0
             }}
         ]
@@ -94,9 +71,16 @@ class StatsRepo(object):
         stats['touched'] = count
         results = self._stats.aggregate(pipe_30days)
         stats['mistakes_30days'] = [item for item in results]
-        results = self._stats.aggregate(pipe_alltime)
-        stats['mistakes_alltime'] = [item for item in results]
         return stats
+
+    def delete_old_stats(self, cutoff_time):
+        """
+        :param cutoff_time: delete stats records older than this
+        :return: PyMongo DeleteResult instance
+        """
+        query = {'date': {'$lt': cutoff_time}}
+        result = self._stats.delete_many(query)
+        return result
 
 
 if __name__ == "__main__":
