@@ -5,15 +5,14 @@ https://dasbot.yak.supplies
 
 
 ## How to run
-- Clone the repo
-- Edit settings/set the env variables (see `settings.toml` and `.env.example`)
-
-- Create and activate a virtual environment: `python3 -m venv .venv && source ./.venv/bin/activate`
-- Install dependencies: `pip install -r requirements.txt`
-- Run `make run`
+1. Clone the repo
+2. Edit settings/set the env variables (see `settings.toml` and `.env.example`)
+3. Create and activate a virtual environment: `python3 -m venv .venv && source ./.venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Run `make run`
 
 As an alternative,
-- Run `docker-compose up` after the first two steps
+- Run `docker compose up` after the first two steps
 
 ## Notes
 
