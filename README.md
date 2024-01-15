@@ -25,6 +25,7 @@ As an alternative,
 - Add Docker build/push actions to CI ✔
 - Randomize quiz time on 1st start ✔
 - Move DB to MongoDB Atlas ✔
+- Select words by level -- A1, B1, ...
 - i18n
 - Revise the words database
 - Let users add their words
