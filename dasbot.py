@@ -1,4 +1,5 @@
 import logging
+import sentry_sdk
 
 import asyncio
 from aiogram import Bot, Dispatcher
@@ -9,9 +10,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 
 from aiohttp import web
 
-from pymongo import MongoClient
-from urllib.parse import urlparse, quote_plus
-
+from dasbot.db.database import Database
 from dasbot.db.dict_repo import DictRepo
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.db.stats_repo import StatsRepo
@@ -27,24 +26,22 @@ settings = Dynaconf(environments=['default', 'production', 'development'],
                     settings_file='settings.toml',
                     load_dotenv=True)
 
+if settings.get('SENTRY_DSN'):
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
+
 logging.basicConfig(level=logging.DEBUG if settings.get('DEBUG') else logging.INFO,
                     format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%m.%d %H:%M:%S')
 log = logging.getLogger(__name__)
 
+
 dp = Dispatcher()
 bot = Bot(settings.TELEGRAM_TOKEN, parse_mode=ParseMode.HTML)
-
-log.debug('connecting to database: %s', settings.DB_ADDRESS)
-db_uri = urlparse(settings.DB_ADDRESS)
-if settings.get('DB_USERNAME'):
-    creds = ':'.join([
-        quote_plus(settings.DB_USERNAME),
-        quote_plus(settings.get('DB_PASSWORD'))
-    ])
-    db_uri = db_uri._replace(netloc='@'.join([creds, db_uri.hostname]))
-client = MongoClient(db_uri.geturl())
-db = client[settings.DB_NAME]
+db = Database(settings).connect()
 
 dictionary = DictRepo(db['dictionary']).load()
 chats_repo = ChatsRepo(db['chats'], db['scores'])

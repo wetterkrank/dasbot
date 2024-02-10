@@ -28,30 +28,32 @@ class ChatsRepo(object):
         tg_chat = message.chat  # NOTE: Chat may be a group etc and have many users
         locale = message.from_user.language_code if message.from_user else None
         chat_data = self._chats.find_one({"chat_id": tg_chat.id}, {"_id": 0})
-        log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
+        # log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
         if chat_data:
             chat: Chat = ChatSchema().load(chat_data)
-            chat.user['last_used_locale'] = locale # locale may change over time and depend on device
+            chat.user["last_used_locale"] = (
+                locale  # locale may change over time and depend on device
+            )
         else:
             user = {
-                'username': tg_chat.username,
-                'first_name': tg_chat.first_name,
-                'last_name': tg_chat.last_name,
-                'locale': locale,
-                'last_used_locale': locale,
+                "username": tg_chat.username,
+                "first_name": tg_chat.first_name,
+                "last_name": tg_chat.last_name,
+                "locale": locale,
+                "last_used_locale": locale,
             }
             chat = Chat(tg_chat.id, user)
         return chat
 
     def save_chat(self, chat: Chat, update_last_seen=False):
-        """ Returns pymongo UpdateResult instance """
+        """Returns pymongo UpdateResult instance"""
         if update_last_seen:
             chat.stamp_time()
         query = {"chat_id": chat.id}
         data = ChatSchema().dump(chat)
         update = {"$set": data}
         result = self._chats.update_one(query, update, upsert=True)
-        log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
+        # log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
 
     # TODO: return ids instead of full objects, or do it in batches
@@ -76,11 +78,9 @@ class ChatsRepo(object):
         query = {"chat_id": chat_id}
         results_cursor = self._scores.find(query, {"_id": 0})
         scores = {
-            item["word"]: (item["score"], item["revisit"])
-            for item in results_cursor
+            item["word"]: (item["score"], item["revisit"]) for item in results_cursor
         }
-        log.debug("loaded all scores for chat %s, count: %s", chat_id,
-                  len(scores))
+        # log.debug("loaded all scores for chat %s, count: %s", chat_id, len(scores))
         return scores
 
     # TODO: check if saved successfully?
@@ -96,6 +96,7 @@ class ChatsRepo(object):
         result = self._scores.update_one(query, update, upsert=True)
         # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
+
 
 if __name__ == "__main__":
     pass

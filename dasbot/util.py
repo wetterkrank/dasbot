@@ -5,6 +5,10 @@ from datetime import timedelta
 from datetime import timezone
 import random
 
+import time
+import logging
+from functools import wraps
+
 def next_hhmm(hhmm, now, skip_today=False):
     """
     :param hhmm: time of the day as a string "HH:MM"
@@ -75,3 +79,14 @@ def equalizer(n: int, m: int, total: int):
         return (min(n, total-m), m)
     else:
         return (total // 2, total // 2 + oddity)
+
+def log_execution_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = round((end_time - start_time) * 1000, 0)  # ms
+        logging.info(f"Execution time for {func.__name__}: {execution_time} ms")
+        return result
+    return wrapper

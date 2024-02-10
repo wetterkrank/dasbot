@@ -44,6 +44,8 @@ class Controller(object):
 
     # not-a-command
     async def generic(self, message: Message):
+        if not message.text: return
+
         answer = message.text.strip().lower()
         chat = self.chats_repo.load_chat(message)
         quiz = chat.quiz

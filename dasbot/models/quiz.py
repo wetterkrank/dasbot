@@ -12,7 +12,6 @@ from dasbot.types import Scores, Words, Cards
 from dasbot.util import equalizer
 
 log = logging.getLogger(__name__)
-# log.setLevel(logging.DEBUG)
 
 
 SCHEDULE = {
@@ -79,7 +78,7 @@ class Quiz(object):
         now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)
         overdue = filter(lambda rec: rec[1][1] and now > rec[1][1], scores.items())
         review = {k: v for _, (k, v) in zip(range(max_len), overdue)}
-        log.debug("overdue scores: %s", len(review))
+        log.debug("overdue scores count: %s", len(review))
         return review
 
     @staticmethod

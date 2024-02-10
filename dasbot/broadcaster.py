@@ -2,6 +2,7 @@ import logging
 
 import asyncio
 from aiogram.exceptions import TelegramForbiddenError, TelegramAPIError
+from pymongo.errors import ServerSelectionTimeoutError
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -27,7 +28,7 @@ class Broadcaster(object):
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             self.chats_repo.save_chat(chat)
             if chat.quiz.has_questions:
-                log.debug("Broadcast: sending message to %s", chat.id)
+                log.info("Broadcast: sending message to %s", chat.id)
                 await self.ui.daily_hello(chat)
                 await self.ui.ask_question(chat)
                 self.chats_repo.save_chat(chat)
@@ -52,16 +53,20 @@ class Broadcaster(object):
 
     # Regularly called rouine that sends out the (over)due quizzes
     async def broadcast(self):
-        pending_chats = self.chats_repo.get_pending_chats()
+        try:
+            pending_chats = self.chats_repo.get_pending_chats()
+        except ServerSelectionTimeoutError as err:
+            log.error("Error: %s", err)
+            return
         # TODO: Consider adding +1 day to overdue chats if bot is started
         # after a downtime, so they get their quizzes on preferred time
-        log.debug("Broadcast: %s pending", len(pending_chats))
+        log.info("Broadcast: %s pending", len(pending_chats))
         sent = 0
         for chat in pending_chats:
             result = await self.send_quiz(chat)
             if result:
                 sent += 1
-        log.debug("Broadcast: %s sent.", sent)
+                log.info("Broadcast: %s sent.", sent)
 
     # Runs the broadcast loop
     async def run(self):

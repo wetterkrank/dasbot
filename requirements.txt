@@ -6,4 +6,5 @@ marshmallow>=3.17.0
 mongomock>=4.1.2
 pymongo>=4.2.0
 pytz>=2023.1
+sentry-sdk==1.40.0
 watchdog[watchmedo]>=2.1.6

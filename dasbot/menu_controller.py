@@ -78,14 +78,14 @@ class MenuController(object):
         chat = self.chats_repo.load_chat(query.message)
         if selection == 'UNSUBSCRIBE':
             chat.unsubscribe()
-            log.debug('Chat %s unsubscribed', chat.id)
+            log.info('Settings: chat %s unsubscribed', chat.id)
         else:
             if not (selection in self.TIME_OPTIONS):
                 selection = '1200'
             selection = f"{selection[:2]}:{selection[2:]}"
             chat.set_quiz_time(selection)
             chat.subscribe()
-            log.debug('Chat %s changed quiz time to %s', chat.id, selection)
+            log.info('Settings: chat %s changed quiz time to %s', chat.id, selection)
         self.chats_repo.save_chat(chat, update_last_seen=True)
         await self.settings_confirm(query, self.ui.quiz_time_set(selection))
 

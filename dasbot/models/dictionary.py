@@ -3,12 +3,11 @@ import logging
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
 log = logging.getLogger(__name__)
-# log.setLevel(logging.DEBUG)
 
 
 class Dictionary(object):
     """
-    Dictionary 
+    Dictionary
 
     Args:
         dict_data (dict): see DictionaryEntrySchema for structure }
