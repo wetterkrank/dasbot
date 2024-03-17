@@ -66,7 +66,6 @@ class Broadcaster(object):
             result = await self.send_quiz(chat)
             if result:
                 sent += 1
-                log.info("Broadcast: %s sent.", sent)
 
     # Runs the broadcast loop
     async def run(self):

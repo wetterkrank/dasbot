@@ -29,8 +29,7 @@ settings = Dynaconf(environments=['default', 'production', 'development'],
 if settings.get('SENTRY_DSN'):
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
-        traces_sample_rate=1.0,
-        profiles_sample_rate=1.0,
+        enable_tracing=False
     )
 
 logging.basicConfig(level=logging.DEBUG if settings.get('DEBUG') else logging.INFO,
@@ -103,7 +102,7 @@ def run_webhook():
   async def on_startup(bot: Bot):
       add_coroutines()
       webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
-      log.info('setting webhook: %s', webhook_url)
+      log.info('Setting webhook: %s', webhook_url)
       await bot.delete_webhook(drop_pending_updates=True)
       await bot.set_webhook(webhook_url,  secret_token=settings.WEBHOOK_SECRET)
 
