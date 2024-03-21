@@ -30,7 +30,7 @@ class Controller(object):
         if not chat.last_seen:
             await self.ui.welcome(chat)
         scores = self.chats_repo.load_scores(chat.id)
-        chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)
+        chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary, chat.quiz_mode)
         if chat.quiz.has_questions:
             await self.ui.ask_question(chat)
         else:

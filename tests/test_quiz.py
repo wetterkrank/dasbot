@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, timedelta
 from pytz import timezone
 
-from dasbot.models.quiz import Quiz, SCHEDULE
+from dasbot.models.quiz import Quiz, SCHEDULE, QuizMode
 from dasbot.models.dictionary import Dictionary
 
 
@@ -41,7 +41,7 @@ class TestQuiz(unittest.TestCase):
         self.assertEqual(10, len(new_words))
 
     def test_new(self):
-        quiz = Quiz.new(10, self.scores, self.dictionary)
+        quiz = Quiz.new(10, self.scores, self.dictionary, QuizMode.Advance)
         self.assertEqual(len(quiz.cards), 10)
         self.assertEqual(len(quiz.scores), 3, f'unexpected scores length')
         self.assertEqual(quiz.position, 0)
@@ -52,9 +52,17 @@ class TestQuiz(unittest.TestCase):
     # all dictionary words are already "touched" -> cards are built using review words only
     def test_new_with_no_newwords(self):
         scores = {word: (1, self.now - timedelta(days=1)) for word in self.dictionary.allwords()}
-        quiz = Quiz.new(10, scores, self.dictionary)
+        quiz = Quiz.new(10, scores, self.dictionary, QuizMode.Advance)
         self.assertEqual(len(quiz.cards), 10)
         self.assertTrue(not any([card['word'] in ['Haus', 'Mann', 'Mensch'] for card in quiz.cards]))
+
+    # in Review mode review words are prioritized over new words
+    def test_new_in_review_mode(self):
+        overdue_words = list(self.dictionary.allwords())[:10]
+        scores = {word: (1, self.now - timedelta(days=1)) for word in overdue_words}
+        quiz = Quiz.new(10, scores, self.dictionary, QuizMode.Review)
+        self.assertEqual(len(quiz.cards), 10)
+        self.assertTrue(all([card['word'] in overdue_words for card in quiz.cards]))
 
     def test_schedule_review(self):
         review_date = Quiz.next_review(0, self.now)
@@ -68,7 +76,7 @@ class TestQuiz(unittest.TestCase):
             'Tag': (1, self.now - timedelta(days=1)),  # in
             'Monat': (10, self.now - timedelta(days=1))  # in
         }
-        quiz = Quiz.new(10, history, self.dictionary)
+        quiz = Quiz.new(10, history, self.dictionary, QuizMode.Advance)
         quiz.cards = [
             {'word': 'Zeit', 'articles': 'die'},
             {'word': 'Tag', 'articles': 'der'},

@@ -13,20 +13,15 @@ class TestMenuController(aiounittest.AsyncTestCase):
         scores_col = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(chats_col, scores_col)
         ui = MagicMock()
-        ui.settings_text = {
-            'main-hint': 'Please select option',
-            'main-btn1': '',
-            'main-btn2': '',
-            'quiz-len-hint': '',
-            'quiz-time-hint': '',
-            'quiz-time-btn': ''
-        }
+        settings_dict = MagicMock()
+        settings_dict.__getitem__.side_effect = lambda name: name
+        ui.settings_text = settings_dict
         self.menucon = MenuController(ui, chats_repo)
 
     async def test_main(self):
         message_mock = AsyncMock()
         await self.menucon.main(message=message_mock)
-        message_mock.answer.assert_called_with(text='Please select option', reply_markup=ANY)
+        message_mock.answer.assert_called_with(text='main-hint', reply_markup=ANY)
 
     def test_settings_kb(self):
         level = 1

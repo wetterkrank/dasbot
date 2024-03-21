@@ -24,7 +24,7 @@ class Broadcaster(object):
         """
         try:
             scores = self.chats_repo.load_scores(chat.id)
-            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary)
+            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary, chat.quiz_mode)
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             self.chats_repo.save_chat(chat)
             if chat.quiz.has_questions:

@@ -12,10 +12,14 @@ class Interface(object):
         self.settings_text = {
             'main-hint': 'Please select option',
             'main-btn1': 'Quiz length',
-            'main-btn2': 'Daily quiz time',
+            'main-btn2': 'Quiz mode',
+            'main-btn3': 'Daily quiz time',
             'quiz-len-hint': 'Please select the number of questions',
             'quiz-time-hint': 'Please select quiz time (time zone Berlin/CET)',
-            'quiz-time-btn': 'Daily quiz OFF'
+            'quiz-time-btn': 'Daily quiz OFF',
+            'quiz-mode-hint': 'Please select quiz mode',
+            'quiz-mode-advance': 'Review + new words',
+            'quiz-mode-review': 'Maximize review',
         }
 
     async def reply_with_help(self, message):
@@ -101,6 +105,9 @@ class Interface(object):
 
     def quiz_length_set(self, pref):
         return f'Quiz length is set to {pref} questions'
+
+    def quiz_mode_set(self, pref):
+        return ('Quiz mode is set to 50% review. Dasbot will add new words to each quiz.', 'Quiz mode is set to max review. Dasbot will prioritise repetition.')[pref == 'review']
 
 
 if __name__ == "__main__":

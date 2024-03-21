@@ -6,7 +6,7 @@ from pytz import timezone
 from marshmallow import Schema, fields, EXCLUDE, post_load
 from dynaconf import Dynaconf
 
-from .quiz import QuizSchema
+from .quiz import QuizMode, QuizSchema
 from dasbot import util
 
 # TODO: receive settings from __main__? we'll have to pass them through several levels
@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 class Chat(object):
     def __init__(self, chat_id, user={}, subscribed=True, last_seen=None, quiz=None,
-                 quiz_scheduled_time=None, quiz_length=None):
+                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None):
         self.id = chat_id
         self.user = user # our User is just a dictionary so far
         self.subscribed = subscribed
@@ -29,6 +29,7 @@ class Chat(object):
         self.quiz = quiz
         self.quiz_scheduled_time = quiz_scheduled_time
         self.quiz_length = quiz_length or settings.QUIZ_LENGTH
+        self.quiz_mode = quiz_mode or QuizMode.Advance
         if self.quiz_scheduled_time is None:
             # For new chats: random time btw 09:00 and 20:59 tomorrow
             self.set_quiz_time(util.random_hhmm(9, 21), skip_today=True)
@@ -72,6 +73,7 @@ class ChatSchema(Schema):
     quiz = fields.Nested(QuizSchema, missing=None)
     quiz_scheduled_time = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
     quiz_length = fields.Integer(missing=None)
+    quiz_mode = fields.Enum(QuizMode, by_value=True, missing=None)
 
     @post_load
     def get_chat(self, data, **kwargs):

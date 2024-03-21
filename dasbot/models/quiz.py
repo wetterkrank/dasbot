@@ -1,19 +1,21 @@
-from dasbot.models.dictionary import Dictionary
 import logging
 
 from datetime import datetime, timedelta
 from random import shuffle
 from typing import Tuple
+from enum import Enum
 from pytz import timezone
 
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
+from dasbot.models.dictionary import Dictionary
 from dasbot.types import Scores, Words, Cards
 from dasbot.util import equalizer
 
 log = logging.getLogger(__name__)
 
 
+# Spaced repetition schedule
 SCHEDULE = {
     0: timedelta(0),
     1: timedelta(hours=1),
@@ -24,6 +26,12 @@ SCHEDULE = {
     6: timedelta(weeks=24)
 }
 
+# MODES = ['equal', 'review'] # 50/50 review + new words or maximize review
+
+# 50/50 review + new words or maximize review
+class QuizMode(Enum):
+    Advance = 'advance'
+    Review = 'review'
 
 class Quiz(object):
     def __init__(self, length=None, cards=[], position=0, correctly=0, active=False, scores={}):
@@ -35,14 +43,14 @@ class Quiz(object):
         self.scores = scores
 
     @staticmethod
-    def new(length: int, scores: Scores, dictionary):
+    def new(length: int, scores: Scores, dictionary: Dictionary, mode: QuizMode):
         """ Returns a new fully prepared Quiz
         :param scores: dictionary {word: (score, due_date)}
         :return: new Quiz instance
         """
         review_scores = Quiz.get_review(scores, length)
         new_words = Quiz.get_new_words(scores, length, dictionary)
-        cards, selected_scores = Quiz.make_cards(length, review_scores, new_words, dictionary)
+        cards, selected_scores = Quiz.make_cards(length, review_scores, new_words, dictionary, mode)
 
         #TODO: Preferably, store review_scores with cards (requires DB migration)
         #TODO: .length -> settings.length; make a getter for .length that will return len(cards)
@@ -82,16 +90,21 @@ class Quiz(object):
         return review
 
     @staticmethod
-    def make_cards(length: int, to_review: Scores, new_words: Words, dictionary: Dictionary) -> Tuple[Cards, Scores]:
+    def make_cards(length: int, to_review: Scores, new_words: Words, dictionary: Dictionary, mode: QuizMode) -> Tuple[Cards, Scores]:
         """ Returns the question/answer cards list for the quiz
         :param length: number of cards to make
         :param to_review: dictionary of words to review, {word: (score, due_date)}
         :param new_words: list of new words
         :param dictionary: Dictionary instance
+        :param mode: quiz mode
         :return: list of dicts {word: articles}[]
         """
-        # Take care of the case when one or both lists don't have enough words for 1/2 quiz length
-        review_len, new_words_count = equalizer(len(to_review), len(new_words), length)
+        if mode == QuizMode.Review:
+            review_len = min(length, len(to_review))
+            new_words_count = length - review_len
+        else:
+            # Takes care of the case when one or both lists don't have enough words for 1/2 quiz length
+            review_len, new_words_count = equalizer(len(to_review), len(new_words), length)
 
         cards = []
         review_words = list(to_review.keys())[:review_len]

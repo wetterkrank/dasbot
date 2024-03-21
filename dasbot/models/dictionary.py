@@ -15,10 +15,11 @@ class Dictionary(object):
 
     def __init__(self, dict_data):
         self._contents = dict_data
-        self._allwords = self._contents.keys() # NOTE: keys() returns a set-like view
+        self._allwords = self._contents.keys()
 
     def allwords(self):
-        """ Returns the list of all words """
+        """ Returns a set-like view of all words """
+        # NOTE: use list() to make a copy of the set
         return self._allwords
 
     def wordcount(self):
