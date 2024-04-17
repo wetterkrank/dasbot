@@ -80,16 +80,20 @@ class Interface(object):
     async def quiz_empty(self, message):
         await message.reply("Hmm, I couldn't find any new words or words to review. Well done! Come back later!")
 
-    async def send_stats(self, message, stats, dict_length):
+    async def send_stats(self, message, stats, review_count, dict_length):
         def bullet(item):
             return f"• {html.quote(item['articles'])} {html.quote(item['word'])}: {item['count']}  "
         def wordlist(key):
             return "\n".join([bullet(item) for item in stats[key]]) + "\n\n"
-        progress = f"{round(stats.get('touched') / dict_length * 100)}%" or ''
-        text = f"📈 <b>Your progress</b>: {progress}\n{stats['touched']} words touched out of {dict_length}\n\n"
-        text += "<b>I recommend working on these words</b>:\n\n"
+        memorized = stats.get('touched') - review_count
+        progress = round(memorized / dict_length * 100)
+        text = f"📈 <b>Your progress</b>: {progress}%\n"
+        text += f"• words seen: {stats['touched']} / {dict_length}\n"
+        text += f"• words memorized: {memorized}\n"
+        text += f"• words to repeat: {review_count}\n\n"
+        text += "<b>I recommend working on these words</b>:\n"
         if len(stats['mistakes_30days']) > 0:
-            text += "Last 30 days' top ❌\n"
+            text += "Last 30 days' top mistakes\n"
             text += wordlist('mistakes_30days')
         await message.answer(text)
 

@@ -114,6 +114,7 @@ class Quiz(object):
             if article:
                 cards.append({'word': word, 'articles': article})
             else:
+                # TODO: check the presence of the word in the dictionary before equalizing?
                 log.error('Error @ make_cards, missing dictionary word %s', word)
         new_words = new_words[:new_words_count]
         for word in new_words:

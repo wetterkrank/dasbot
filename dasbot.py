@@ -2,13 +2,13 @@ import logging
 import sentry_sdk
 
 import asyncio
+from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandStart
 from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-
-from aiohttp import web
+from dynaconf import Dynaconf
 
 from dasbot.db.database import Database
 from dasbot.db.dict_repo import DictRepo
@@ -19,8 +19,6 @@ from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
 from dasbot.maintenance import Maintenance
 from dasbot.menu_controller import MenuController, MenuCallback
-
-from dynaconf import Dynaconf
 
 settings = Dynaconf(environments=['default', 'production', 'development'],
                     settings_file='settings.toml',
@@ -77,7 +75,7 @@ async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
 @dp.message(Command('stats'))
 async def stats_command(message: Message):
     log.debug('/stats received: %s', message)
-    await chatcon.stats(message, dictionary)
+    await chatcon.stats(message)
 
 # generic message handler; should be last
 @dp.message()

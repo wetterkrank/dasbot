@@ -38,9 +38,13 @@ class Controller(object):
         self.chats_repo.save_chat(chat, update_last_seen=True)
 
     # /stats
-    async def stats(self, message: Message, dictionary):
+    async def stats(self, message: Message):
+        scores = self.chats_repo.load_scores(message.chat.id)
+        review_count = len(Quiz.get_review(scores, len(scores)))
         stats = self.stats_repo.get_stats(message.chat.id)
-        await self.ui.send_stats(message, stats, dictionary.wordcount())
+        dict_length = self.dictionary.wordcount()
+        stats['touched'] = min(stats.get('touched'), dict_length)
+        await self.ui.send_stats(message, stats, review_count, dict_length)
 
     # not-a-command
     async def generic(self, message: Message):
