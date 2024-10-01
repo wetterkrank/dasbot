@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.3.1
+        uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           check-name: "Run tests"
