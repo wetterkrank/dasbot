@@ -2,7 +2,8 @@ name: Publish Docker image
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
 
 jobs:
   push_to_registry:
@@ -24,12 +25,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          check-name: "Run tests"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+        uses: ./.github/workflows/tests.yml
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2.1.0
