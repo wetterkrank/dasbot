@@ -6,8 +6,12 @@ on:
       - master
 
 jobs:
+  run_tests:
+    name: Run tests
+    uses: ./.github/workflows/tests.yml
   push_to_registry:
     name: Push Docker image to Docker Hub
+    needs: run_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -23,9 +27,6 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
-      - name: Wait for tests to succeed
-        uses: ./.github/workflows/tests.yml
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2.1.0
