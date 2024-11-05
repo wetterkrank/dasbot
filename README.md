@@ -14,6 +14,12 @@ https://dasbot.yak.supplies
 As an alternative,
 - Run `docker compose up` after the first two steps
 
+### Dictionary
+You'll need a db collection 'dictionary' with documents like this:
+```
+{"word":"Bahnhof","articles":"der","translation":{"en":"(railway) station"},"level":85}
+```
+
 ## Notes
 
 **Todo**
@@ -25,9 +31,10 @@ As an alternative,
 - Add Docker build/push actions to CI ✔
 - Randomize quiz time on 1st start ✔
 - Move DB to MongoDB Atlas ✔
+- Revise the dictionary
+- Add some tools for dictionary management
 - Select words by level -- A1, B1, ...
 - i18n
-- Revise the words database
 - Let users add their words
 - "Forget me" command
 - Custom quiz intervals ("N times/day every 3 hours")
