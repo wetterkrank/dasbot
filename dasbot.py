@@ -8,8 +8,8 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandStart
 from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from dynaconf import Dynaconf
 
+from dasbot.config import settings
 from dasbot.db.database import Database
 from dasbot.db.dict_repo import DictRepo
 from dasbot.db.chats_repo import ChatsRepo
@@ -19,10 +19,6 @@ from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
 from dasbot.maintenance import Maintenance
 from dasbot.menu_controller import MenuController, MenuCallback
-
-settings = Dynaconf(environments=['default', 'production', 'development'],
-                    settings_file='settings.toml',
-                    load_dotenv=True)
 
 if settings.get('SENTRY_DSN'):
     sentry_sdk.init(

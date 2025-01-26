@@ -8,3 +8,4 @@ pymongo>=4.2.0
 pytz>=2023.1
 sentry-sdk==2.8.0
 watchdog[watchmedo]>=2.1.6
+posthog>=3.8.4
