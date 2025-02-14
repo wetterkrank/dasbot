@@ -13,9 +13,7 @@ class TestMenuController(aiounittest.AsyncTestCase):
         scores_col = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(chats_col, scores_col)
         ui = MagicMock()
-        settings_dict = MagicMock()
-        settings_dict.__getitem__.side_effect = lambda name: name
-        ui.settings_text = settings_dict
+        ui.settings_text = lambda name: name
         self.menucon = MenuController(ui, chats_repo)
 
     async def test_main(self):

@@ -1,11 +1,12 @@
 ﻿aiogram==3.2.0
-aiohttp>=3.9.0
+aiohttp==3.9.0
 aiounittest>=1.4.2
 dynaconf>=3.1.9
+i18nice[YAML]>=0.15.5
 marshmallow>=3.17.0
 mongomock>=4.1.2
 pymongo>=4.2.0
-pytz>=2023.1
-sentry-sdk==2.8.0
-watchdog[watchmedo]>=2.1.6
 posthog>=3.8.4
+pytz>=2025.1
+sentry-sdk>=2.8.0
+watchdog[watchmedo]>=2.1.6

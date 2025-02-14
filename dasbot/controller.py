@@ -1,11 +1,11 @@
 import logging
-from aiogram import Bot
 
+from aiogram import Bot
 from aiogram.types import Message
+
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.db.stats_repo import StatsRepo
 from dasbot.models.dictionary import Dictionary
-
 from dasbot.models.quiz import Quiz
 from dasbot.interface import Interface
 from dasbot.analytics import tracker

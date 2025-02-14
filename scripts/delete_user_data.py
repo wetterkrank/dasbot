@@ -15,10 +15,15 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
+chat_id = 0  # telegram chat_id
 db = Database(settings).connect()
 
 scores = db["scores"]
-query = {"word": "Pro"}
-
-log.info("Scores records: %s" % scores.count_documents(query))
+query = {"chat_id": chat_id}
+log.info("Scores records count: %s" % scores.count_documents(query))
 # scores.delete_many(query)
+
+stats = db["stats"]
+query = {"chat_id": chat_id}
+log.info("Stats records count: %s" % stats.count_documents(query))
+# stats.delete_many(query)
