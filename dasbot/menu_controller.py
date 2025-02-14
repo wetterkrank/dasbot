@@ -36,19 +36,19 @@ class MenuController(object):
         self.SETTINGS = {
             0: {
                 "main": {
-                    "hint": self.ui.settings_text["main-hint"],
+                    "hint": self.ui.settings_text("main-hint"),
                     "row_len": 2,
                     "btns": [
                         {
-                            "text": self.ui.settings_text["main-btn1"],
+                            "text": self.ui.settings_text("main-len"),
                             "action": "quiz-len",
                         },
                         {
-                            "text": self.ui.settings_text["main-btn2"],
+                            "text": self.ui.settings_text("main-mode"),
                             "action": "quiz-mode",
                         },
                         {
-                            "text": self.ui.settings_text["main-btn3"],
+                            "text": self.ui.settings_text("main-time"),
                             "action": "quiz-time",
                         },
                     ],
@@ -56,12 +56,12 @@ class MenuController(object):
             },
             1: {
                 "quiz-len": {
-                    "hint": self.ui.settings_text["quiz-len-hint"],
+                    "hint": self.ui.settings_text("quiz-len-hint"),
                     "row_len": 4,
                     "btns": [{"text": n, "action": n} for n in self.LENGTH_OPTIONS],
                 },
                 "quiz-time": {
-                    "hint": self.ui.settings_text["quiz-time-hint"],
+                    "hint": self.ui.settings_text("quiz-time-hint"),
                     "row_len": 4,
                     "btns": [
                         {"text": f"{t[:2]}:{t[2:]}", "action": t}
@@ -69,21 +69,21 @@ class MenuController(object):
                     ]
                     + [
                         {
-                            "text": self.ui.settings_text["quiz-time-btn"],
+                            "text": self.ui.settings_text("quiz-time-btn"),
                             "action": "UNSUBSCRIBE",
                         }
                     ],
                 },
                 "quiz-mode": {
-                    "hint": self.ui.settings_text["quiz-mode-hint"],
+                    "hint": self.ui.settings_text("quiz-mode-hint"),
                     "row_len": 2,
                     "btns": [
                         {
-                            "text": self.ui.settings_text["quiz-mode-advance"],
+                            "text": self.ui.settings_text("quiz-mode-advance"),
                             "action": QuizMode.Advance.value,
                         },
                         {
-                            "text": self.ui.settings_text["quiz-mode-review"],
+                            "text": self.ui.settings_text("quiz-mode-review"),
                             "action": QuizMode.Review.value,
                         },
                     ],

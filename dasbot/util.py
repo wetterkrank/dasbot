@@ -1,13 +1,14 @@
-# NOTE: We don't handle TZ changes
+import logging
 
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 import random
-
 import time
-import logging
 from functools import wraps
+
+
+# NOTE: We don't handle TZ changes
 
 def next_hhmm(hhmm, now, skip_today=False):
     """

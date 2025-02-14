@@ -25,6 +25,7 @@ class Chat(object):
         self.quiz_mode = quiz_mode or QuizMode.Advance
         if self.quiz_scheduled_time is None:
             # For new chats: random time btw 09:00 and 20:59 tomorrow
+            # TODO: use current time tomorrow instead
             self.set_quiz_time(util.random_hhmm(9, 21), skip_today=True)
 
     def stamp_time(self):

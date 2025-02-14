@@ -29,7 +29,7 @@ class TestController(aiounittest.AsyncTestCase):
     async def test_stats(self):
         message_mock = AsyncMock()
         await self.controller.stats(message_mock)
-        message_mock.answer.assert_called_with(AnyStringWith('<b>Your progress</b>: 0%'))
+        message_mock.answer.assert_called_with(AnyStringWith('<b>Your progress: 0%</b>'))
         message_mock.answer.assert_called_with(AnyStringWith('words seen: 0 / 2'))
         message_mock.answer.assert_called_with(AnyStringWith('words to repeat: 0'))
         message_mock.answer.assert_called_with(AnyStringWith('words memorized: 0'))

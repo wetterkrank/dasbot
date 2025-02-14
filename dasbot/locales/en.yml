@@ -1,0 +1,54 @@
+en:
+  help: Type /start to start the quiz, /settings to change the quiz time or length. Any issues -- please message @wetterkrank.
+  welcome: |
+    Hi! I'm Dasbot.
+
+    My mission is to help you memorize German articles.
+    I'll be sending you a short quiz every day.
+
+    My dictionary has about 2000 most frequently used German nouns, and we'll start from the most common ones like Frau, Kind, Mann, and move on to less frequent words as you progress.
+
+    To change the preferred quiz time/length (or turn it off), use /settings command. Practice any time by sending /start.
+
+    Let's go!
+  daily_hello: "Hi, it's Dasbot! Here's your daily German articles quiz:"
+  question: "%{number}/%{total}. What's the article for <b>%{word}</b>?"
+  hint: "%{word}: %{hint}"
+  feedback:
+    correct: "Correct, <b>%{answer}</b> ✅"
+    incorrect: "❌ Incorrect, <b>%{answer}</b>"
+  rate:
+    perfect: perfeKt!
+    excellent: excellent!
+    good: good job!
+    ok: keep trying!
+  result: |
+    %{correct} out of %{total}, %{rate}
+    To start over, type /start, or /help for more info.
+  empty: Hmm, I couldn't find any new words or words to review. Well done! Come back later!
+  stats:
+    progress: |
+        📈 <b>Your progress: %{progress}%%</b>
+        • words seen: %{touched} / %{total}
+        • words memorized: %{memorized}
+        • words to repeat: %{to_review}
+    mistakes: |
+        <b>I recommend working on these words</b>:
+        Last 30 days' top mistakes
+  settings:
+    menu:
+      main-hint: Please select option
+      main-len: Quiz length
+      main-mode: Quiz mode
+      main-time: Daily quiz time
+      quiz-len-hint: Please select the number of questions
+      quiz-time-hint: Please select quiz time (time zone Berlin/CET)
+      quiz-time-btn: Daily quiz OFF
+      quiz-mode-hint: Please select quiz mode
+      quiz-mode-advance: Review + new words
+      quiz-mode-review: Maximize review
+    quiz_time_set: "Daily quiz time is set to %{pref} (Berlin time)"
+    quiz_off: Daily quiz is off
+    quiz_length_set: "Quiz length is set to %{pref} questions"
+    quiz_mode_advance: Quiz mode is set to 50%% review. Dasbot will add new words to each quiz.
+    quiz_mode_review: Quiz mode is set to max review. Dasbot will prioritise repetition.
