@@ -1,11 +1,12 @@
+import mongomock
 import aiounittest
 from unittest.mock import AsyncMock, MagicMock, ANY
-import mongomock
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.controller import Controller
 from dasbot.db.stats_repo import StatsRepo
 from dasbot.models.dictionary import Dictionary
+from dasbot.i18n import set_locale
 
 class AnyStringWith(str):
     def __eq__(self, other):
@@ -25,6 +26,7 @@ class TestController(aiounittest.AsyncTestCase):
         }
         dictionary = Dictionary(dict_data)
         self.controller = Controller(bot, chats_repo, stats_repo, dictionary)
+        set_locale("en")
 
     async def test_stats(self):
         message_mock = AsyncMock()

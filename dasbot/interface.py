@@ -1,8 +1,10 @@
 import logging
-from dasbot.i18n import t
 
 from aiogram import html
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+
+from dasbot.i18n import t
+
 
 log = logging.getLogger(__name__)
 
@@ -11,9 +13,6 @@ log = logging.getLogger(__name__)
 class Interface(object):
     def __init__(self, bot):
         self.bot = bot
-
-    def settings_text(self, key):
-        return t(f"settings.menu.{key}")
 
     async def reply_with_help(self, message):
         await message.reply(t("help"))
@@ -101,20 +100,6 @@ class Interface(object):
         buttons = [(KeyboardButton(text=text) for text in labels)]
         keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         return keyboard
-
-    def quiz_time_set(self, pref):
-        return (t("settings.quiz_time_set", pref=pref), t("settings.quiz_off"))[
-            pref == "UNSUBSCRIBE"
-        ]
-
-    def quiz_length_set(self, pref):
-        return t("settings.quiz_length_set", pref=pref)
-
-    def quiz_mode_set(self, pref):
-        return (
-            t("settings.quiz_mode_advance"),
-            t("settings.quiz_mode_review"),
-        )[pref == "review"]
 
 
 if __name__ == "__main__":
