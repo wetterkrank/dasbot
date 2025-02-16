@@ -7,6 +7,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 from dasbot import util
 from dasbot.models.quiz import Quiz
 from dasbot.models.chat import Chat
+from dasbot.i18n import set_locale
 
 log = logging.getLogger(__name__)
 
@@ -63,6 +64,7 @@ class Broadcaster(object):
         log.info("Broadcast: %s pending", len(pending_chats))
         sent = 0
         for chat in pending_chats:
+            set_locale(chat.user.get("last_used_locale"))
             result = await self.send_quiz(chat)
             if result:
                 sent += 1
