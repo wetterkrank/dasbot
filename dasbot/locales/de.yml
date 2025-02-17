@@ -1,0 +1,66 @@
+de:
+  help: |
+    Schicke /start, um das Quiz zu starten, oder /settings, um die Uhrzeit des Quiz oder die Anzahl der Fragen zu ändern.
+    Ein Problem gefunden? Bitte kontaktiere @wetterkrank.
+  welcome: |
+    Hi! Ich bin Dasbot.
+
+    Meine Mission ist es, dir zu helfen, die Artikel im Deutschen zu lernen.
+    Ich schicke dir jeden Tag ein kurzes Quiz.
+
+    Mein Wörterbuch enthält etwa 2000 der am häufigsten verwendeten deutschen Nomen. Wir beginnen mit den häufigsten Wörtern wie „Frau“, „Kind“ und „Mann“ und gehen zu selteneren Wörtern über, wenn du Fortschritte machst.
+
+    Um deine bevorzugte Quizzeit oder -länge zu ändern (oder es auszuschalten), schicke /settings. Du kannst jederzeit mit /start üben.
+
+    Los geht's!
+  daily_hello: "Hi, hier ist Dasbot! Dein tägliches deutsches Artikel-Quiz ist fertig:"
+  question: "%{number}/%{total}. Welchen Artikel hat <b>%{word}</b>?"
+  hint: "%{word}: %{hint}"
+  feedback:
+    correct: "Richtig, <b>%{answer}</b> ✅"
+    incorrect: "❌ Falsch, <b>%{answer}</b>"
+  rate:
+    perfect: perfeKt!
+    excellent: ausgezeichnet!
+    good: gut gemacht!
+    ok: übe weiter!
+  result: |
+    %{correct} von %{total} richtig, %{rate}
+    Um zu neu starten, schicke /start, oder /help für mehr Info.
+  empty: Hmm, ich konnte keine neuen Wörter oder Wiederholungen für dich finden. Gut gemacht! Schau später wieder vorbei!
+  stats:
+    progress: |
+        📈 <b>Deine Statistik: %{progress}%%</b>
+        • Wörter gesehen: %{touched} / %{total}
+        • Erinnerte Wörter: %{memorized}
+        • Wörter zum Wiederholen: %{to_review}
+    mistakes: |
+        <b>Ich empfehle dir, diese Wörter zu üben</b>:
+        Deine häufigsten Fehler der letzten 30 Tage
+  settings:
+    menu:
+      0:
+        main:
+          hint: Bitte wähle eine Option
+          buttons:
+            quiz_length: Quiz Dauer
+            quiz_mode: Wiederholung/neue Wörter
+            quiz_time: Quiz Zeit
+      1:
+        quiz_length:
+          hint: Bitte wähle die Anzahl der Fragen
+        quiz_time:
+          hint: Bitte wähle eine Quizzeit (Zeitzone Berlin/CET)
+          buttons:
+            off: Tägliches Quiz AUS
+        quiz_mode:
+          hint: Bitte wähle Quiz Modus
+          buttons:
+            advance: Wiederholung + neue Wörter
+            review: Maximale Wiederholung
+    action:
+      quiz_time_set: "Die Quizzeit ist auf %{pref} (Berliner Zeit) eingestellt"
+      quiz_off: Tägliches Quiz ist aus
+      quiz_length_set: "Die Quizdauer ist auf %{pref} Fragen eingestellt"
+      quiz_mode_advance: Der Quizmodus ist auf "Wiederholung + neue Wörter" eingestellt. Dasbot wird jedem Quiz neue Wörter hinzufügen.
+      quiz_mode_review: Der Quizmodus ist auf "Maximale Wiederholung" eingestellt. Die Wiederholung hat Priorität vor neuen Wörtern.

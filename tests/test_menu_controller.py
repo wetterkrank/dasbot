@@ -17,7 +17,7 @@ class TestMenuController(aiounittest.AsyncTestCase):
     async def test_main(self):
         message_mock = AsyncMock()
         await self.menucon.main(message=message_mock)
-        message_mock.answer.assert_called_with(text='Please select option', reply_markup=ANY)
+        message_mock.answer.assert_called_with(text='Please select an option', reply_markup=ANY)
 
     def test_settings_kb(self):
         level = 1

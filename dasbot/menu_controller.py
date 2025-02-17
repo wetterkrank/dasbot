@@ -163,5 +163,7 @@ class MenuController(object):
             f"quiz_mode_{selection}",
         )
 
+    # NOTE: Telegram web has a bug with inline kb not disappearing
+    # Possible workaround: delete the message with the kb and send a new one
     async def action_confirm(self, query, key, **kwargs):
         await query.message.edit_text(text=t(f"settings.action.{key}", **kwargs))
