@@ -3,7 +3,7 @@ import i18n
 
 i18n.load_path.append("dasbot/locales")
 i18n.set("filename_format", "{locale}.{format}")
-i18n.set("available_locales", ["en", "ru"])
+i18n.set("available_locales", ["en", "de", "ru"])
 i18n.load_everything()
 
 request_locale = contextvars.ContextVar("request_locale")

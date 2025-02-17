@@ -43,8 +43,8 @@ de:
         main:
           hint: Bitte wähle eine Option
           buttons:
-            quiz_length: Quiz Dauer
-            quiz_mode: Wiederholung/neue Wörter
+            quiz_length: Anzahl der Fragen
+            quiz_mode: Wiederholung Modus
             quiz_time: Quiz Zeit
       1:
         quiz_length:
@@ -56,7 +56,7 @@ de:
         quiz_mode:
           hint: Bitte wähle Quiz Modus
           buttons:
-            advance: Wiederholung + neue Wörter
+            advance: Wiederholung + neue
             review: Maximale Wiederholung
     action:
       quiz_time_set: "Die Quizzeit ist auf %{pref} (Berliner Zeit) eingestellt"
