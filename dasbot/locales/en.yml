@@ -6,12 +6,12 @@ en:
     My mission is to help you memorize German articles.
     I'll be sending you a short quiz every day.
 
-    My dictionary has about 2000 most frequently used German nouns, and we'll start from the most common ones like Frau, Kind, Mann, and move on to less frequent words as you progress.
+    My dictionary contains about 2000 most frequently used German nouns. We'll start with the most common ones, like Frau, Kind, Mann, and move on to less frequent words as you progress.
 
-    To change the preferred quiz time/length (or turn it off), use /settings command. Practice any time by sending /start.
+    To change your preferred quiz time/length (or turn it off), use the /settings command. Practice any time by sending /start.
 
     Let's go!
-  daily_hello: "Hi, it's Dasbot! Here's your daily German articles quiz:"
+  daily_hello: "Hi, it's Dasbot! Here's your daily German article quiz:"
   question: "%{number}/%{total}. What's the article for <b>%{word}</b>?"
   hint: "%{word}: %{hint}"
   feedback:
@@ -39,7 +39,7 @@ en:
     menu:
       0:
         main:
-          hint: Please select option
+          hint: Please select an option
           buttons:
             quiz_length: Quiz length
             quiz_mode: Quiz mode
@@ -61,4 +61,4 @@ en:
       quiz_off: Daily quiz is off
       quiz_length_set: "Quiz length is set to %{pref} questions"
       quiz_mode_advance: Quiz mode is set to 50%% review. Dasbot will add new words to each quiz.
-      quiz_mode_review: Quiz mode is set to max review. Dasbot will prioritise repetition.
+      quiz_mode_review: Quiz mode is set to maximum review. Dasbot will prioritize repetition over new words.
