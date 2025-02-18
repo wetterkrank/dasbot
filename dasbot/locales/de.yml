@@ -30,7 +30,7 @@ de:
   empty: Hmm, ich konnte keine neuen Wörter oder Wiederholungen für dich finden. Gut gemacht! Schau später wieder vorbei!
   stats:
     progress: |
-        📈 <b>Deine Statistik: %{progress}%%</b>
+        📈 <b>Deine Fortschritte: %{progress}%%</b>
         • Wörter gesehen: %{touched} / %{total}
         • Erinnerte Wörter: %{memorized}
         • Wörter zum Wiederholen: %{to_review}
