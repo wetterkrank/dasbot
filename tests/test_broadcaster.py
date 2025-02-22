@@ -20,11 +20,11 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
     tomorrow = datetime.now(tz=timezone.utc) + timedelta(days=1)
 
     @staticmethod
-    async def success(chat):
+    async def success(*args):
         pass
 
     @staticmethod
-    async def failGeneric(chat):
+    async def failGeneric(*args):
         raise TelegramAPIError(method=SendMessage, message="foobar")
 
     def setUp(self):
@@ -32,7 +32,7 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
-        self.dictionary = Dictionary({w: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': 1} for w in ['Tag', 'Monat', 'Jahr']})
+        self.dictionary = Dictionary({w: {'articles': 'foo', 'note': {'en': 'bar'}, 'frequency': 1} for w in ['Tag', 'Monat', 'Jahr']})
         self.broadcaster = Broadcaster(self.ui_mock, chats_repo, self.dictionary)
 
     async def test_send_quiz(self):

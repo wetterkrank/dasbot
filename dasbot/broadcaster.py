@@ -31,7 +31,7 @@ class Broadcaster(object):
             if chat.quiz.has_questions:
                 log.info("Broadcast: sending message to %s", chat.id)
                 await self.ui.daily_hello(chat)
-                await self.ui.ask_question(chat)
+                await self.ui.ask_question(chat, self.dictionary)
                 self.chats_repo.save_chat(chat)
                 await asyncio.sleep(1)  # FYI, TG limit: 30 messages/second
                 return True

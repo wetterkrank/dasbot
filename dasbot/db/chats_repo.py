@@ -19,7 +19,6 @@ class ChatsRepo(object):
         log.info("%s chat(s) in DB" % self._chats.count_documents({}))
         log.info("%s scores(s) in DB" % self._scores.count_documents({}))
 
-    # NOTE: Could make this more explicit by separating load_chat and create_chat methods
     def load_chat(self, message: Message):
         """
         :param message: Telegram message
@@ -28,7 +27,6 @@ class ChatsRepo(object):
         tg_chat = message.chat  # NOTE: Chat may be a group etc and have many users
         locale = message.from_user.language_code if message.from_user else None
         chat_data = self._chats.find_one({"chat_id": tg_chat.id}, {"_id": 0})
-        # log.debug("requested chat %s, result: %s", tg_chat.id, chat_data)
         if chat_data:
             chat: Chat = ChatSchema().load(chat_data)
             chat.user["last_used_locale"] = (
@@ -53,7 +51,6 @@ class ChatsRepo(object):
         data = ChatSchema().dump(chat)
         update = {"$set": data}
         result = self._chats.update_one(query, update, upsert=True)
-        # log.debug("saved chat %s, result: %s", chat.id, result.raw_result)
         return result
 
     # TODO: return ids instead of full objects, or do it in batches
@@ -70,6 +67,7 @@ class ChatsRepo(object):
         return chats
 
     # TODO: make Score a separate model?
+    # TODO: cache the scores in memory instead of querying on every request
     def load_scores(self, chat_id):
         """
         :param chat_id: chat id
@@ -80,10 +78,8 @@ class ChatsRepo(object):
         scores = {
             item["word"]: (item["score"], item["revisit"]) for item in results_cursor
         }
-        # log.debug("loaded all scores for chat %s, count: %s", chat_id, len(scores))
         return scores
 
-    # TODO: check if saved successfully?
     def save_score(self, chat: Chat, word, score):
         """
         :param chat: chat instance
@@ -94,7 +90,6 @@ class ChatsRepo(object):
         query = {"chat_id": chat.id, "word": word}
         update = {"$set": {"score": score[0], "revisit": score[1]}}
         result = self._scores.update_one(query, update, upsert=True)
-        # log.debug("saved score for chat %s, result: %s", chat.id, result.raw_result)
         return result
 
 

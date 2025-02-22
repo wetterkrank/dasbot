@@ -3,7 +3,7 @@ import logging
 from aiogram import html
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
-from dasbot.i18n import t
+from dasbot.i18n import request_locale, t
 
 
 log = logging.getLogger(__name__)
@@ -14,8 +14,8 @@ class Interface(object):
     def __init__(self, bot):
         self.bot = bot
 
-    async def reply_with_help(self, message):
-        await message.reply(t("help"))
+    async def help(self, message):
+        await message.answer(t("help"))
 
     async def welcome(self, chat):
         await self.bot.send_message(chat.id, t("welcome"))
@@ -23,19 +23,30 @@ class Interface(object):
     async def daily_hello(self, chat):
         await self.bot.send_message(chat.id, t("daily_hello"))
 
-    async def ask_question(self, chat):
-        text = t(
-            "question",
-            number=chat.quiz.pos,
-            total=chat.quiz.length,
-            word=html.quote(chat.quiz.question),
-        )
+    async def ask_question(self, chat, dictionary):
+        word = chat.quiz.question
+        note = dictionary.note(word, 'de')
+        if note:
+            text = t(
+                "question_with_note",
+                number=chat.quiz.pos,
+                total=chat.quiz.length,
+                word=html.quote(word),
+                note=note,
+            )
+        else:
+            text = t(
+                "question",
+                number=chat.quiz.pos,
+                total=chat.quiz.length,
+                word=html.quote(word),
+            )
         await self.bot.send_message(
-            chat.id, text, reply_markup=Interface.quiz_kb(), disable_notification=True
+            chat.id, text, reply_markup=self.quiz_kb(), disable_notification=True
         )
-
     async def give_hint(self, quiz, message, dictionary):
-        translation = dictionary.translation(quiz.question, "en") or "?"
+        language = request_locale.get()
+        translation = dictionary.note(quiz.question, language) or "¯\_(ツ)_/¯"
         await message.answer(
             t("hint", word=quiz.question, hint=translation),
             disable_notification=True,
@@ -94,8 +105,7 @@ class Interface(object):
             text += "\n" + t("stats.mistakes") + wordlist("mistakes_30days")
         await message.answer(text)
 
-    @staticmethod
-    def quiz_kb() -> ReplyKeyboardMarkup:
+    def quiz_kb(self) -> ReplyKeyboardMarkup:
         labels = ("der", "die", "das", "?")
         buttons = [(KeyboardButton(text=text) for text in labels)]
         keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
