@@ -13,6 +13,5 @@ def set_locale(locale):
     request_locale.set(locale if locale in i18n.get("available_locales") else "en")
     i18n.set("fallback", "en")
 
-
 def t(key, **kwargs):
     return i18n.translator.t(key, locale=request_locale.get(), **kwargs)

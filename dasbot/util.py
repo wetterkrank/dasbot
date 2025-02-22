@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import random
 import time
 from functools import wraps
 
@@ -41,18 +40,6 @@ def next_quiz_time(last_quiz_time, now=None):
     return last_quiz_time.replace(year=tomorrow_date.year,
                                   month=tomorrow_date.month,
                                   day=tomorrow_date.day)
-
-def random_hhmm(start_hour, end_hour, seed=None):
-    """
-    :param start_hour: start hour, example: 0
-    :param end_hour: end hour, example: 24
-    :param seed: random generator seed, for testing
-    :return: random time as a string 'HH:MM'
-    """
-    random.seed(seed)
-    hour = random.randint(start_hour, end_hour - 1)
-    minute = random.randint(0, 59)
-    return '{0:02}:{1:02}'.format(hour, minute)
 
 def month_ago(now=None):
     """
