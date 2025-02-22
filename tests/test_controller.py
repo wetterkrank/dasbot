@@ -21,8 +21,8 @@ class TestController(aiounittest.AsyncTestCase):
         stats_repo = StatsRepo(scores_col, stats_col)
         bot = MagicMock()
         dict_data = {
-            "foo": {"articles": "bar", "translation": {"en": "baz"}, "level": 1},
-            "bar": {"articles": "foo", "translation": {"en": "woo"}, "level": 2},
+            "foo": {"articles": "bar", "note": {"en": "baz"}, "frequency": 1},
+            "bar": {"articles": "foo", "note": {"en": "woo"}, "frequency": 2},
         }
         dictionary = Dictionary(dict_data)
         self.controller = Controller(bot, chats_repo, stats_repo, dictionary)

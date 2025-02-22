@@ -13,6 +13,7 @@ en:
     Let's go!
   daily_hello: "Hi, it's Dasbot! Here's your daily German article quiz:"
   question: "%{number}/%{total}. What's the article for <b>%{word}</b>?"
+  question_with_note: "%{number}/%{total}. What's the article for <b>%{word}</b> (%{note})?"
   hint: "%{word}: %{hint}"
   feedback:
     correct: "Correct, <b>%{answer}</b> ✅"

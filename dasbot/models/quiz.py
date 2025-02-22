@@ -48,7 +48,7 @@ class Quiz(object):
         :param scores: dictionary {word: (score, due_date)}
         :return: new Quiz instance
         """
-        review_scores = Quiz.get_review(scores, length)
+        review_scores = Quiz.get_review(scores, length, dictionary)
         new_words = Quiz.get_new_words(scores, length, dictionary)
         cards, selected_scores = Quiz.make_cards(length, review_scores, new_words, dictionary, mode)
 
@@ -68,14 +68,14 @@ class Quiz(object):
         """ Selects from the dictionary words which have not been seen yet
             Returns max_num (or fewer) words
         """
-        all_new_words = dictionary.allwords() - scores.keys()
-        all_sorted = sorted(all_new_words, key=lambda k: dictionary.level(k))
+        all_new_words = dictionary.words() - scores.keys()
+        all_sorted = sorted(all_new_words, key=lambda k: -dictionary.frequency(k))
         count = min(len(all_new_words), max_num)
         new_words = [v for _, v in zip(range(count), all_sorted)]
         return new_words
 
     @staticmethod
-    def get_review(scores: Scores, max_len: int, now=None) -> Scores:
+    def get_review(scores: Scores, max_len: int, dictionary: Dictionary, now=None) -> Scores:
         """ Selects overdue words to practice from the history dict
         :param scores: dictionary {word: (score, due_date)}
         :param max_len: integer; function returns this (or fewer) entries
@@ -84,7 +84,7 @@ class Quiz(object):
         """
         # Strip TZ here vs add to the scores' dates
         now = now or datetime.now(tz=timezone('UTC')).replace(tzinfo=None)
-        overdue = filter(lambda rec: rec[1][1] and now > rec[1][1], scores.items())
+        overdue = filter(lambda score: dictionary.has(score[0]) and score[1][1] and now > score[1][1], scores.items())
         review = {k: v for _, (k, v) in zip(range(max_len), overdue)}
         log.debug("overdue scores count: %s", len(review))
         return review

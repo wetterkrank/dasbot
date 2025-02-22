@@ -41,7 +41,7 @@ dp.callback_query.middleware(I18nMiddleware())
 bot = Bot(settings.TELEGRAM_TOKEN, parse_mode=ParseMode.HTML)
 db = Database(settings).connect()
 
-dictionary = DictRepo(db["dictionary"]).load()
+dictionary = DictRepo(db["dictionary_v2"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
 stats_repo = StatsRepo(db["scores"], db["stats"])
 chatcon = Controller(bot, chats_repo, stats_repo, dictionary)

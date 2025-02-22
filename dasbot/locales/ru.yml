@@ -13,6 +13,7 @@ ru:
     Поехали!
   daily_hello: "Привет, это Dasbot! Твой ежедневный тест на немецкие артикли:"
   question: "%{number}/%{total}. Какой артикль у <b>%{word}</b>?"
+  question_with_note: "%{number}/%{total}. Какой артикль у <b>%{word}</b> (%{note})?"
   hint: "%{word}: %{hint}"
   feedback:
     correct: "Верно, <b>%{answer}</b> ✅"
@@ -57,8 +58,8 @@ ru:
               advance: Повторение + новое
               review: Сначала повторение
       action:
-        quiz_time_set: "Ок, время отправки теста: %{pref} по Берлину"
-        quiz_off: Ок, ежедневная рассылка выключена
-        quiz_length_set: "Ок, вопросов в тесте будет %{pref}"
+        quiz_time_set: "Ок, время теста %{pref} по Берлину."
+        quiz_off: Ок, ежедневная рассылка выключена.
+        quiz_length_set: "Ок, в тесте будет %{pref} вопросов."
         quiz_mode_advance: Ок, режим повторения 50/50. В каждом тесте будут новые слова.
         quiz_mode_review: Ок, приоритет на повторении. Новые слова будут добавляться, когда старые выучены.

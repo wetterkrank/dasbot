@@ -12,11 +12,11 @@ class TestQuiz(unittest.TestCase):
         self.now = datetime.now(tz=timezone('UTC')).replace(tzinfo=None)  # NOTE: We're using TZ-naive dt here
         # 13 words in the dictionary
         words = [
-            ('Tag', 1), ('Monat', 1), ('Jahr', 1),
-            ('Mal', 100), ('Zeit', 100), ('Beispiel', 100), ('Deutsch', 100), ('Frau', 100),
-            ('Kind', 1), ('Aspekt', 2), ('Mensch', 3), ('Mann', 4), ('Haus', 5)
+            ('Tag', 1.0), ('Monat', 1.0), ('Jahr', 1.0),
+            ('Mal', 0.1), ('Zeit', 0.1), ('Beispiel', 0.1), ('Deutsch', 0.1), ('Frau', 0.1),
+            ('Kind', 1.0), ('Aspekt', 0.8), ('Mensch', 0.6), ('Mann', 0.4), ('Haus', 0.2)
         ]
-        self.dictionary = Dictionary({word: {'articles': 'foo', 'translation': {'en': 'bar'}, 'level': level} for (word, level) in words})
+        self.dictionary = Dictionary({word: {'articles': 'foo', 'note': {'en': 'bar'}, 'frequency': freq} for (word, freq) in words})
         # of them, 3 overdue words to review
         self.scores = {
             'Tag': (1, self.now - timedelta(days=1)),
@@ -26,16 +26,18 @@ class TestQuiz(unittest.TestCase):
 
     def test_get_review(self):
         self.scores['Tag'] = (1, self.now + timedelta(days=1))
-        to_review = Quiz.get_review(self.scores, 5, self.now)
+        self.scores['Nichts'] = (1, self.now - timedelta(days=1))
+        to_review = Quiz.get_review(self.scores, 5, self.dictionary, self.now)
         self.assertEqual(len(to_review), 2, f'review must be of correct length')
-        self.assertEqual(to_review.get('Tag'), None, f'review must not include non-overdue words')
+        self.assertEqual(to_review.get('Tag'), None, f'review must include only overdue words')
+        self.assertEqual(to_review.get('Nichts'), None, f'review must include words present in the dictionary')
 
     def test_get_new_words(self):
         new_words = Quiz.get_new_words(self.scores, 5, self.dictionary)
         self.assertEqual(5, len(new_words))
         self.assertEqual(
             set(new_words), set(['Kind', 'Aspekt', 'Mensch', 'Mann', 'Haus']),
-            f'new words must be selected by ascending level'
+            f'new words must be selected by descending frequency'
         )
         new_words = Quiz.get_new_words(self.scores, 15, self.dictionary)
         self.assertEqual(10, len(new_words))
@@ -49,16 +51,16 @@ class TestQuiz(unittest.TestCase):
         self.assertEqual(quiz.correctly, 0)
         self.assertTrue(quiz.active)
 
-    # all dictionary words are already "touched" -> cards are built using review words only
+    # all dictionary words are already "touched" -> cards are built using review words, in insertion order
     def test_new_with_no_newwords(self):
-        scores = {word: (1, self.now - timedelta(days=1)) for word in self.dictionary.allwords()}
+        scores = {word: (1, self.now - timedelta(days=1)) for word in self.dictionary.words()}
         quiz = Quiz.new(10, scores, self.dictionary, QuizMode.Advance)
         self.assertEqual(len(quiz.cards), 10)
         self.assertTrue(not any([card['word'] in ['Haus', 'Mann', 'Mensch'] for card in quiz.cards]))
 
     # in Review mode review words are prioritized over new words
     def test_new_in_review_mode(self):
-        overdue_words = list(self.dictionary.allwords())[:10]
+        overdue_words = list(self.dictionary.words())[:10]
         scores = {word: (1, self.now - timedelta(days=1)) for word in overdue_words}
         quiz = Quiz.new(10, scores, self.dictionary, QuizMode.Review)
         self.assertEqual(len(quiz.cards), 10)

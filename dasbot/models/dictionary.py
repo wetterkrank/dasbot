@@ -15,29 +15,32 @@ class Dictionary(object):
 
     def __init__(self, dict_data):
         self._contents = dict_data
-        self._allwords = self._contents.keys()
+        self._words = self._contents.keys()
 
-    def allwords(self):
-        """ Returns a set-like view of all words """
+    def words(self):
+        """Returns (a set-like view of) all words, in insertion order"""
         # NOTE: use list() to make a copy of the set
-        return self._allwords
+        return self._words
 
     def wordcount(self):
-        """ Returns the dictionary length """
-        return len(self._allwords)
+        """Returns the dictionary length"""
+        return len(self._words)
 
     def articles(self, word):
-        """ Returns the article(s) string for specified word (separated by '/' if more than one)"""
+        """Returns the article(s) string for specified word (separated by '/' if more than one)"""
         return self._contents.get(word, {}).get("articles") or None
 
-    def translation(self, word, locale):
-        """  Returns the word's translation """
-        return self._contents.get(word, {}).get("translation", {}).get(locale) or None
+    def note(self, word, locale):
+        """Returns the comment (for DE locale) or translation"""
+        return self._contents.get(word, {}).get("note", {}).get(locale) or None
 
-    def level(self, word):
-        """ Returns the word's level """
-        return self._contents.get(word, {}).get("level") or None
+    def frequency(self, word):
+        """Returns the word's frequency"""
+        return self._contents.get(word, {}).get("frequency") or None
 
+    def has(self, word):
+        """Returns True if word is in dictionary"""
+        return self._contents.get(word) is not None
 
 class DictionaryEntrySchema(Schema):
     class Meta:
@@ -45,12 +48,18 @@ class DictionaryEntrySchema(Schema):
 
     word = fields.String()
     articles = fields.String()
-    translation = fields.Dict(keys=fields.String(),  values=fields.String())
-    level = fields.Integer()
+    frequency = fields.Float()
+    note = fields.Dict(keys=fields.String(), values=fields.String())
 
     @post_load
     def make_entry(self, data, **kwargs):
-        return {data["word"]: {"articles": data["articles"], "translation": data["translation"], "level": data["level"]}}
+        return {
+            data["word"]: {
+                "articles": data["articles"],
+                "frequency": data["frequency"],
+                "note": data["note"],
+            }
+        }
 
 
 if __name__ == "__main__":

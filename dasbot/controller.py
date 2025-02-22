@@ -29,7 +29,7 @@ class Controller(object):
 
     # /help
     async def help(self, message: Message):
-        await self.ui.reply_with_help(message)
+        await self.ui.help(message)
 
     # /start
     async def start(self, message: Message):
@@ -44,7 +44,7 @@ class Controller(object):
         scores = self.chats_repo.load_scores(chat.id)
         chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary, chat.quiz_mode)
         if chat.quiz.has_questions:
-            await self.ui.ask_question(chat)
+            await self.ui.ask_question(chat, self.dictionary)
         else:
             await self.ui.quiz_empty(message)
         self.chats_repo.save_chat(chat, update_last_seen=True)
@@ -52,7 +52,7 @@ class Controller(object):
     # /stats
     async def stats(self, message: Message):
         scores = self.chats_repo.load_scores(message.chat.id)
-        review_count = len(Quiz.get_review(scores, len(scores)))
+        review_count = len(Quiz.get_review(scores, len(scores), self.dictionary))
         stats = self.stats_repo.get_stats(message.chat.id)
         dict_length = self.dictionary.wordcount()
         stats["touched"] = min(stats.get("touched"), dict_length)
@@ -68,8 +68,8 @@ class Controller(object):
         quiz = chat.quiz
 
         if not (quiz and quiz.expected(answer)):
-            return await self.ui.reply_with_help(message)
-        if answer == "?":
+            return await self.ui.help(message)
+        if answer == '?':
             return await self.ui.give_hint(quiz, message, self.dictionary)
 
         result = chat.quiz.verify_and_update_score(answer)
@@ -78,7 +78,7 @@ class Controller(object):
         self.stats_repo.save_stats(chat, quiz.question, result)
         quiz.advance()
         if quiz.has_questions:
-            await self.ui.ask_question(chat)
+            await self.ui.ask_question(chat, self.dictionary)
         else:
             await self.ui.announce_result(chat)
             quiz.stop()

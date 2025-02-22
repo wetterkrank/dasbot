@@ -15,6 +15,7 @@ de:
     Los geht's!
   daily_hello: "Hi, hier ist Dasbot! Dein tägliches deutsches Artikel-Quiz ist fertig:"
   question: "%{number}/%{total}. Wie lautet der Artikel für <b>%{word}</b>?"
+  question_with_note: "%{number}/%{total}. Wie lautet der Artikel für <b>%{word}</b> (%{note})?"
   hint: "%{word}: %{hint}"
   feedback:
     correct: "Richtig, <b>%{answer}</b> ✅"
