@@ -8,6 +8,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandStart
 from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiogram.client.default import DefaultBotProperties
 
 from dasbot.config import settings
 from dasbot.middleware.i18n import I18nMiddleware
@@ -38,7 +39,9 @@ dp = Dispatcher()
 dp.message.middleware(I18nMiddleware())
 dp.callback_query.middleware(I18nMiddleware())
 
-bot = Bot(settings.TELEGRAM_TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(
+    settings.TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 db = Database(settings).connect()
 
 dictionary = DictRepo(db["dictionary_v2"]).load()
