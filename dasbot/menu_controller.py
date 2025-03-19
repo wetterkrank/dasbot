@@ -38,7 +38,7 @@ class MenuController(object):
         self.SETTINGS = {
             0: {
                 "main": {
-                    "row_len": 2,
+                    "row_len": 1,
                     "buttons": [
                         {
                             "action": "quiz_length",
@@ -68,7 +68,7 @@ class MenuController(object):
                     ],
                 },
                 "quiz_mode": {
-                    "row_len": 2,
+                    "row_len": 1,
                     "buttons": [
                         {
                             "action": QuizMode.Advance.value,
@@ -163,7 +163,7 @@ class MenuController(object):
             f"quiz_mode_{selection}",
         )
 
-    # NOTE: Telegram web has a bug with inline kb not disappearing
+    # NOTE: Telegram Web has a bug with inline kb not disappearing?
     # Possible workaround: delete the message with the kb and send a new one
     async def action_confirm(self, query, key, **kwargs):
         await query.message.edit_text(text=t(f"settings.action.{key}", **kwargs))

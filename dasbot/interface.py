@@ -25,7 +25,7 @@ class Interface(object):
 
     async def ask_question(self, chat, dictionary):
         word = chat.quiz.question
-        note = dictionary.note(word, 'de')
+        note = dictionary.note(word, "de")
         if note:
             text = t(
                 "question_with_note",
@@ -44,9 +44,14 @@ class Interface(object):
         await self.bot.send_message(
             chat.id, text, reply_markup=self.quiz_kb(), disable_notification=True
         )
+
     async def give_hint(self, quiz, message, dictionary):
         language = request_locale.get()
-        translation = dictionary.note(quiz.question, language) or "¯\_(ツ)_/¯"
+        translation = (
+            dictionary.note(quiz.question, language)
+            or dictionary.note(quiz.question, 'en') # TODO: add dictionary for DE
+            or "🤷‍♂️"
+        )
         await message.answer(
             t("hint", word=quiz.question, hint=translation),
             disable_notification=True,
