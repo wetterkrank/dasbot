@@ -2,7 +2,7 @@ import logging
 
 import asyncio
 from aiogram.exceptions import TelegramForbiddenError, TelegramAPIError
-from pymongo.errors import ServerSelectionTimeoutError
+from pymongo.errors import ServerSelectionTimeoutError, AutoReconnect
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -58,6 +58,11 @@ class Broadcaster(object):
             pending_chats = self.chats_repo.get_pending_chats()
         except ServerSelectionTimeoutError as err:
             log.error("Error: %s", err)
+            await asyncio.sleep(30)
+            return
+        except AutoReconnect as err:
+            log.error("Error: %s", err)
+            await asyncio.sleep(30)
             return
         # TODO: Consider adding +1 day to overdue chats if bot is started
         # after a downtime, so they get their quizzes on preferred time
