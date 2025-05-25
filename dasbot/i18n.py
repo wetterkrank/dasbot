@@ -8,6 +8,11 @@ i18n.load_everything()
 
 request_locale = contextvars.ContextVar("request_locale")
 
+# Available translations
+FLAGS = {
+    "en": "🇬🇧",
+    "ru": "🇷🇺"
+}
 
 def set_locale(locale):
     request_locale.set(locale if locale in i18n.get("available_locales") else "en")

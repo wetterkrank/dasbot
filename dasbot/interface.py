@@ -3,7 +3,7 @@ import logging
 from aiogram import html
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
-from dasbot.i18n import request_locale, t
+from dasbot.i18n import FLAGS, request_locale, t
 
 
 log = logging.getLogger(__name__)
@@ -42,14 +42,17 @@ class Interface(object):
                 word=html.quote(word),
             )
         await self.bot.send_message(
-            chat.id, text, reply_markup=self.quiz_kb(), disable_notification=True
+            chat.id, text, reply_markup=self.quiz_kb(chat), disable_notification=True
         )
 
-    async def give_hint(self, quiz, message, dictionary):
-        language = request_locale.get()
+    async def give_hint(self, quiz, message, answer, dictionary):
+        language = next(
+            (key for key, value in FLAGS.items() if value in answer),
+            request_locale.get(),
+        )
         translation = (
             dictionary.note(quiz.question, language)
-            or dictionary.note(quiz.question, 'en') # TODO: add dictionary for DE
+            or dictionary.note(quiz.question, "en")  # TODO: add dictionary for DE
             or "🤷‍♂️"
         )
         await message.answer(
@@ -110,11 +113,19 @@ class Interface(object):
             text += "\n" + t("stats.mistakes") + wordlist("mistakes_30days")
         await message.answer(text)
 
-    def quiz_kb(self) -> ReplyKeyboardMarkup:
-        labels = ("der", "die", "das", "?")
+    def quiz_kb(self, chat) -> ReplyKeyboardMarkup:
+        labels = ("der", "die", "das", self.hint_button(chat))
         buttons = [(KeyboardButton(text=text) for text in labels)]
         keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
         return keyboard
+
+    def hint_button(self, chat):
+        language = chat.hint_language or request_locale.get()
+        flag = FLAGS.get(language, FLAGS["en"])
+        return f"{flag}?"
+
+    def hint_commands(self):
+        return (f"{flag}?" for flag in FLAGS.values())
 
 
 if __name__ == "__main__":

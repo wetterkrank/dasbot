@@ -27,7 +27,7 @@ de:
     ok: übe weiter!
   result: |
     %{correct} von %{total} richtig, %{rate}
-    Um zu neu starten, schicke /start, oder /help für mehr Info.
+    Um neu zu starten, schicke /start, oder /help für mehr Info.
   empty: Hmm, ich konnte keine neuen Wörter oder Wiederholungen für dich finden. Gut gemacht! Schau später wieder vorbei!
   stats:
     progress: |
@@ -47,6 +47,7 @@ de:
             quiz_length: Anzahl der Fragen
             quiz_mode: Wiederholung Modus
             quiz_time: Quiz Zeit
+            hint_language: Hinweise
       1:
         quiz_length:
           hint: Bitte wähle die Anzahl der Fragen
@@ -59,9 +60,12 @@ de:
           buttons:
             advance: Wiederholung + neue
             review: Maximale Wiederholung
+        hint_language:
+          hint: Bitte wähle die Sprache für Hinweise
     action:
       quiz_time_set: "Die Quizzeit ist auf %{pref} (Berliner Zeit) eingestellt"
       quiz_off: Tägliches Quiz ist aus
       quiz_length_set: "Die Quizdauer ist auf %{pref} Fragen eingestellt"
       quiz_mode_advance: Der Quizmodus ist auf "Wiederholung + neue Wörter" eingestellt. Dasbot wird jedem Quiz neue Wörter hinzufügen.
       quiz_mode_review: Der Quizmodus ist auf "Maximale Wiederholung" eingestellt. Die Wiederholung hat Priorität vor neuen Wörtern.
+      hint_language_set: "Ok, Sprache für Hinweise: %{pref}"

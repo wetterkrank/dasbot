@@ -22,8 +22,14 @@ class TestInterface(aiounittest.AsyncTestCase):
         self.ui = Interface(self.bot)
 
     def test_quiz_kb(self):
-        keyboard = self.ui.quiz_kb()
+        chat = Chat(chat_id=1001)
+        keyboard = self.ui.quiz_kb(chat)
         self.assertIsInstance(keyboard, ReplyKeyboardMarkup)
+
+    def test_hint_button(self):
+        chat = Chat(chat_id=1001, hint_language="en")
+        hint_button = self.ui.hint_button(chat)
+        self.assertEqual(hint_button, "🇬🇧?")
 
     async def test_ask_question(self):
         quiz = Quiz.new(1, {}, self.dictionary, QuizMode.Advance)

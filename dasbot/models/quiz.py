@@ -124,7 +124,7 @@ class Quiz(object):
         return cards, selected_scores
 
     def expected(self, answer):
-        return self.active and answer in ['der', 'die', 'das', '?']
+        return self.active and answer in ['der', 'die', 'das']
 
     # NOTE: Split into 2 parts?
     # TODO: An option of reporting an error

@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 class Chat(object):
     def __init__(self, chat_id, user={}, subscribed=True, last_seen=None, quiz=None,
-                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None):
+                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None, hint_language=None):
         self.id = chat_id
         self.user = user # our User is just a dictionary so far
         self.subscribed = subscribed
@@ -25,6 +25,7 @@ class Chat(object):
         self.quiz_mode = quiz_mode or QuizMode.Advance
         if self.quiz_scheduled_time is None:
             self.quiz_scheduled_time = util.next_quiz_time(datetime.now(tz=timezone('UTC')))
+        self.hint_language = hint_language or None
 
     def stamp_time(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))
@@ -66,6 +67,7 @@ class ChatSchema(Schema):
     quiz_scheduled_time = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
     quiz_length = fields.Integer(missing=None)
     quiz_mode = fields.Enum(QuizMode, by_value=True, missing=None)
+    hint_language = fields.String(missing=None)
 
     @post_load
     def get_chat(self, data, **kwargs):
