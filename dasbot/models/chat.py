@@ -50,24 +50,24 @@ class Chat(object):
 class UserSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
-    username = fields.String(missing=None)
-    first_name = fields.String(missing=None)
-    last_name = fields.String(missing=None)
-    locale = fields.String(missing=None)
-    last_used_locale = fields.String(missing=None)
+    username = fields.String(load_default=None)
+    first_name = fields.String(load_default=None)
+    last_name = fields.String(load_default=None)
+    locale = fields.String(load_default=None)
+    last_used_locale = fields.String(load_default=None)
 
 class ChatSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
     chat_id = fields.Integer()
-    user = fields.Nested(UserSchema, missing={})
-    subscribed = fields.Boolean(missing=True)
-    last_seen = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
-    quiz = fields.Nested(QuizSchema, missing=None)
-    quiz_scheduled_time = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
-    quiz_length = fields.Integer(missing=None)
-    quiz_mode = fields.Enum(QuizMode, by_value=True, missing=None)
-    hint_language = fields.String(missing=None)
+    user = fields.Nested(UserSchema, load_default={})
+    subscribed = fields.Boolean(load_default=True)
+    last_seen = fields.Raw(load_default=None)  # Keep the raw datetime for Mongo
+    quiz = fields.Nested(QuizSchema, load_default=None)
+    quiz_scheduled_time = fields.Raw(load_default=None)  # Keep the raw datetime for Mongo
+    quiz_length = fields.Integer(load_default=None)
+    quiz_mode = fields.Enum(QuizMode, by_value=True, load_default=None)
+    hint_language = fields.String(load_default=None)
 
     @post_load
     def get_chat(self, data, **kwargs):
