@@ -6,7 +6,7 @@ from aiogram.filters.callback_data import CallbackData
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.quiz import QuizMode
-from dasbot.i18n import t
+from dasbot.i18n import FLAGS, t
 
 
 log = logging.getLogger(__name__)
@@ -49,6 +49,9 @@ class MenuController(object):
                         {
                             "action": "quiz_time",
                         },
+                        {
+                            "action": "hint_language",
+                        }
                     ],
                 }
             },
@@ -78,6 +81,19 @@ class MenuController(object):
                         },
                     ],
                 },
+                "hint_language": {
+                    "row_len": 2,
+                    "buttons": [
+                        {
+                            "text": FLAGS["en"],
+                            "action": "en",
+                        },
+                        {
+                            "text": FLAGS["ru"],
+                            "action": "ru",
+                        },
+                    ],
+                },
             },
         }
         self.ACTIONS = {
@@ -86,6 +102,7 @@ class MenuController(object):
                 "quiz_time": self.set_quiz_time,
                 "quiz_length": self.set_quiz_length,
                 "quiz_mode": self.set_quiz_mode,
+                "hint_language": self.set_hint_language,
             },
         }
 
@@ -161,6 +178,18 @@ class MenuController(object):
         await self.action_confirm(
             query,
             f"quiz_mode_{selection}",
+        )
+
+    async def set_hint_language(self, query, _level, selection):
+        chat = self.chats_repo.load_chat(query.message)
+        if not (selection in FLAGS.keys()):
+            return
+        chat.hint_language = selection
+        self.chats_repo.save_chat(chat, update_last_seen=True)
+        await self.action_confirm(
+            query,
+            f"hint_language_set",
+            pref=FLAGS[selection],
         )
 
     # NOTE: Telegram Web has a bug with inline kb not disappearing?

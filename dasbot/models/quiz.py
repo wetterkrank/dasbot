@@ -124,7 +124,7 @@ class Quiz(object):
         return cards, selected_scores
 
     def expected(self, answer):
-        return self.active and answer in ['der', 'die', 'das', '?']
+        return self.active and answer in ['der', 'die', 'das']
 
     # NOTE: Split into 2 parts?
     # TODO: An option of reporting an error
@@ -198,7 +198,7 @@ class QuizSchema(Schema):
     length = fields.Integer()
     position = fields.Integer()
     correctly = fields.Integer()
-    active = fields.Boolean(missing=False)
+    active = fields.Boolean(load_default=False)
     cards = fields.List(fields.Dict(keys=fields.String(),
                         values=fields.String(allow_none=True)))
     scores = fields.Dict(keys=fields.String(),

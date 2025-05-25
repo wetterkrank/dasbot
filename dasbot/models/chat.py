@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 class Chat(object):
     def __init__(self, chat_id, user={}, subscribed=True, last_seen=None, quiz=None,
-                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None):
+                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None, hint_language=None):
         self.id = chat_id
         self.user = user # our User is just a dictionary so far
         self.subscribed = subscribed
@@ -25,6 +25,7 @@ class Chat(object):
         self.quiz_mode = quiz_mode or QuizMode.Advance
         if self.quiz_scheduled_time is None:
             self.quiz_scheduled_time = util.next_quiz_time(datetime.now(tz=timezone('UTC')))
+        self.hint_language = hint_language or None
 
     def stamp_time(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))
@@ -49,23 +50,24 @@ class Chat(object):
 class UserSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
-    username = fields.String(missing=None)
-    first_name = fields.String(missing=None)
-    last_name = fields.String(missing=None)
-    locale = fields.String(missing=None)
-    last_used_locale = fields.String(missing=None)
+    username = fields.String(load_default=None)
+    first_name = fields.String(load_default=None)
+    last_name = fields.String(load_default=None)
+    locale = fields.String(load_default=None)
+    last_used_locale = fields.String(load_default=None)
 
 class ChatSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skip unknown fields on deserialization
     chat_id = fields.Integer()
-    user = fields.Nested(UserSchema, missing={})
-    subscribed = fields.Boolean(missing=True)
-    last_seen = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
-    quiz = fields.Nested(QuizSchema, missing=None)
-    quiz_scheduled_time = fields.Raw(missing=None)  # Keep the raw datetime for Mongo
-    quiz_length = fields.Integer(missing=None)
-    quiz_mode = fields.Enum(QuizMode, by_value=True, missing=None)
+    user = fields.Nested(UserSchema, load_default={})
+    subscribed = fields.Boolean(load_default=True)
+    last_seen = fields.Raw(load_default=None)  # Keep the raw datetime for Mongo
+    quiz = fields.Nested(QuizSchema, load_default=None)
+    quiz_scheduled_time = fields.Raw(load_default=None)  # Keep the raw datetime for Mongo
+    quiz_length = fields.Integer(load_default=None)
+    quiz_mode = fields.Enum(QuizMode, by_value=True, load_default=None)
+    hint_language = fields.String(load_default=None)
 
     @post_load
     def get_chat(self, data, **kwargs):

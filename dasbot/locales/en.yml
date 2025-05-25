@@ -45,6 +45,7 @@ en:
             quiz_length: Quiz length
             quiz_mode: Quiz mode
             quiz_time: Daily quiz time
+            hint_language: Hints
       1:
         quiz_length:
           hint: Please select the number of questions
@@ -57,9 +58,12 @@ en:
           buttons:
             advance: Review + new words
             review: Maximize review
+        hint_language:
+          hint: Please select the language for hints
     action:
       quiz_time_set: "Daily quiz time is set to %{pref} (Berlin time)"
       quiz_off: Daily quiz is off
       quiz_length_set: "Quiz length is set to %{pref} questions"
       quiz_mode_advance: Quiz mode is set to 50%% review. Dasbot will add new words to each quiz.
       quiz_mode_review: Quiz mode is set to maximum review. Dasbot will prioritize repetition over new words.
+      hint_language_set: "Ok, language for hints: %{pref}"
