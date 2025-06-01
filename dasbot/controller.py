@@ -67,7 +67,7 @@ class Controller(object):
         chat = self.chats_repo.load_chat(message)
         quiz = chat.quiz
 
-        if quiz and answer in self.ui.hint_commands():
+        if quiz and quiz.active and answer in self.ui.hint_commands():
             return await self.ui.give_hint(quiz, message, answer, self.dictionary)
         if not (quiz and quiz.expected(answer)):
             return await self.ui.help(message)

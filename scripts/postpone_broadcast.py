@@ -3,14 +3,13 @@
 
 import logging
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 
 sys.path.insert(0, "..")
 
 from dasbot.config import settings
 from dasbot.db.database import Database
-from dasbot.db.chats_repo import ChatsRepo
 
 
 logging.basicConfig(
@@ -31,5 +30,5 @@ log.info(f"Pending: {chats.count_documents(query)}")
 update = [
     {"$set": {"quiz_scheduled_time": {"$add": ["$quiz_scheduled_time", 24 * 60 * 60 * 1000]}}}
 ]
-# result = chats.update_many(query, update)
-# log.info(f"Updated {result.modified_count} records")
+result = chats.update_many(query, update)
+log.info(f"Updated {result.modified_count} records")
