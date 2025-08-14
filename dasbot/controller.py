@@ -9,6 +9,7 @@ from dasbot.models.dictionary import Dictionary
 from dasbot.models.quiz import Quiz
 from dasbot.interface import Interface
 from dasbot.analytics import tracker
+from dasbot.ads import ads
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +90,7 @@ class Controller(object):
                     "locale": chat.user["last_used_locale"],
                 },
             )
+            await ads.send(chat.id, chat.user["last_used_locale"])
 
         self.chats_repo.save_chat(chat, update_last_seen=True)
 
