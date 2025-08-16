@@ -36,9 +36,9 @@ class Controller(object):
     async def start(self, message: Message):
         chat = self.chats_repo.load_chat(message)
         tracker.capture(
-            chat.id,
             "quiz started",
-            {"locale": chat.user["last_used_locale"]},
+            distinct_id=str(chat.id),
+            properties={"locale": chat.user["last_used_locale"]},
         )
         if not chat.last_seen:
             await self.ui.welcome(chat)
@@ -84,11 +84,9 @@ class Controller(object):
             await self.ui.announce_result(chat)
             quiz.stop()
             tracker.capture(
-                chat.id,
                 "quiz completed",
-                {
-                    "locale": chat.user["last_used_locale"],
-                },
+                distinct_id=str(chat.id),
+                properties={"locale": chat.user["last_used_locale"]},
             )
             await ads.send(chat.id, chat.user["last_used_locale"])
 
