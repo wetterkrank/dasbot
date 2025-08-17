@@ -2,7 +2,7 @@ import logging
 
 import asyncio
 from aiogram.exceptions import TelegramForbiddenError, TelegramAPIError
-from pymongo.errors import ServerSelectionTimeoutError, AutoReconnect
+from pymongo.errors import ServerSelectionTimeoutError, AutoReconnect, OperationFailure
 
 from dasbot import util
 from dasbot.models.quiz import Quiz
@@ -53,14 +53,12 @@ class Broadcaster(object):
             return False
 
     # Regularly called rouine that sends out the (over)due quizzes
+    # TODO: add a retry mechanism for MongoDB errors, with exponential backoff etc
+    # Or maybe a supervisor task that would watch/restart the whole broadcaster?
     async def broadcast(self):
         try:
             pending_chats = self.chats_repo.get_pending_chats()
-        except ServerSelectionTimeoutError as err:
-            log.error("Error: %s", err)
-            await asyncio.sleep(30)
-            return
-        except AutoReconnect as err:
+        except (ServerSelectionTimeoutError, AutoReconnect, OperationFailure) as err:
             log.error("Error: %s", err)
             await asyncio.sleep(30)
             return
