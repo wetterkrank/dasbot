@@ -7,6 +7,7 @@ from dasbot.controller import Controller
 from dasbot.models.dictionary import Dictionary
 from dasbot.i18n import set_locale
 from dasbot.models.quiz import Quiz
+from posthog import Posthog
 
 
 class AnyStringWith(str):
@@ -14,6 +15,7 @@ class AnyStringWith(str):
         return self in other
 
 
+# TODO: disable all network calls in tests
 class TestController(aiounittest.AsyncTestCase):
     def setUp(self):
         self.chats_repo = MagicMock()
@@ -91,13 +93,11 @@ class TestController(aiounittest.AsyncTestCase):
 
     @patch("dasbot.controller.Interface")
     async def test_generic_with_quiz_completion(self, mock_ui):
-        # Store original modules to restore later
-        original_ads_module = sys.modules.get("dasbot.ads")
-        original_analytics_module = sys.modules.get("dasbot.analytics")
-        original_controller_module = sys.modules.get("dasbot.controller")
-
-        # Remove modules from cache so they can be reimported with new settings
+        original_modules = {}
         for module_name in ["dasbot.ads", "dasbot.analytics", "dasbot.controller"]:
+            # Store original modules to restore later
+            original_modules[module_name] = sys.modules.get(module_name)
+            # Remove modules from cache so they can be reimported with new settings
             if module_name in sys.modules:
                 del sys.modules[module_name]
 
@@ -109,6 +109,11 @@ class TestController(aiounittest.AsyncTestCase):
                 }.get(key)
 
                 import dasbot.controller
+
+                # PostHog's batching may prevent immediate requests,
+                # so we just check that real class was instantiated
+                self.assertIsInstance(dasbot.analytics.tracker, Posthog)
+                self.assertIsInstance(dasbot.ads.ads, dasbot.ads.Ads)
 
                 quiz = Quiz(
                     length=1,
@@ -129,7 +134,7 @@ class TestController(aiounittest.AsyncTestCase):
 
                 # Set up HTTP interception for both ads and analytics
                 with aioresponses() as m:
-                    m.post( "https://us.i.posthog.com/capture/", status=200)
+                    m.post("https://us.i.posthog.com/capture/", status=200)
                     ads_url = "https://dasbot-ads.yak.supplies/impressions"
                     m.post(ads_url, status=202)
 
@@ -142,8 +147,6 @@ class TestController(aiounittest.AsyncTestCase):
                     await controller.generic(message_mock)
 
                     # Verify HTTP calls
-                    # Note: PostHog uses internal batching mechanism that don't always
-                    # result in immediate HTTP requests that aioresponses can intercept.
                     ads_requests = [
                         call for call in m.requests if str(call[1]) == ads_url
                     ]
@@ -152,18 +155,8 @@ class TestController(aiounittest.AsyncTestCase):
                     )
 
         finally:
-            # Restore original modules
-            if original_ads_module:
-                sys.modules["dasbot.ads"] = original_ads_module
-            elif "dasbot.ads" in sys.modules:
-                del sys.modules["dasbot.ads"]
-
-            if original_analytics_module:
-                sys.modules["dasbot.analytics"] = original_analytics_module
-            elif "dasbot.analytics" in sys.modules:
-                del sys.modules["dasbot.analytics"]
-
-            if original_controller_module:
-                sys.modules["dasbot.controller"] = original_controller_module
-            elif "dasbot.controller" in sys.modules:
-                del sys.modules["dasbot.controller"]
+            for module_name, original_module in original_modules.items():
+                if original_module:
+                    sys.modules[module_name] = original_module
+                elif module_name in sys.modules:
+                    del sys.modules[module_name]
