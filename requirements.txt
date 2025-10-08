@@ -1,5 +1,5 @@
-﻿aiogram==3.13.1
-aiohttp==3.10.11
+aiogram==3.13.1
+aiohttp==3.12.14
 dynaconf~=3.2.11
 i18nice[YAML]~=0.16.0
 marshmallow~=4.0.0
