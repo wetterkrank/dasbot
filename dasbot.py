@@ -39,10 +39,10 @@ dp = Dispatcher()
 dp.message.middleware(I18nMiddleware())
 dp.callback_query.middleware(I18nMiddleware())
 
+db = Database(settings).connect()
 bot = Bot(
     settings.TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
-db = Database(settings).connect()
 
 dictionary = DictRepo(db["dictionary_v2"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
