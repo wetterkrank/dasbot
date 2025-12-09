@@ -28,15 +28,30 @@ class Dictionary(object):
 
     def articles(self, word):
         """Returns the article(s) string for specified word (separated by '/' if more than one)"""
-        return self._contents.get(word, {}).get("articles") or None
+        return self._contents.get(word, {}).get("articles")
+
+    def display_as(self, word):
+        """Returns the display_as string for specified word"""
+        return self._contents.get(word, {}).get("display_as")
 
     def note(self, word, locale):
         """Returns the comment (for DE locale) or translation"""
-        return self._contents.get(word, {}).get("note", {}).get(locale) or None
+        if locale == "de":
+            return self._contents.get(word, {}).get("note")
+        else:
+            return self._contents.get(word, {}).get("translation", {}).get(locale)
 
     def frequency(self, word):
         """Returns the word's frequency"""
-        return self._contents.get(word, {}).get("frequency") or None
+        return self._contents.get(word, {}).get("frequency")
+
+    def level(self, word):
+        """Returns the word's level"""
+        return self._contents.get(word, {}).get("level")
+
+    def example(self, word):
+        """Returns the example sentence for specified word"""
+        return self._contents.get(word, {}).get("example")
 
     def has(self, word):
         """Returns True if word is in dictionary"""
@@ -47,17 +62,25 @@ class DictionaryEntrySchema(Schema):
         unknown = EXCLUDE  # Skips unknown fields on deserialization
 
     word = fields.String()
+    display_as = fields.String()
     articles = fields.String()
     frequency = fields.Float()
-    note = fields.Dict(keys=fields.String(), values=fields.String())
+    level = fields.String()
+    note = fields.String()
+    translation = fields.Dict(keys=fields.String(), values=fields.String())
+    example = fields.String()
 
     @post_load
     def make_entry(self, data, **kwargs):
         return {
             data["word"]: {
+                "display_as": data.get("display_as"),
                 "articles": data["articles"],
+                "level": data.get("level"),
                 "frequency": data["frequency"],
-                "note": data["note"],
+                "note": data.get("note"),
+                "translation": data["translation"],
+                "example": data.get("example"),
             }
         }
 

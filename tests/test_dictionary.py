@@ -6,8 +6,8 @@ from dasbot.models.dictionary import Dictionary
 class TestDictionary(unittest.TestCase):
     def setUp(self):
         dict_data = {
-            "foo": {"articles": "bar", "note": {"en": "baz"}, "frequency": 2.0},
-            "bar": {"articles": "foo", "note": {"en": "woo"}, "frequency": 0.5},
+            "foo": {"articles": "bar", "translation": {"en": "baz"}, "frequency": 2.0},
+            "bar": {"articles": "foo", "translation": {"en": "woo"}, "frequency": 0.5},
         }
         self.dict = Dictionary(dict_data)
 

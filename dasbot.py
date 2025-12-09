@@ -44,7 +44,7 @@ bot = Bot(
     settings.TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 
-dictionary = DictRepo(db["dictionary_v2"]).load()
+dictionary = DictRepo(db["dictionary_v3"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
 stats_repo = StatsRepo(db["scores"], db["stats"])
 chatcon = Controller(bot, chats_repo, stats_repo, dictionary)
