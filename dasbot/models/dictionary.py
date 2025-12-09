@@ -1,9 +1,13 @@
 import logging
 
+from enum import Enum
 from marshmallow import Schema, fields, EXCLUDE, post_load
 
 log = logging.getLogger(__name__)
 
+class DictionaryMode(Enum):
+    Default = 'default'
+    A1 = 'a1'
 
 class Dictionary(object):
     """

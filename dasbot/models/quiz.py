@@ -26,8 +26,6 @@ SCHEDULE = {
     6: timedelta(weeks=24)
 }
 
-# MODES = ['equal', 'review'] # 50/50 review + new words or maximize review
-
 # 50/50 review + new words or maximize review
 class QuizMode(Enum):
     Advance = 'advance'

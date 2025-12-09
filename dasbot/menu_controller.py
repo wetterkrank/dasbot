@@ -6,6 +6,7 @@ from aiogram.filters.callback_data import CallbackData
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.quiz import QuizMode
+from dasbot.models.dictionary import DictionaryMode
 from dasbot.i18n import FLAGS, t
 
 
@@ -34,6 +35,7 @@ class MenuController(object):
         ]
         self.LENGTH_OPTIONS = ["5", "10", "20", "50"]
         self.MODE_OPTIONS = [mode.value for mode in list(QuizMode)]
+        self.DICTIONARY_OPTIONS = [mode.value for mode in list(DictionaryMode)]
         self.QUIZ_OFF = "off"
         self.SETTINGS = {
             0: {
@@ -51,7 +53,11 @@ class MenuController(object):
                         },
                         {
                             "action": "hint_language",
+                        },
+                        {
+                            "action": "dictionary",
                         }
+
                     ],
                 }
             },
@@ -94,6 +100,18 @@ class MenuController(object):
                         },
                     ],
                 },
+                "dictionary": {
+                    "row_len": 1,
+                    "buttons": [
+                        {
+                            "action": "default",
+                        },
+                        {
+                            "action": 'a1',
+                        },
+                    ],
+                },
+
             },
         }
         self.ACTIONS = {
@@ -103,6 +121,7 @@ class MenuController(object):
                 "quiz_length": self.set_quiz_length,
                 "quiz_mode": self.set_quiz_mode,
                 "hint_language": self.set_hint_language,
+                "dictionary": self.set_dictionary,
             },
         }
 
@@ -190,6 +209,17 @@ class MenuController(object):
             query,
             f"hint_language_set",
             pref=FLAGS[selection],
+        )
+
+    async def set_dictionary(self, query, _level, selection):
+        chat = self.chats_repo.load_chat(query.message)
+        if not (selection in self.DICTIONARY_OPTIONS):
+            selection = self.DICTIONARY_OPTIONS[0]
+        chat.dictionary_mode = DictionaryMode(selection)
+        self.chats_repo.save_chat(chat, update_last_seen=True)
+        await self.action_confirm(
+            query,
+            f"dictionary_{selection}",
         )
 
     # NOTE: Telegram Web has a bug with inline kb not disappearing?
