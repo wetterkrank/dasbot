@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 
 
 class Broadcaster(object):
-    def __init__(self, ui, chats_repo, dictionary):
+    def __init__(self, ui, chats_repo, dictionaries):
         self.ui = ui
         self.chats_repo = chats_repo
-        self.dictionary = dictionary
+        self.dictionaries = dictionaries
 
     async def send_quiz(self, chat: Chat) -> bool:
         """
@@ -25,13 +25,14 @@ class Broadcaster(object):
         """
         try:
             scores = self.chats_repo.load_scores(chat.id)
-            chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary, chat.quiz_mode)
+            dictionary = self.dictionaries[chat.dictionary_level]
+            chat.quiz = Quiz.new(chat.quiz_length, scores, dictionary, chat.quiz_mode)
             chat.quiz_scheduled_time = util.next_quiz_time(chat.quiz_scheduled_time)
             self.chats_repo.save_chat(chat)
             if chat.quiz.has_questions:
                 log.info("Broadcast: sending message to %s", chat.id)
                 await self.ui.daily_hello(chat)
-                await self.ui.ask_question(chat, self.dictionary)
+                await self.ui.ask_question(chat, dictionary)
                 self.chats_repo.save_chat(chat)
                 await asyncio.sleep(1)  # FYI, TG limit: 30 messages/second
                 return True

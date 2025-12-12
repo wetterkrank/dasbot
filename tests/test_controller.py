@@ -1,5 +1,6 @@
 import sys
 import aiounittest
+from collections import defaultdict
 from aioresponses import aioresponses
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -21,12 +22,12 @@ class TestController(aiounittest.AsyncTestCase):
         self.chats_repo = MagicMock()
         self.stats_repo = MagicMock()
         self.bot = MagicMock()
-        self.dictionary = Dictionary(
+        self.dictionaries = defaultdict(lambda: Dictionary(
             {
                 "foo": {"articles": "bar", "note": {"en": "baz"}, "frequency": 1},
                 "bar": {"articles": "foo", "note": {"en": "woo"}, "frequency": 2},
             }
-        )
+        ))
         set_locale("en")
 
     async def test_stats(self):
@@ -38,7 +39,7 @@ class TestController(aiounittest.AsyncTestCase):
         )
         self.chats_repo.load_scores = MagicMock(return_value={})
         controller = Controller(
-            self.bot, self.chats_repo, self.stats_repo, self.dictionary
+            self.bot, self.chats_repo, self.stats_repo, self.dictionaries
         )
         message_mock = AsyncMock()
 
@@ -55,7 +56,7 @@ class TestController(aiounittest.AsyncTestCase):
         message_mock = AsyncMock()
         message_mock.text = None
         controller = Controller(
-            self.bot, self.chats_repo, self.stats_repo, self.dictionary
+            self.bot, self.chats_repo, self.stats_repo, self.dictionaries
         )
 
         await controller.generic(message_mock)
@@ -68,7 +69,7 @@ class TestController(aiounittest.AsyncTestCase):
         mock_ui.return_value.give_hint = AsyncMock()
         mock_ui.return_value.hint_commands = MagicMock(return_value=["🇬🇧?"])
         controller = Controller(
-            self.bot, self.chats_repo, self.stats_repo, self.dictionary
+            self.bot, self.chats_repo, self.stats_repo, self.dictionaries
         )
         message_mock = AsyncMock(text="🇬🇧?")
 
@@ -83,7 +84,7 @@ class TestController(aiounittest.AsyncTestCase):
         )
         mock_ui.return_value.help = AsyncMock()
         controller = Controller(
-            self.bot, self.chats_repo, self.stats_repo, self.dictionary
+            self.bot, self.chats_repo, self.stats_repo, self.dictionaries
         )
         message_mock = AsyncMock(text="bla")
 
@@ -139,7 +140,7 @@ class TestController(aiounittest.AsyncTestCase):
                     m.post(ads_url, status=202)
 
                     controller = dasbot.controller.Controller(
-                        self.bot, self.chats_repo, self.stats_repo, self.dictionary
+                        self.bot, self.chats_repo, self.stats_repo, self.dictionaries
                     )
                     controller.ui = mock_ui.return_value
 

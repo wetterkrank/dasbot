@@ -1,6 +1,7 @@
 import logging
 
 import unittest
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock
 
@@ -11,7 +12,7 @@ from aiogram.methods import SendMessage
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.chat import Chat, ChatSchema
-from dasbot.models.dictionary import Dictionary
+from dasbot.models.dictionary import Dictionary, Level
 from dasbot.broadcaster import Broadcaster
 
 
@@ -32,8 +33,8 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
-        self.dictionary = Dictionary({w: {'articles': 'foo', 'note': {'en': 'bar'}, 'frequency': 1} for w in ['Tag', 'Monat', 'Jahr']})
-        self.broadcaster = Broadcaster(self.ui_mock, chats_repo, self.dictionary)
+        self.dictionaries = defaultdict(lambda: Dictionary({w: {'articles': 'foo', 'note': {'en': 'bar'}, 'frequency': 1} for w in ['Tag', 'Monat', 'Jahr']}))
+        self.broadcaster = Broadcaster(self.ui_mock, chats_repo, self.dictionaries)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)

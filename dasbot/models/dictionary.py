@@ -5,9 +5,14 @@ from marshmallow import Schema, fields, EXCLUDE, post_load
 
 log = logging.getLogger(__name__)
 
-class DictionaryMode(Enum):
+class Level(Enum):
     Default = 'default'
     A1 = 'a1'
+
+    @classmethod
+    def from_value(cls, value):
+        return next((m for m in cls if m.value == value), Level.Default)
+
 
 class Dictionary(object):
     """

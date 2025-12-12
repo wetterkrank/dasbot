@@ -44,10 +44,10 @@ bot = Bot(
     settings.TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 
-dictionary = DictRepo(db["dictionary_v3"]).load()
+dictionaries = DictRepo(db["dictionary_v3"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
 stats_repo = StatsRepo(db["scores"], db["stats"])
-chatcon = Controller(bot, chats_repo, stats_repo, dictionary)
+chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
 menucon = MenuController(chats_repo)
 
 
@@ -94,7 +94,7 @@ async def all_other_messages(message: Message):
 
 
 def add_coroutines():
-    broadcaster = Broadcaster(Interface(bot), chats_repo, dictionary)
+    broadcaster = Broadcaster(Interface(bot), chats_repo, dictionaries)
     maintenance = Maintenance(stats_repo)
     if settings.get("BROADCAST"):
         asyncio.create_task(broadcaster.run())

@@ -6,7 +6,7 @@ from aiogram.filters.callback_data import CallbackData
 
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.models.quiz import QuizMode
-from dasbot.models.dictionary import DictionaryMode
+from dasbot.models.dictionary import Level
 from dasbot.i18n import FLAGS, t
 
 
@@ -35,7 +35,7 @@ class MenuController(object):
         ]
         self.LENGTH_OPTIONS = ["5", "10", "20", "50"]
         self.MODE_OPTIONS = [mode.value for mode in list(QuizMode)]
-        self.DICTIONARY_OPTIONS = [mode.value for mode in list(DictionaryMode)]
+        self.DICTIONARY_OPTIONS = [mode.value for mode in list(Level)]
         self.QUIZ_OFF = "off"
         self.SETTINGS = {
             0: {
@@ -215,7 +215,7 @@ class MenuController(object):
         chat = self.chats_repo.load_chat(query.message)
         if not (selection in self.DICTIONARY_OPTIONS):
             selection = self.DICTIONARY_OPTIONS[0]
-        chat.dictionary_mode = DictionaryMode(selection)
+        chat.dictionary_level = Level(selection)
         self.chats_repo.save_chat(chat, update_last_seen=True)
         await self.action_confirm(
             query,
