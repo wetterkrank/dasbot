@@ -117,7 +117,6 @@ class TestController(aiounittest.AsyncTestCase):
                 self.assertIsInstance(dasbot.ads.ads, dasbot.ads.Ads)
 
                 quiz = Quiz(
-                    length=1,
                     cards=[{"word": "Kartoffel", "articles": "die"}],
                     position=0,
                     correctly=0,
