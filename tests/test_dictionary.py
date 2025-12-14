@@ -26,7 +26,7 @@ class TestDictionary(unittest.TestCase):
 
     def test_frequency(self):
         self.assertEqual(2.0, self.dict.frequency("foo"))
-        self.assertEqual(None, self.dict.frequency("fzz"))
+        self.assertEqual(0.0, self.dict.frequency("fzz"))
 
 
 if __name__ == '__main__':

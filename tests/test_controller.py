@@ -26,8 +26,8 @@ class TestController(aiounittest.AsyncTestCase):
         self.bot = MagicMock()
         self.dictionaries = defaultdict(lambda: Dictionary(
             {
-                "foo": {"articles": "bar", "note": {"en": "baz"}, "frequency": 1},
-                "bar": {"articles": "foo", "note": {"en": "woo"}, "frequency": 2},
+                "foo": {"articles": "bar", "translation": {"en": "baz"}, "frequency": 1},
+                "bar": {"articles": "foo", "translation": {"en": "woo"}, "frequency": 2},
             }
         ))
         set_locale("en")
