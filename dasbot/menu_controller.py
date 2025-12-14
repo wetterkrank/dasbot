@@ -216,6 +216,7 @@ class MenuController(object):
         if not (selection in self.DICTIONARY_OPTIONS):
             selection = self.DICTIONARY_OPTIONS[0]
         chat.dictionary_level = Level(selection)
+        chat.quiz = None  # reset quiz to force a restart with the new dictionary
         self.chats_repo.save_chat(chat, update_last_seen=True)
         await self.action_confirm(
             query,

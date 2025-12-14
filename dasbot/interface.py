@@ -24,14 +24,15 @@ class Interface(object):
         await self.bot.send_message(chat.id, t("daily_hello"))
 
     async def ask_question(self, chat, dictionary):
-        word = chat.quiz.question
-        note = dictionary.note(word, "de")
+        key = chat.quiz.question
+        note = dictionary.note(key)
+        word = html.quote(dictionary.display_as(key))
         if note:
             text = t(
                 "question_with_note",
                 number=chat.quiz.pos,
                 total=chat.quiz.length,
-                word=html.quote(word),
+                word=word,
                 note=note,
             )
         else:
@@ -39,7 +40,7 @@ class Interface(object):
                 "question",
                 number=chat.quiz.pos,
                 total=chat.quiz.length,
-                word=html.quote(word),
+                word=word,
             )
         await self.bot.send_message(
             chat.id, text, reply_markup=self.quiz_kb(chat), disable_notification=True
@@ -50,15 +51,12 @@ class Interface(object):
             (key for key, value in FLAGS.items() if value in answer),
             request_locale.get(),
         )
-        translation = (
-            dictionary.note(quiz.question, language)
-            or dictionary.note(quiz.question, "en")  # TODO: add dictionary for DE
-            or "🤷‍♂️"
-        )
-        await message.answer(
-            t("hint", word=quiz.question, hint=translation),
-            disable_notification=True,
-        )
+        translation = dictionary.translation(quiz.question, language)
+        translation = translation and t("hint", word=quiz.question, hint=translation)
+        example = dictionary.example(quiz.question)
+        example = example and f"<tg-spoiler>{example}</tg-spoiler>"
+        hint = "\n".join(filter(None, [translation, example]))
+        await message.answer(hint, disable_notification=True)
 
     async def give_feedback(self, chat, message, correct):
         answer = f"{html.quote(chat.quiz.answer)} {html.quote(chat.quiz.question)}"

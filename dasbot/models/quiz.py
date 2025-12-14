@@ -159,7 +159,7 @@ class Quiz(object):
 
     @property
     def has_questions(self):
-        return self.position < self.length and self.position < len(self.cards)
+        return self.position < self.length
 
     @property
     def question(self):

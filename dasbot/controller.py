@@ -1,5 +1,7 @@
 import logging
 
+import asyncio
+
 from aiogram import Bot
 from aiogram.types import Message
 
@@ -35,11 +37,6 @@ class Controller(object):
     # /start
     async def start(self, message: Message):
         chat = self.chats_repo.load_chat(message)
-        tracker.capture(
-            "quiz started",
-            distinct_id=str(chat.id),
-            properties={"locale": chat.user["last_used_locale"]},
-        )
         if not chat.last_seen:
             await self.ui.welcome(chat)
         scores = self.chats_repo.load_scores(chat.id)
@@ -93,7 +90,9 @@ class Controller(object):
                 distinct_id=str(chat.id),
                 properties={"locale": chat.user["last_used_locale"]},
             )
-            await ads.send(chat.id, chat.user["last_used_locale"])
+            # Alternatively, we could send the ad hook inline with a short timeout
+            # Can't use await since a timeout would block saving the chat
+            asyncio.create_task(ads.send(chat.id, chat.user["last_used_locale"]))
 
         self.chats_repo.save_chat(chat, update_last_seen=True)
 

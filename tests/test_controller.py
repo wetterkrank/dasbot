@@ -1,14 +1,16 @@
 import sys
 import aiounittest
+import asyncio
+
 from collections import defaultdict
 from aioresponses import aioresponses
 from unittest.mock import AsyncMock, MagicMock, patch
+from posthog import Posthog
 
 from dasbot.controller import Controller
 from dasbot.models.dictionary import Dictionary
 from dasbot.i18n import set_locale
 from dasbot.models.quiz import Quiz
-from posthog import Posthog
 
 
 class AnyStringWith(str):
@@ -144,7 +146,10 @@ class TestController(aiounittest.AsyncTestCase):
                     controller.ui = mock_ui.return_value
 
                     message_mock = AsyncMock(text="die", chat=MagicMock(id=12345))
+
+                    # Call our method and let event loop run scheduled tasks
                     await controller.generic(message_mock)
+                    await asyncio.sleep(0)
 
                     # Verify HTTP calls
                     ads_requests = [

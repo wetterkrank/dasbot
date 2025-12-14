@@ -35,34 +35,35 @@ class Dictionary(object):
         """Returns the dictionary length"""
         return len(self._words)
 
-    def articles(self, word):
+    def articles(self, word) -> str | None:
         """Returns the article(s) string for specified word (separated by '/' if more than one)"""
         return self._contents.get(word, {}).get("articles")
 
-    def display_as(self, word):
+    def display_as(self, word) -> str:
         """Returns the display_as string for specified word"""
-        return self._contents.get(word, {}).get("display_as")
+        return self._contents.get(word, {}).get("display_as") or word
 
-    def note(self, word, locale):
-        """Returns the comment (for DE locale) or translation"""
-        if locale == "de":
-            return self._contents.get(word, {}).get("note")
-        else:
-            return self._contents.get(word, {}).get("translation", {}).get(locale)
+    def note(self, word) -> str | None:
+        """Returns the comment in German"""
+        return self._contents.get(word, {}).get("note")
 
-    def frequency(self, word):
+    def translation(self, word, locale) -> str | None:
+        """Returns the translation for specified word and locale"""
+        return self._contents.get(word, {}).get("translation", {}).get(locale)
+
+    def frequency(self, word) -> float | None:
         """Returns the word's frequency"""
         return self._contents.get(word, {}).get("frequency")
 
-    def level(self, word):
+    def level(self, word) -> str | None:
         """Returns the word's level"""
         return self._contents.get(word, {}).get("level")
 
-    def example(self, word):
+    def example(self, word)  -> str | None:
         """Returns the example sentence for specified word"""
         return self._contents.get(word, {}).get("example")
 
-    def has(self, word):
+    def has(self, word) -> bool:
         """Returns True if word is in dictionary"""
         return self._contents.get(word) is not None
 

@@ -19,10 +19,10 @@ class TestDictionary(unittest.TestCase):
         self.assertEqual("bar", self.dict.articles("foo"))
         self.assertEqual(None, self.dict.articles("fzz"))
 
-    def test_note(self):
-        self.assertEqual("woo", self.dict.note("bar", "en"))
-        self.assertEqual(None, self.dict.note("bar", "zz"))
-        self.assertEqual(None, self.dict.note("bzz", "en"))
+    def test_translation(self):
+        self.assertEqual("woo", self.dict.translation("bar", "en"))
+        self.assertEqual(None, self.dict.translation("bar", "zz"))
+        self.assertEqual(None, self.dict.translation("bzz", "en"))
 
     def test_frequency(self):
         self.assertEqual(2.0, self.dict.frequency("foo"))
