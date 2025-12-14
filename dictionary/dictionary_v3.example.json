@@ -1,0 +1,33 @@
+[{
+  "word": "Stadt",
+  "articles": "die",
+  "level": "A1",
+  "frequency": 5.66,
+  "translation": {
+    "en": "city, town",
+    "ru": "город"
+  },
+  "example": "Berlin ist eine große Stadt."
+},
+{
+  "word": "Blau",
+  "articles": "das",
+  "frequency": 4.65,
+  "note": "Farbe",
+  "translation": {
+    "en": "blue",
+    "ru": "синий цвет"
+  }
+},
+{
+  "word": "Arzt",
+  "display_as": "Arzt/Ärztin",
+  "articles": "der/die",
+  "level": "A1",
+  "frequency": 4.86,
+  "translation": {
+    "en": "physician, doctor",
+    "ru": "врач"
+  },
+  "example": "Meine Schwester ist Ärztin im Krankenhaus."
+}]

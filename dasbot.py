@@ -51,21 +51,25 @@ chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
 menucon = MenuController(chats_repo)
 
 
-# /help command handler
-@dp.message(Command("help"))
-async def help_command(message: Message):
-    log.debug("/help received: %s", message)
-    await chatcon.help(message)
-
-
-# /start command handler
 @dp.message(CommandStart())
 async def start_command(message: Message):
     log.debug("/start received: %s", message)
     await chatcon.start(message)
 
 
-# /settings command handler
+@dp.message(Command("help"))
+async def help_command(message: Message):
+    log.debug("/help received: %s", message)
+    await chatcon.help(message)
+
+
+@dp.message(Command("stats"))
+async def stats_command(message: Message):
+    log.debug("/stats received: %s", message)
+    await chatcon.stats(message)
+
+
+# handler for the /settings command
 @dp.message(Command("settings"))
 async def settings_command(message: Message):
     log.debug("/settings received: %s", message)
@@ -77,13 +81,6 @@ async def settings_command(message: Message):
 async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
     log.debug("callback query received: %s", query)
     await menucon.navigate(query, callback_data)
-
-
-# /stats command handler
-@dp.message(Command("stats"))
-async def stats_command(message: Message):
-    log.debug("/stats received: %s", message)
-    await chatcon.stats(message)
 
 
 # generic message handler; should be last

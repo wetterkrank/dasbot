@@ -10,7 +10,9 @@ de:
 
     Mein Wörterbuch enthält etwa 2000 der am häufigsten verwendeten deutschen Nomen. Wir beginnen mit den häufigsten Wörtern wie „Frau“, „Kind“ und „Mann“ und gehen zu selteneren Wörtern über, wenn du Fortschritte machst.
 
-    Um deine bevorzugte Quizzeit oder -länge zu ändern (oder es auszuschalten), schicke /settings. Du kannst jederzeit mit /start üben.
+    Um deine bevorzugte Quizzeit oder -länge zu ändern (oder es auszuschalten), schicke /settings.
+    Du kannst auch das Vokabularniveau auswählen (zum Beispiel nur A1) in den Einstellungen.
+    Übe jederzeit, indem du /start schickst.
 
     Los geht's!
   daily_hello: "Hi, hier ist Dasbot! Dein tägliches deutsches Artikel-Quiz ist fertig:"
