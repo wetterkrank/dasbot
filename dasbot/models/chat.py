@@ -29,7 +29,7 @@ class Chat(object):
             self.quiz_scheduled_time = util.next_quiz_time(datetime.now(tz=timezone('UTC')))
         self.hint_language = hint_language or None
 
-    def stamp_time(self):
+    def update_last_seen(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))
 
     def unsubscribe(self):

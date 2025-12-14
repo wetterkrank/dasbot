@@ -51,8 +51,12 @@ class Interface(object):
             (key for key, value in FLAGS.items() if value in answer),
             request_locale.get(),
         )
-        translation = dictionary.translation(quiz.question, language)
-        translation = translation and t("hint", word=quiz.question, hint=translation)
+        translation = (
+            dictionary.translation(quiz.question, language)
+            or dictionary.translation(quiz.question, "en")
+            or "🤷‍♂️"
+        )
+        translation = t("hint", word=quiz.question, hint=translation)
         example = dictionary.example(quiz.question)
         example = example and f"<tg-spoiler>{example}</tg-spoiler>"
         hint = "\n".join(filter(None, [translation, example]))

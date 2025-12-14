@@ -35,7 +35,7 @@ class MenuController(object):
         ]
         self.LENGTH_OPTIONS = ["5", "10", "20", "50"]
         self.MODE_OPTIONS = [mode.value for mode in list(QuizMode)]
-        self.DICTIONARY_OPTIONS = [mode.value for mode in list(Level)]
+        self.DICTIONARY_OPTIONS = [level.value for level in list(Level)]
         self.QUIZ_OFF = "off"
         self.SETTINGS = {
             0: {
@@ -215,7 +215,7 @@ class MenuController(object):
         chat = self.chats_repo.load_chat(query.message)
         if not (selection in self.DICTIONARY_OPTIONS):
             selection = self.DICTIONARY_OPTIONS[0]
-        chat.dictionary_level = Level(selection)
+        chat.dictionary_level = Level.from_value(selection)
         chat.quiz = None  # reset quiz to force a restart with the new dictionary
         self.chats_repo.save_chat(chat, update_last_seen=True)
         await self.action_confirm(

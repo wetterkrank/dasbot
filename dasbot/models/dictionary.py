@@ -51,9 +51,9 @@ class Dictionary(object):
         """Returns the translation for specified word and locale"""
         return self._contents.get(word, {}).get("translation", {}).get(locale)
 
-    def frequency(self, word) -> float | None:
+    def frequency(self, word) -> float:
         """Returns the word's frequency"""
-        return self._contents.get(word, {}).get("frequency")
+        return self._contents.get(word, {}).get("frequency", 0.0)
 
     def level(self, word) -> str | None:
         """Returns the word's level"""
@@ -84,12 +84,12 @@ class DictionaryEntrySchema(Schema):
     def make_entry(self, data, **kwargs):
         return {
             data["word"]: {
-                "display_as": data.get("display_as"),
                 "articles": data["articles"],
+                "display_as": data.get("display_as"),
                 "level": data.get("level"),
-                "frequency": data["frequency"],
+                "frequency": data.get("frequency"),
                 "note": data.get("note"),
-                "translation": data["translation"],
+                "translation": data.get("translation"),
                 "example": data.get("example"),
             }
         }

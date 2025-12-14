@@ -33,21 +33,31 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.scores_collection = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(self.chats_collection, self.scores_collection)
         self.ui_mock = MagicMock()
-        self.dictionaries = defaultdict(lambda: Dictionary({w: {'articles': 'foo', 'note': {'en': 'bar'}, 'frequency': 1} for w in ['Tag', 'Monat', 'Jahr']}))
+        self.dictionaries = defaultdict(
+            lambda: Dictionary(
+                {
+                    w: {"articles": "foo", "translation": {"en": "bar"}, "frequency": 1}
+                    for w in ["Tag", "Monat", "Jahr"]
+                }
+            )
+        )
         self.broadcaster = Broadcaster(self.ui_mock, chats_repo, self.dictionaries)
 
     async def test_send_quiz(self):
         tomorrow = datetime.now(tz=timezone.utc).date() + timedelta(days=1)
-        current_quiz_time = datetime.fromisoformat('2011-11-04 12:05:23+00:00')
+        current_quiz_time = datetime.fromisoformat("2011-11-04 12:05:23+00:00")
         expected_next_quiz_time = current_quiz_time.replace(
-            year=tomorrow.year, month=tomorrow.month, day=tomorrow.day)
+            year=tomorrow.year, month=tomorrow.month, day=tomorrow.day
+        )
         self.ui_mock.daily_hello = TestBroadcaster.success
         self.ui_mock.ask_question = TestBroadcaster.success
 
         chat = Chat(chat_id=1001, quiz_scheduled_time=current_quiz_time)
         result = await self.broadcaster.send_quiz(chat)
 
-        saved_chat = ChatSchema().load(self.chats_collection.find_one({"chat_id": 1001}))
+        saved_chat = ChatSchema().load(
+            self.chats_collection.find_one({"chat_id": 1001})
+        )
         self.assertEqual(1, saved_chat.quiz.pos)
         self.assertEqual(expected_next_quiz_time, saved_chat.quiz_scheduled_time)
         self.assertTrue(result)
@@ -73,5 +83,5 @@ class TestBroadcaster(aiounittest.AsyncTestCase):
         self.assertFalse(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
