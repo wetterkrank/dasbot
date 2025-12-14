@@ -1,11 +1,13 @@
 import logging
 
+import asyncio
+
 from aiogram import Bot
 from aiogram.types import Message
 
+from dasbot.types import Dictionaries
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.db.stats_repo import StatsRepo
-from dasbot.models.dictionary import Dictionary
 from dasbot.models.quiz import Quiz
 from dasbot.interface import Interface
 from dasbot.analytics import tracker
@@ -20,13 +22,13 @@ class Controller(object):
         bot: Bot,
         chats_repo: ChatsRepo,
         stats_repo: StatsRepo,
-        dictionary: Dictionary,
+        dictionaries: Dictionaries,
     ):
         self.bot = bot
         self.chats_repo = chats_repo
         self.stats_repo = stats_repo
         self.ui = Interface(bot)
-        self.dictionary = dictionary
+        self.dictionaries = dictionaries
 
     # /help
     async def help(self, message: Message):
@@ -35,27 +37,26 @@ class Controller(object):
     # /start
     async def start(self, message: Message):
         chat = self.chats_repo.load_chat(message)
-        tracker.capture(
-            "quiz started",
-            distinct_id=str(chat.id),
-            properties={"locale": chat.user["last_used_locale"]},
-        )
         if not chat.last_seen:
             await self.ui.welcome(chat)
         scores = self.chats_repo.load_scores(chat.id)
-        chat.quiz = Quiz.new(chat.quiz_length, scores, self.dictionary, chat.quiz_mode)
+        dictionary = self.dictionaries[chat.dictionary_level]
+        chat.quiz = Quiz.new(chat.quiz_length, scores, dictionary, chat.quiz_mode)
         if chat.quiz.has_questions:
-            await self.ui.ask_question(chat, self.dictionary)
+            await self.ui.ask_question(chat, dictionary)
         else:
             await self.ui.quiz_empty(message)
         self.chats_repo.save_chat(chat, update_last_seen=True)
 
     # /stats
+    # TODO: fix "touched" percentage calculation -- should depend on selected dictionary
     async def stats(self, message: Message):
-        scores = self.chats_repo.load_scores(message.chat.id)
-        review_count = len(Quiz.get_review(scores, len(scores), self.dictionary))
-        stats = self.stats_repo.get_stats(message.chat.id)
-        dict_length = self.dictionary.wordcount()
+        chat = self.chats_repo.load_chat(message)
+        scores = self.chats_repo.load_scores(chat.id)
+        dictionary = self.dictionaries[chat.dictionary_level]
+        review_count = len(Quiz.get_review(scores, len(scores), dictionary))
+        stats = self.stats_repo.get_stats(chat.id)
+        dict_length = dictionary.wordcount()
         stats["touched"] = min(stats.get("touched"), dict_length)
         await self.ui.send_stats(message, stats, review_count, dict_length)
 
@@ -66,10 +67,11 @@ class Controller(object):
 
         answer = message.text.strip().lower()
         chat = self.chats_repo.load_chat(message)
+        dictionary = self.dictionaries[chat.dictionary_level]
         quiz = chat.quiz
 
         if quiz and quiz.active and answer in self.ui.hint_commands():
-            return await self.ui.give_hint(quiz, message, answer, self.dictionary)
+            return await self.ui.give_hint(quiz, message, answer, dictionary)
         if not (quiz and quiz.expected(answer)):
             return await self.ui.help(message)
 
@@ -79,7 +81,7 @@ class Controller(object):
         self.stats_repo.save_stats(chat, quiz.question, result)
         quiz.advance()
         if quiz.has_questions:
-            await self.ui.ask_question(chat, self.dictionary)
+            await self.ui.ask_question(chat, dictionary)
         else:
             await self.ui.announce_result(chat)
             quiz.stop()
@@ -88,7 +90,9 @@ class Controller(object):
                 distinct_id=str(chat.id),
                 properties={"locale": chat.user["last_used_locale"]},
             )
-            await ads.send(chat.id, chat.user["last_used_locale"])
+            # Alternatively, we could send the ad hook inline with a short timeout
+            # Can't use await since a timeout would block saving the chat
+            asyncio.create_task(ads.send(chat.id, chat.user["last_used_locale"]))
 
         self.chats_repo.save_chat(chat, update_last_seen=True)
 

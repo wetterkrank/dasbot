@@ -46,7 +46,7 @@ class ChatsRepo(object):
     def save_chat(self, chat: Chat, update_last_seen=False):
         """Returns pymongo UpdateResult instance"""
         if update_last_seen:
-            chat.stamp_time()
+            chat.update_last_seen()
         query = {"chat_id": chat.id}
         data = ChatSchema().dump(chat)
         update = {"$set": data}

@@ -26,21 +26,19 @@ SCHEDULE = {
     6: timedelta(weeks=24)
 }
 
-# MODES = ['equal', 'review'] # 50/50 review + new words or maximize review
-
 # 50/50 review + new words or maximize review
 class QuizMode(Enum):
     Advance = 'advance'
     Review = 'review'
 
 class Quiz(object):
-    def __init__(self, length=None, cards=[], position=0, correctly=0, active=False, scores={}):
-        self.length = length
+    def __init__(self, cards=[], position=0, correctly=0, active=False, scores={}):
         self.cards = cards
         self.position = position
         self.correctly = correctly
         self.active = active
         self.scores = scores
+        self.length = len(cards)
 
     @staticmethod
     def new(length: int, scores: Scores, dictionary: Dictionary, mode: QuizMode):
@@ -53,9 +51,7 @@ class Quiz(object):
         cards, selected_scores = Quiz.make_cards(length, review_scores, new_words, dictionary, mode)
 
         #TODO: Preferably, store review_scores with cards (requires DB migration)
-        #TODO: .length -> settings.length; make a getter for .length that will return len(cards)
         return Quiz(
-            length=length,
             cards=cards,
             position=0,
             correctly=0,
@@ -163,7 +159,7 @@ class Quiz(object):
 
     @property
     def has_questions(self):
-        return self.position < self.length and self.position < len(self.cards)
+        return self.position < self.length
 
     @property
     def question(self):
@@ -195,7 +191,6 @@ class QuizSchema(Schema):
     class Meta:
         unknown = EXCLUDE  # Skips unknown fields on deserialization
 
-    length = fields.Integer()
     position = fields.Integer()
     correctly = fields.Integer()
     active = fields.Boolean(load_default=False)

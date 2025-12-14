@@ -14,7 +14,7 @@ class TestInterface(aiounittest.AsyncTestCase):
 
     def setUp(self):
         dict_data = {
-            "foo": {"articles": "bar", "note": {"de": "baz"}, "frequency": 2.0},
+            "foo": {"articles": "bar", "note": "baz", "frequency": 2.0},
         }
         self.dictionary = Dictionary(dict_data)
 

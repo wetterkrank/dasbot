@@ -45,9 +45,10 @@ de:
           hint: Bitte wähle eine Option
           buttons:
             quiz_length: Anzahl der Fragen
-            quiz_mode: Wiederholung Modus
+            quiz_mode: Wiederholung
             quiz_time: Quiz Zeit
             hint_language: Hinweise
+            dictionary: Wörterliste
       1:
         quiz_length:
           hint: Bitte wähle die Anzahl der Fragen
@@ -56,12 +57,17 @@ de:
           buttons:
             off: Tägliches Quiz AUS
         quiz_mode:
-          hint: Bitte wähle Quiz Modus
+          hint: Bitte wähle den Wiederholungsmodus
           buttons:
-            advance: Wiederholung + neue
+            advance: Wiederholung + neue Wörter
             review: Maximale Wiederholung
         hint_language:
           hint: Bitte wähle die Sprache für Hinweise
+        dictionary:
+          hint: Welche Wörterliste möchtest du verwenden?
+          buttons:
+            a1: Nur A1
+            default: Dasbots vollständiges Wörterbuch
     action:
       quiz_time_set: "Die Quizzeit ist auf %{pref} (Berliner Zeit) eingestellt"
       quiz_off: Tägliches Quiz ist aus
@@ -69,3 +75,5 @@ de:
       quiz_mode_advance: Der Quizmodus ist auf "Wiederholung + neue Wörter" eingestellt. Dasbot wird jedem Quiz neue Wörter hinzufügen.
       quiz_mode_review: Der Quizmodus ist auf "Maximale Wiederholung" eingestellt. Die Wiederholung hat Priorität vor neuen Wörtern.
       hint_language_set: "Ok, Sprache für Hinweise: %{pref}"
+      dictionary_a1: "A1-Wörterliste ausgewählt. Starte das Quiz mit /start neu."
+      dictionary_default: "Vollständiges Wörterbuch ausgewählt. Starte das Quiz mit /start neu."

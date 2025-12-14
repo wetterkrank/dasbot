@@ -43,9 +43,10 @@ en:
           hint: Please select an option
           buttons:
             quiz_length: Quiz length
-            quiz_mode: Quiz mode
+            quiz_mode: Repetition
             quiz_time: Daily quiz time
             hint_language: Hints
+            dictionary: Dictionary level
       1:
         quiz_length:
           hint: Please select the number of questions
@@ -60,10 +61,17 @@ en:
             review: Maximize review
         hint_language:
           hint: Please select the language for hints
+        dictionary:
+          hint: What dictionary would you like to use?
+          buttons:
+            a1: A1 only
+            default: Dasbot's full dictionary
     action:
-      quiz_time_set: "Daily quiz time is set to %{pref} (Berlin time)"
-      quiz_off: Daily quiz is off
-      quiz_length_set: "Quiz length is set to %{pref} questions"
+      quiz_time_set: "Daily quiz time is set to %{pref} (Berlin time)."
+      quiz_off: Daily quiz is off.
+      quiz_length_set: "Quiz length is set to %{pref} questions."
       quiz_mode_advance: Quiz mode is set to 50%% review. Dasbot will add new words to each quiz.
       quiz_mode_review: Quiz mode is set to maximum review. Dasbot will prioritize repetition over new words.
       hint_language_set: "Ok, language for hints: %{pref}"
+      dictionary_a1: "Now using A1 only dictionary. Restart the quiz with /start."
+      dictionary_default: "Using Dasbot's full frequency dictionary. Restart the quiz with /start."

@@ -7,6 +7,7 @@ from marshmallow import Schema, fields, EXCLUDE, post_load
 
 from dasbot import util
 from dasbot.models.quiz import QuizMode, QuizSchema
+from dasbot.models.dictionary import Level
 from dasbot.config import settings
 
 log = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class Chat(object):
     def __init__(self, chat_id, user={}, subscribed=True, last_seen=None, quiz=None,
-                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None, hint_language=None):
+                 quiz_scheduled_time=None, quiz_length=None, quiz_mode=None, hint_language=None, dictionary_level=None):
         self.id = chat_id
         self.user = user # our User is just a dictionary so far
         self.subscribed = subscribed
@@ -23,11 +24,12 @@ class Chat(object):
         self.quiz_scheduled_time = quiz_scheduled_time
         self.quiz_length = quiz_length or settings.QUIZ_LENGTH
         self.quiz_mode = quiz_mode or QuizMode.Advance
+        self.dictionary_level = dictionary_level or Level.Default
         if self.quiz_scheduled_time is None:
             self.quiz_scheduled_time = util.next_quiz_time(datetime.now(tz=timezone('UTC')))
         self.hint_language = hint_language or None
 
-    def stamp_time(self):
+    def update_last_seen(self):
         self.last_seen = datetime.now(tz=timezone('UTC'))
 
     def unsubscribe(self):
@@ -68,6 +70,7 @@ class ChatSchema(Schema):
     quiz_length = fields.Integer(load_default=None)
     quiz_mode = fields.Enum(QuizMode, by_value=True, load_default=None)
     hint_language = fields.String(load_default=None)
+    dictionary_level = fields.Enum(Level, by_value=True, load_default=None)
 
     @post_load
     def get_chat(self, data, **kwargs):
