@@ -78,7 +78,7 @@ class Interface(object):
             total=chat.quiz.length,
             rate=self.rate(chat.quiz.correctly, chat.quiz.length),
         )
-        await self.bot.send_message(chat.id, text, reply_markup=ReplyKeyboardRemove())
+        await self.bot.send_message(chat.id, text, reply_markup=ReplyKeyboardRemove(), disable_notification=True)
 
     def rate(self, correctly, total):
         grades = {
