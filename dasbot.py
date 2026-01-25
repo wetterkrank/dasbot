@@ -20,7 +20,7 @@ from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
 from dasbot.maintenance import Maintenance
-from dasbot.menu_controller import MenuController, MenuCallback
+from dasbot.settings_controller import SettingsController, MenuCallback
 
 if settings.get("SENTRY_DSN"):
     sentry_sdk.init(dsn=settings.SENTRY_DSN, enable_tracing=False)
@@ -48,7 +48,7 @@ dictionaries = DictRepo(db["dictionary_v3"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
 stats_repo = StatsRepo(db["scores"], db["stats"])
 chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
-menucon = MenuController(chats_repo)
+settingscon = SettingsController(chats_repo, stats_repo)
 
 
 @dp.message(CommandStart())
@@ -69,21 +69,25 @@ async def stats_command(message: Message):
     await chatcon.stats(message)
 
 
-# handler for the /settings command
 @dp.message(Command("settings"))
 async def settings_command(message: Message):
     log.debug("/settings received: %s", message)
-    await menucon.main(message)
+    await settingscon.main(message)
 
 
-# handler for the settings menu callbacks
+@dp.message(Command("deletemydata"))
+async def deletemydata_command(message: Message):
+    log.debug("/deletemydata received: %s", message)
+    await settingscon.delete_account_with_confirmation(message)
+
+
 @dp.callback_query(MenuCallback.filter())
 async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
     log.debug("callback query received: %s", query)
-    await menucon.navigate(query, callback_data)
+    await settingscon.navigate(query, callback_data)
 
 
-# generic message handler; should be last
+# generic message handler; should come last
 @dp.message()
 async def all_other_messages(message: Message):
     log.debug("generic message received: %s", message)
@@ -104,7 +108,7 @@ async def polling():
     await dp.start_polling(bot)
 
 
-def run_webhook():
+def run_webhooks():
     async def on_startup(bot: Bot):
         add_coroutines()
         webhook_url = f"{settings.WEBHOOK_HOST}{settings.WEBHOOK_PATH}"
@@ -125,6 +129,6 @@ def run_webhook():
 
 
 if settings.get("MODE").lower() == "webhook":
-    run_webhook()
+    run_webhooks()
 else:
     asyncio.run(polling())

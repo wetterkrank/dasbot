@@ -4,15 +4,18 @@ import mongomock
 
 from aiogram.types import InlineKeyboardMarkup
 from dasbot.db.chats_repo import ChatsRepo
-from dasbot.menu_controller import MenuController
+from dasbot.db.stats_repo import StatsRepo
+from dasbot.settings_controller import SettingsController
 
 
-class TestMenuController(aiounittest.AsyncTestCase):
+class TestSettingsController(aiounittest.AsyncTestCase):
     def setUp(self):
         chats_col = mongomock.MongoClient(tz_aware=True).db.collection
         scores_col = mongomock.MongoClient(tz_aware=True).db.collection
+        stats_col = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(chats_col, scores_col)
-        self.menucon = MenuController(chats_repo)
+        stats_repo = StatsRepo(scores_col, stats_col)
+        self.menucon = SettingsController(chats_repo, stats_repo)
 
     async def test_main(self):
         message_mock = AsyncMock()
