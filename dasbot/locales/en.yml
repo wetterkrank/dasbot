@@ -47,6 +47,7 @@ en:
             quiz_time: Daily quiz time
             hint_language: Hints
             dictionary: Dictionary level
+            delete_account: Delete account
       1:
         quiz_length:
           hint: Please select the number of questions
@@ -66,6 +67,11 @@ en:
           buttons:
             a1: A1 only
             default: Dasbot's full dictionary
+        delete_account:
+          hint: Are you sure you want to delete your account? This will permanently delete all your data including your chat history, scores, and statistics. This action cannot be undone.
+          buttons:
+            yes: Yes, delete my account
+            no: Cancel
     action:
       quiz_time_set: "Daily quiz time is set to %{pref} (Berlin time)."
       quiz_off: Daily quiz is off.
@@ -75,3 +81,5 @@ en:
       hint_language_set: "Ok, language for hints: %{pref}"
       dictionary_a1: "Now using A1 only dictionary. Restart the quiz with /start."
       dictionary_default: "Using Dasbot's full frequency dictionary. Restart the quiz with /start."
+      delete_account_deleted: "Your account has been deleted. All your data has been permanently removed. You can start fresh anytime by sending /start."
+      delete_account_cancelled: "Account deletion cancelled. Your data is safe."

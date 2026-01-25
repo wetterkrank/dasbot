@@ -82,6 +82,15 @@ class StatsRepo(object):
         result = self._stats.delete_many(query)
         return result
 
+    def delete_stats(self, chat_id):
+        """
+        :param chat_id: chat id to delete stats for
+        :return: PyMongo DeleteResult instance
+        """
+        query = {'chat_id': chat_id}
+        result = self._stats.delete_many(query)
+        return result
+
 
 if __name__ == "__main__":
     pass

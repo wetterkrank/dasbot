@@ -20,7 +20,7 @@ from dasbot.interface import Interface
 from dasbot.broadcaster import Broadcaster
 from dasbot.controller import Controller
 from dasbot.maintenance import Maintenance
-from dasbot.menu_controller import MenuController, MenuCallback
+from dasbot.menu_controller import SettingsController, MenuCallback
 
 if settings.get("SENTRY_DSN"):
     sentry_sdk.init(dsn=settings.SENTRY_DSN, enable_tracing=False)
@@ -48,7 +48,7 @@ dictionaries = DictRepo(db["dictionary_v3"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
 stats_repo = StatsRepo(db["scores"], db["stats"])
 chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
-menucon = MenuController(chats_repo)
+settingscon = SettingsController(chats_repo, stats_repo)
 
 
 # /help command handler
@@ -69,14 +69,14 @@ async def start_command(message: Message):
 @dp.message(Command("settings"))
 async def settings_command(message: Message):
     log.debug("/settings received: %s", message)
-    await menucon.main(message)
+    await settingscon.main(message)
 
 
 # handler for the settings menu callbacks
 @dp.callback_query(MenuCallback.filter())
 async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
     log.debug("callback query received: %s", query)
-    await menucon.navigate(query, callback_data)
+    await settingscon.navigate(query, callback_data)
 
 
 # /stats command handler
