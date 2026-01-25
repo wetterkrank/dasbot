@@ -92,6 +92,24 @@ class ChatsRepo(object):
         result = self._scores.update_one(query, update, upsert=True)
         return result
 
+    def delete_chat(self, chat_id):
+        """
+        :param chat_id: chat id to delete
+        :return: pymongo DeleteResult instance
+        """
+        query = {"chat_id": chat_id}
+        result = self._chats.delete_one(query)
+        return result
+
+    def delete_scores(self, chat_id):
+        """
+        :param chat_id: chat id to delete scores for
+        :return: pymongo DeleteResult instance
+        """
+        query = {"chat_id": chat_id}
+        result = self._scores.delete_many(query)
+        return result
+
 
 if __name__ == "__main__":
     pass

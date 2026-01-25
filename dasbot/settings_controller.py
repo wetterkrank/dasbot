@@ -5,6 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 
 from dasbot.db.chats_repo import ChatsRepo
+from dasbot.db.stats_repo import StatsRepo
 from dasbot.models.quiz import QuizMode
 from dasbot.models.dictionary import Level
 from dasbot.i18n import FLAGS, t
@@ -19,9 +20,10 @@ class MenuCallback(CallbackData, prefix="menu"):
     selection: str
 
 
-class MenuController(object):
-    def __init__(self, chats_repo):
+class SettingsController(object):
+    def __init__(self, chats_repo, stats_repo):
         self.chats_repo: ChatsRepo = chats_repo
+        self.stats_repo: StatsRepo = stats_repo
         # NOTE: Can't use colon in callback actions, it's used as a separator
         self.TIME_OPTIONS = [
             "0900",
@@ -111,6 +113,17 @@ class MenuController(object):
                         },
                     ],
                 },
+                "delete_account": {
+                    "row_len": 2,
+                    "buttons": [
+                        {
+                            "action": "yes",
+                        },
+                        {
+                            "action": "no",
+                        },
+                    ],
+                },
 
             },
         }
@@ -122,6 +135,7 @@ class MenuController(object):
                 "quiz_mode": self.set_quiz_mode,
                 "hint_language": self.set_hint_language,
                 "dictionary": self.set_dictionary,
+                "delete_account": self.delete_account_confirmation,
             },
         }
 
@@ -129,6 +143,12 @@ class MenuController(object):
     async def main(self, message: Message):
         text = self.settings_text("0.main.hint")
         keyboard = self.settings_kb(0, "main")
+        await message.answer(text=text, reply_markup=keyboard)
+
+    # respond to /deletemydata command
+    async def delete_account_with_confirmation(self, message: Message):
+        text = self.settings_text("1.delete_account.hint")
+        keyboard = self.settings_kb(1, "delete_account")
         await message.answer(text=text, reply_markup=keyboard)
 
     # respond to callback queries
@@ -222,6 +242,24 @@ class MenuController(object):
             query,
             f"dictionary_{selection}",
         )
+
+    async def delete_account_confirmation(self, query, _level, selection):
+        if selection == "yes":
+            chat_id = query.message.chat.id
+            self.delete_account(chat_id)
+            await self.action_confirm(query, "delete_account_deleted")
+        elif selection == "no":
+            await self.action_confirm(query, "delete_account_cancelled")
+
+    def delete_account(self, chat_id):
+        """
+        Delete account data: chat, scores, and stats.
+        :param chat_id: chat id to delete
+        """
+        self.chats_repo.delete_chat(chat_id)
+        self.chats_repo.delete_scores(chat_id)
+        self.stats_repo.delete_stats(chat_id)
+        log.info("Account deleted for chat %s", chat_id)
 
     # NOTE: Telegram Web has a bug with inline kb not disappearing?
     # Possible workaround: delete the message with the kb and send a new one
