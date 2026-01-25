@@ -8,7 +8,9 @@ en:
 
     My dictionary contains about 2000 most frequently used German nouns. We'll start with the most common ones, like Frau, Kind, Mann, and move on to less frequent words as you progress.
 
-    To change your preferred quiz time/length (or turn it off), use the /settings command. Practice any time by sending /start.
+    To change your preferred quiz time/length, or turn it off, use the /settings command.
+    You can also select the vocabulary level (for example, only A1) in the settings.
+    Practice any time by sending /start.
 
     Let's go!
   daily_hello: "Hi, it's Dasbot! Here's your daily German article quiz:"

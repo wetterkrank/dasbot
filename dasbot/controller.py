@@ -42,14 +42,14 @@ class Controller(object):
         scores = self.chats_repo.load_scores(chat.id)
         dictionary = self.dictionaries[chat.dictionary_level]
         chat.quiz = Quiz.new(chat.quiz_length, scores, dictionary, chat.quiz_mode)
+        self.chats_repo.save_chat(chat, update_last_seen=True)
         if chat.quiz.has_questions:
             await self.ui.ask_question(chat, dictionary)
         else:
             await self.ui.quiz_empty(message)
-        self.chats_repo.save_chat(chat, update_last_seen=True)
 
     # /stats
-    # TODO: fix "touched" percentage calculation -- should depend on selected dictionary
+    # TODO: fix "touched" percentage calculation -- should depend on selected dictionary?
     async def stats(self, message: Message):
         chat = self.chats_repo.load_chat(message)
         scores = self.chats_repo.load_scores(chat.id)
@@ -60,7 +60,7 @@ class Controller(object):
         stats["touched"] = min(stats.get("touched"), dict_length)
         await self.ui.send_stats(message, stats, review_count, dict_length)
 
-    # not-a-command
+    # not-a-command (answer or hint request)
     async def generic(self, message: Message):
         if not message.text:
             return

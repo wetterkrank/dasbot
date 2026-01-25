@@ -18,11 +18,7 @@ As an alternative,
 - Run `docker compose pull && docker compose up -d`
 
 ### Dictionary
-You'll need a db collection 'dictionary' with documents like this:
-```
-{"word":"Bahnhof","articles":"der","notes":{"en":"(railway) station"},"frequency":1.0},
-{"word":"Teil","articles":"der/die","notes":{"en":"part, detail"},"frequency":0.5}
-```
+You'll need a db collection 'dictionary_v3', see the example in /dictionary.
 
 ## Notes
 
@@ -60,8 +56,10 @@ A correct answer increases the card's score by 1, while a mistake decreases its 
 - i18n ✔
 - Revise the dictionary ✔
 - Add some tools for dictionary management
-- Select words by level -- A1, B1, ...
+- Select words by level -- A1, B1, ... ✔
 - Let users add their words
 - "Forget me" command
 - Custom quiz intervals ("N times/day every 3 hours")
 - Postpone broadcast when restarting after outage (use a one-off script?)
+- Hall of fame
+- Command to pause/restart broadcast, auto-pause when all words are memorized

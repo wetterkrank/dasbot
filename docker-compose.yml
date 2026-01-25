@@ -2,7 +2,7 @@ version: "2"
 services:
 
   mongo:
-    image: mongo:latest
+    image: mongo:8.2
     container_name: dasbot_mongo
     restart: always
     ports:

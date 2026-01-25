@@ -51,49 +51,43 @@ chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
 settingscon = SettingsController(chats_repo, stats_repo)
 
 
-# /help command handler
-@dp.message(Command("help"))
-async def help_command(message: Message):
-    log.debug("/help received: %s", message)
-    await chatcon.help(message)
-
-
-# /start command handler
 @dp.message(CommandStart())
 async def start_command(message: Message):
     log.debug("/start received: %s", message)
     await chatcon.start(message)
 
 
-# /settings command handler
-@dp.message(Command("settings"))
-async def settings_command(message: Message):
-    log.debug("/settings received: %s", message)
-    await settingscon.main(message)
+@dp.message(Command("help"))
+async def help_command(message: Message):
+    log.debug("/help received: %s", message)
+    await chatcon.help(message)
 
 
-# handler for the settings menu callbacks
-@dp.callback_query(MenuCallback.filter())
-async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
-    log.debug("callback query received: %s", query)
-    await settingscon.navigate(query, callback_data)
-
-
-# /stats command handler
 @dp.message(Command("stats"))
 async def stats_command(message: Message):
     log.debug("/stats received: %s", message)
     await chatcon.stats(message)
 
 
-# /deletemydata command handler
+@dp.message(Command("settings"))
+async def settings_command(message: Message):
+    log.debug("/settings received: %s", message)
+    await settingscon.main(message)
+
+
 @dp.message(Command("deletemydata"))
 async def deletemydata_command(message: Message):
     log.debug("/deletemydata received: %s", message)
     await settingscon.delete_account_with_confirmation(message)
 
 
-# generic message handler; should be last
+@dp.callback_query(MenuCallback.filter())
+async def settings_navigate(query: CallbackQuery, callback_data: MenuCallback):
+    log.debug("callback query received: %s", query)
+    await settingscon.navigate(query, callback_data)
+
+
+# generic message handler; should come last
 @dp.message()
 async def all_other_messages(message: Message):
     log.debug("generic message received: %s", message)
