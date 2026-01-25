@@ -49,7 +49,7 @@ de:
             quiz_time: Quiz Zeit
             hint_language: Hinweise
             dictionary: Wörterliste
-            delete_account: Konto löschen
+            delete_account: Daten löschen
       1:
         quiz_length:
           hint: Bitte wähle die Anzahl der Fragen
@@ -70,9 +70,9 @@ de:
             a1: Nur A1
             default: Dasbots vollständiges Wörterbuch
         delete_account:
-          hint: Bist du sicher, dass du dein Konto löschen möchtest? Dies wird alle deine Daten dauerhaft löschen, einschließlich deines Chat-Verlaufs, deiner Punktzahlen und Statistiken. Diese Aktion kann nicht rückgängig gemacht werden.
+          hint: Bist du sicher? Dies wird alle deine Daten dauerhaft löschen, einschließlich deiner Punktzahlen und Statistiken. Diese Aktion kann nicht rückgängig gemacht werden.
           buttons:
-            yes: Ja, mein Konto löschen
+            yes: Ja, meine Daten löschen
             no: Abbrechen
     action:
       quiz_time_set: "Die Quizzeit ist auf %{pref} (Berliner Zeit) eingestellt"
@@ -83,5 +83,5 @@ de:
       hint_language_set: "Ok, Sprache für Hinweise: %{pref}"
       dictionary_a1: "A1-Wörterliste ausgewählt. Starte das Quiz mit /start neu."
       dictionary_default: "Vollständiges Wörterbuch ausgewählt. Starte das Quiz mit /start neu."
-      delete_account_deleted: "Dein Konto wurde gelöscht. Alle deine Daten wurden dauerhaft entfernt. Du kannst jederzeit neu beginnen, indem du /start sendest."
-      delete_account_cancelled: "Kontolöschung abgebrochen. Deine Daten sind sicher."
+      delete_account_deleted: "Deine Daten wurden gelöscht. Du kannst jederzeit neu beginnen, indem du /start sendest."
+      delete_account_cancelled: "Datenlöschung abgebrochen."

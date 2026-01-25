@@ -58,9 +58,6 @@ class SettingsController(object):
                         },
                         {
                             "action": "dictionary",
-                        },
-                        {
-                            "action": "delete_account",
                         }
 
                     ],
@@ -146,6 +143,12 @@ class SettingsController(object):
     async def main(self, message: Message):
         text = self.settings_text("0.main.hint")
         keyboard = self.settings_kb(0, "main")
+        await message.answer(text=text, reply_markup=keyboard)
+
+    # respond to /deletemydata command
+    async def delete_account_with_confirmation(self, message: Message):
+        text = self.settings_text("1.delete_account.hint")
+        keyboard = self.settings_kb(1, "delete_account")
         await message.answer(text=text, reply_markup=keyboard)
 
     # respond to callback queries

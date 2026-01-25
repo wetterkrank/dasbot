@@ -5,10 +5,10 @@ import mongomock
 from aiogram.types import InlineKeyboardMarkup
 from dasbot.db.chats_repo import ChatsRepo
 from dasbot.db.stats_repo import StatsRepo
-from dasbot.menu_controller import SettingsController
+from dasbot.settings_controller import SettingsController
 
 
-class TestMenuController(aiounittest.AsyncTestCase):
+class TestSettingsController(aiounittest.AsyncTestCase):
     def setUp(self):
         chats_col = mongomock.MongoClient(tz_aware=True).db.collection
         scores_col = mongomock.MongoClient(tz_aware=True).db.collection
