@@ -9,7 +9,7 @@ class TestStatsRepo(unittest.TestCase):
     def setUp(self):
         scores_col = mongomock.MongoClient().db.collection
         stats_col = mongomock.MongoClient().db.collection
-        self.stats_repo = StatsRepo(scores_col, stats_col)
+        self.stats_repo = StatsRepo(scores_col, stats_col, 'test_dictionary')
 
     def test_get_stats_no_data(self):
         stats = self.stats_repo.get_stats(1)

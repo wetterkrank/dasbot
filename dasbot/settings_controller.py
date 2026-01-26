@@ -135,7 +135,7 @@ class SettingsController(object):
                 "quiz_mode": self.set_quiz_mode,
                 "hint_language": self.set_hint_language,
                 "dictionary": self.set_dictionary,
-                "delete_account": self.delete_account_confirmation,
+                "delete_account": self.confirm_account_deletion,
             },
         }
 
@@ -243,7 +243,7 @@ class SettingsController(object):
             f"dictionary_{selection}",
         )
 
-    async def delete_account_confirmation(self, query, _level, selection):
+    async def confirm_account_deletion(self, query, _level, selection):
         if selection == "yes":
             chat_id = query.message.chat.id
             self.delete_account(chat_id)

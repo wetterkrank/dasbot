@@ -46,7 +46,7 @@ bot = Bot(
 
 dictionaries = DictRepo(db["dictionary_v3"]).load()
 chats_repo = ChatsRepo(db["chats"], db["scores"])
-stats_repo = StatsRepo(db["scores"], db["stats"])
+stats_repo = StatsRepo(db["scores"], db["stats"], 'dictionary_v3')
 chatcon = Controller(bot, chats_repo, stats_repo, dictionaries)
 settingscon = SettingsController(chats_repo, stats_repo)
 
@@ -75,9 +75,9 @@ async def settings_command(message: Message):
     await settingscon.main(message)
 
 
-@dp.message(Command("deletemydata"))
-async def deletemydata_command(message: Message):
-    log.debug("/deletemydata received: %s", message)
+@dp.message(Command("forgetme"))
+async def forgetme_command(message: Message):
+    log.debug("/forgetme received: %s", message)
     await settingscon.delete_account_with_confirmation(message)
 
 
@@ -104,6 +104,7 @@ def add_coroutines():
 
 async def polling():
     add_coroutines()
+    log.info("Deleting webhook and starting polling")
     await bot.delete_webhook(drop_pending_updates=True)  # ok for polling too
     await dp.start_polling(bot)
 

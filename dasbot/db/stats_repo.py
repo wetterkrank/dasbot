@@ -10,9 +10,10 @@ log = logging.getLogger(__name__)
 
 
 class StatsRepo(object):
-    def __init__(self, scores_col, stats_col):
+    def __init__(self, scores_col, stats_col, dictionary_col_name):
         self._scores = scores_col
         self._stats = stats_col
+        self._dictionary_col_name = dictionary_col_name
         self.__status()
 
     def __status(self):
@@ -54,7 +55,7 @@ class StatsRepo(object):
             {'$sort': {'count': -1}},
             {'$limit': 5},
             {'$lookup': {
-                'from': 'dictionary',
+                'from': self._dictionary_col_name,
                 'localField': '_id',
                 'foreignField': 'word',
                 'as': 'dictionaryEntry'

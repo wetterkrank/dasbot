@@ -14,7 +14,7 @@ class TestSettingsController(aiounittest.AsyncTestCase):
         scores_col = mongomock.MongoClient(tz_aware=True).db.collection
         stats_col = mongomock.MongoClient(tz_aware=True).db.collection
         chats_repo = ChatsRepo(chats_col, scores_col)
-        stats_repo = StatsRepo(scores_col, stats_col)
+        stats_repo = StatsRepo(scores_col, stats_col, 'test_dictionary')
         self.menucon = SettingsController(chats_repo, stats_repo)
 
     async def test_main(self):
