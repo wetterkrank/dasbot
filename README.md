@@ -58,8 +58,8 @@ A correct answer increases the card's score by 1, while a mistake decreases its 
 - Add some tools for dictionary management
 - Select words by level -- A1, B1, ... ✔
 - Let users add their words
-- "Forget me" command
+- "Forget me" command ✔
 - Custom quiz intervals ("N times/day every 3 hours")
 - Postpone broadcast when restarting after outage (use a one-off script?)
 - Hall of fame
-- Command to pause/restart broadcast, auto-pause when all words are memorized
+- Auto-pause when all words are memorized
