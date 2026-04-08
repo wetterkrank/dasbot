@@ -1,0 +1,27 @@
+name: dasbot
+services:
+  dasbot:
+    container_name: dasbot
+    image: wetterkrank/dasbot:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - 127.0.0.1:8080:8080
+  mongodb:
+    container_name: mongodb
+    image: mongo:8.2.6
+    restart: unless-stopped
+    env_file: .env.mongo
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+volumes:
+  mongodb_data:
+    name: mongodb_data
