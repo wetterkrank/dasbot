@@ -76,7 +76,7 @@ class Controller(object):
             return await self.ui.help(message)
 
         result = chat.quiz.verify_and_update_score(answer)
-        await self.ui.give_feedback(chat, message, result)
+        await self.ui.give_feedback(chat, message, result, dictionary)
         self.chats_repo.save_score(chat, quiz.question, quiz.score)
         self.stats_repo.save_stats(chat, quiz.question, result)
         quiz.advance()

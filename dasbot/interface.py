@@ -62,8 +62,9 @@ class Interface(object):
         hint = "\n".join(filter(None, [translation, example]))
         await message.answer(hint, disable_notification=True)
 
-    async def give_feedback(self, chat, message, correct):
-        answer = f"{html.quote(chat.quiz.answer)} {html.quote(chat.quiz.question)}"
+    async def give_feedback(self, chat, message, correct, dictionary):
+        question = dictionary.display_as(chat.quiz.question)
+        answer = f"{html.quote(chat.quiz.answer)} {html.quote(question)}"
         text = (
             t("feedback.correct", answer=answer)
             if correct
